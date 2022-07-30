@@ -9,7 +9,14 @@ type TechnologyCardProps = {
 };
 
 const Home: NextPage = () => {
-  const hello = trpc.useQuery(["example.hello", { text: "from Guy 22" }]);
+  const {data: hello, refetch} = trpc.useQuery(["example.getAll"]);
+  const createOneMutation = trpc.useMutation(['example.createOne']);
+  console.log('hello', hello);
+
+  const createOneHandler = () => {
+    createOneMutation.mutate();
+    refetch();
+  }
 
   return (
     <>
@@ -21,12 +28,13 @@ const Home: NextPage = () => {
 
       <main className="container mx-auto flex flex-col items-center justify-center h-screen p-4">
         <h1 className="text-5xl md:text-[5rem] leading-normal font-extrabold text-gray-700">
-          Sleeper Sunday Cheatsheet
+          Sleeper Sunday Board
         </h1>
         <h3>Complete Weekly Summary of Your Sleeper Leagues</h3>
         <div>
           <label>Enter your Sleeper username:</label>
           <input/>
+          <button onClick={createOneHandler}>Create One</button>
         </div>
         {/* <p className="text-2xl text-gray-700">This stack uses:</p>
         <div className="grid gap-3 pt-3 mt-3 text-center md:grid-cols-2 lg:w-2/3">
