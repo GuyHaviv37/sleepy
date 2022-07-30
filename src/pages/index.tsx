@@ -1,6 +1,7 @@
 import type { NextPage } from "next";
 import Head from "next/head";
-import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
+import { useRouter } from 'next/router';
 import { trpc } from "../utils/trpc";
 
 const enum CacheStatus {
@@ -9,18 +10,28 @@ const enum CacheStatus {
   'HIT',
 }
 
+type SleeperUserFromCache = {username: string; sleeperId: string};
+
 const Home: NextPage = () => {
   // const {data: hello, refetch} = trpc.useQuery(["example.getAll"]);
   // const createOneMutation = trpc.useMutation(['example.createOne']);
-  // console.log('hello', hello);
+  const router = useRouter();
   const [usernameInput, setUsernameInput] = useState('');
   const [isCachedUsername, setIsCachedUsername] = useState<CacheStatus>(CacheStatus.LOADING);
+  const [errorMessage, setErrorMessage] = useState('');
+  const userFromCache = useRef<SleeperUserFromCache>();
+
   useEffect(() => {
     try {
-      const item = window.localStorage.getItem('username');
-      if (item) {
-        setUsernameInput(JSON.parse(item));
-        setIsCachedUsername(CacheStatus.HIT);
+      const user = window.localStorage.getItem('user');
+      if (user) {
+        userFromCache.current = JSON.parse(user);
+        if (userFromCache.current?.username) {
+          setUsernameInput(userFromCache.current.username);
+          setIsCachedUsername(CacheStatus.HIT);
+        } else {
+          console.log('Error: an empty username was saved to cache');
+        }
       } else {
         setIsCachedUsername(CacheStatus.MISS);
       }
@@ -30,16 +41,35 @@ const Home: NextPage = () => {
       setIsCachedUsername(CacheStatus.MISS);
     }
   }, [])
+
   const onUsernameInputChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     setUsernameInput(event.target.value);
   }, [setUsernameInput])
-  const onSubmit = () => {
-    // save to localStorage
+
+  const onCachedSubmit = () => {
+    if (userFromCache.current?.sleeperId) {
+      const {sleeperId} = userFromCache.current;
+      router.push(`user/${sleeperId}`);
+    } else {
+      console.error('Error with cached data: no sleeper id');
+    }
+  }
+  const onFormSubmit = async () => {
+    setErrorMessage('');
     try {
-      if (typeof window !== 'undefined') {
-        window.localStorage.setItem('username', JSON.stringify(usernameInput));
+      const userData = await (await fetch(`https://api.sleeper.app/v1/user/${usernameInput}`)).json();
+      console.log('userData', userData);
+      if (userData) {
+        if (typeof window !== 'undefined') {
+          window.localStorage.setItem('user', JSON.stringify({
+            username: usernameInput,
+            sleeperId: userData.user_id
+          }));
+        }
+        router.push(`user/${userData.user_id}/settings`);
+      } else {
+        setErrorMessage(`Could not find user - ${usernameInput}`);
       }
-      console.log('username:', usernameInput);
     } catch (error) {
       console.log(error);
     }
@@ -49,10 +79,17 @@ const Home: NextPage = () => {
     switch (isCachedUsername) {
       case CacheStatus.HIT:
         return (
-          <button className="text-primary-text rounded-md bg-accent mx-auto px-3 py-1"
-            onClick={onSubmit}>
-            {usernameInput} &rarr;
-          </button>
+          <>
+            <button className="text-primary-text rounded-md bg-accent mx-auto px-3 py-1
+            hover:-translate-y-1 active:translate-y-0"
+              onClick={onCachedSubmit}>
+              {usernameInput} &rarr;
+            </button>
+            <button className="px-1 mt-2 text-primary text-xs tracking-wide md:text-base"
+            onClick={() => setIsCachedUsername(CacheStatus.MISS)}>
+              or change to a different user
+            </button>
+          </>
         )
       case CacheStatus.MISS:
         return (
@@ -73,8 +110,12 @@ const Home: NextPage = () => {
                 value={usernameInput}
                 onChange={onUsernameInputChange}
               />
-              <button className="text-primary-text rounded-md bg-accent mx-auto px-3 py-1"
-                onClick={onSubmit}>
+              {errorMessage && (
+                <p className="px-1 text-red-600 text-sm md:text-base">{errorMessage}</p>
+              )}
+              <button className="text-primary-text rounded-md bg-accent mx-auto px-3 py-1
+              hover:-translate-y-1 active:translate-y-0"
+                onClick={onFormSubmit}>
                 Submit &rarr;
               </button>
             </>
