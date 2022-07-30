@@ -1,21 +1,87 @@
 import type { NextPage } from "next";
 import Head from "next/head";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { trpc } from "../utils/trpc";
 
-type TechnologyCardProps = {
-  name: string;
-  description: string;
-  documentation: string;
-};
+const enum CacheStatus {
+  'LOADING',
+  'MISS',
+  'HIT',
+}
 
 const Home: NextPage = () => {
-  const {data: hello, refetch} = trpc.useQuery(["example.getAll"]);
-  const createOneMutation = trpc.useMutation(['example.createOne']);
-  console.log('hello', hello);
+  // const {data: hello, refetch} = trpc.useQuery(["example.getAll"]);
+  // const createOneMutation = trpc.useMutation(['example.createOne']);
+  // console.log('hello', hello);
+  const [usernameInput, setUsernameInput] = useState('');
+  const [isCachedUsername, setIsCachedUsername] = useState<CacheStatus>(CacheStatus.LOADING);
+  useEffect(() => {
+    try {
+      const item = window.localStorage.getItem('username');
+      if (item) {
+        setUsernameInput(JSON.parse(item));
+        setIsCachedUsername(CacheStatus.HIT);
+      } else {
+        setIsCachedUsername(CacheStatus.MISS);
+      }
+    }
+    catch (error) {
+      console.log(error);
+      setIsCachedUsername(CacheStatus.MISS);
+    }
+  }, [])
+  const onUsernameInputChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    setUsernameInput(event.target.value);
+  }, [setUsernameInput])
+  const onSubmit = () => {
+    // save to localStorage
+    try {
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem('username', JSON.stringify(usernameInput));
+      }
+      console.log('username:', usernameInput);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-  const createOneHandler = () => {
-    createOneMutation.mutate();
-    refetch();
+  const renderFormOrCachedUsername = () => {
+    switch (isCachedUsername) {
+      case CacheStatus.HIT:
+        return (
+          <button className="text-primary-text rounded-md bg-accent mx-auto px-3 py-1"
+            onClick={onSubmit}>
+            {usernameInput} &rarr;
+          </button>
+        )
+      case CacheStatus.MISS:
+        return (
+          <section className="mt-3 flex flex-col space-y-3 bg-primary px-5 py-3 rounded-lg">
+            <>
+              <label className="text-primary-text text-center w-full md:text-lg tracking-wide"
+                htmlFor="usernameInput">
+                Enter your Sleeper username:
+              </label>
+              <input className="px-3 py-1.5 text-base rounded-lg text-grey-700
+              border-[3px] border-solid border-grey-300
+              transition ease-in-out
+              focus:text-primary focus:border-accent focus:outline-none
+              md:text-md"
+                placeholder="Username"
+                type="text"
+                id="usernameInput"
+                value={usernameInput}
+                onChange={onUsernameInputChange}
+              />
+              <button className="text-primary-text rounded-md bg-accent mx-auto px-3 py-1"
+                onClick={onSubmit}>
+                Submit &rarr;
+              </button>
+            </>
+          </section>)
+        default: // LOADING
+        return (<div>Loading...</div>)
+    }
   }
 
   return (
@@ -26,46 +92,19 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="container mx-auto flex flex-col items-center justify-center h-screen p-4">
-        <h1 className="text-5xl md:text-[5rem] leading-normal font-extrabold text-gray-700">
+      <main className="container mx-auto flex flex-col items-center justify-center h-screen p-4 bg-background-main">
+        <h1 className="text-4xl md:text-5xl leading-tight text-center md:leading-normal font-bold md:font-extrabold text-primary">
           Sleeper Sunday Board
         </h1>
-        <h3>Complete Weekly Summary of Your Sleeper Leagues</h3>
-        <div>
-          <label>Enter your Sleeper username:</label>
-          <input/>
-          <button onClick={createOneHandler}>Create One</button>
-        </div>
-        {/* <p className="text-2xl text-gray-700">This stack uses:</p>
-        <div className="grid gap-3 pt-3 mt-3 text-center md:grid-cols-2 lg:w-2/3">
-          <TechnologyCard
-            name="NextJS"
-            description="The React framework for production"
-            documentation="https://nextjs.org/"
-          />
-          <TechnologyCard
-            name="TypeScript"
-            description="Strongly typed programming language that builds on JavaScript, giving you better tooling at any scale"
-            documentation="https://www.typescriptlang.org/"
-          />
-          <TechnologyCard
-            name="TailwindCSS"
-            description="Rapidly build modern websites without ever leaving your HTML"
-            documentation="https://tailwindcss.com/"
-          />
-          <TechnologyCard
-            name="tRPC"
-            description="End-to-end typesafe APIs made easy"
-            documentation="https://trpc.io/"
-          />
-        </div>
-        <div className="pt-6 text-2xl text-blue-500 flex justify-center items-center w-full">
-          {hello.data ? <p>{hello.data.greeting}</p> : <p>Loading..</p>}
-        </div> */}
+        <br />
+        <h3 className="text-lg md:text-2xl leading-tight text-center md:leading-normal font-semibold md:font-bold text-accent">
+          Complete Weekly Summary of Your Sleeper Leagues
+        </h3>
+        <br />
+        {renderFormOrCachedUsername()}
       </main>
     </>
   );
 };
-
 
 export default Home;
