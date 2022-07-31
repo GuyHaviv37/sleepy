@@ -2,7 +2,6 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from 'next/router';
-import { trpc } from "../utils/trpc";
 
 const enum CacheStatus {
   'LOADING',
@@ -11,10 +10,13 @@ const enum CacheStatus {
 }
 
 type SleeperUserFromCache = {username: string; sleeperId: string};
+type SleeperUserData = {username: string, user_id: string};
+
+const getSleeperUserData = async (username: string): Promise<SleeperUserData> => {
+  return await (await fetch(`https://api.sleeper.app/v1/user/${username}`)).json()
+};
 
 const Home: NextPage = () => {
-  // const {data: hello, refetch} = trpc.useQuery(["example.getAll"]);
-  // const createOneMutation = trpc.useMutation(['example.createOne']);
   const router = useRouter();
   const [usernameInput, setUsernameInput] = useState('');
   const [isCachedUsername, setIsCachedUsername] = useState<CacheStatus>(CacheStatus.LOADING);
@@ -57,7 +59,7 @@ const Home: NextPage = () => {
   const onFormSubmit = async () => {
     setErrorMessage('');
     try {
-      const userData = await (await fetch(`https://api.sleeper.app/v1/user/${usernameInput}`)).json();
+      const userData = await getSleeperUserData(usernameInput);
       console.log('userData', userData);
       if (userData) {
         if (typeof window !== 'undefined') {
@@ -109,6 +111,7 @@ const Home: NextPage = () => {
                 id="usernameInput"
                 value={usernameInput}
                 onChange={onUsernameInputChange}
+                autoComplete={'off'}
               />
               {errorMessage && (
                 <p className="px-1 text-red-600 text-sm md:text-base">{errorMessage}</p>
