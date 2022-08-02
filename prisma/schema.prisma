@@ -15,14 +15,5 @@ model User {
     id String @id @default(cuid())
     username String @unique
     sleeperId String @unique
-    scales LeagueScale[]
-}
-
-model LeagueScale {
-  leagueId String @id @unique
-  scale Float
-  user User? @relation(fields: [userId], references: [id])
-  userId String @default(cuid())
-
-  @@index([userId])
+    scales Json?
 }
