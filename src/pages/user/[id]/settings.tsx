@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react';
+import React, { ChangeEvent, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import useSWR from 'swr';
@@ -16,41 +16,45 @@ type LeagueData = {
 type UseSleeperUserLeaguesResult = {
     leagues: LeagueData[],
     isLoading: boolean,
-    isError: boolean
+    isError: boolean,
+    leagueWeightsMap: React.MutableRefObject<{[key: string]: string;}>
 }
 
 const useSleeperUserLeagues = (sleeperId: string): UseSleeperUserLeaguesResult => {
     const {data, error} = useSWR(`https://api.sleeper.app/v1/user/${sleeperId}/leagues/${SPORT}/${SEASON}`, fetcher);
+    const leagueWeightsMap = useRef<{[key: string]: string}>({});
+
+    useEffect(() => {
+        data?.forEach((league: LeagueData) => leagueWeightsMap.current[league.league_id] = leagueWeightsMap.current[league.league_id] ?? "0")
+    }, [data]);
 
     return {
         leagues: data,
         isLoading: !error && !data,
         isError: error,
+        leagueWeightsMap,
     }
 }
-
-// type UpdateUserScalesInput = inferMutationInput<'example.updateUserScales'>;
 
 const UserDashboardPage = () => {
     const router = useRouter();
     const { id } = router.query;
-    const {isLoading, leagues} = useSleeperUserLeagues(id as string);
-    const inputRefs = useRef<HTMLInputElement[]>(new Array());
+    const {isLoading, leagues, leagueWeightsMap} = useSleeperUserLeagues(id as string);
     const updateUserScales = trpc.useMutation('example.updateUserScales');
 
-    console.log('input refs: ', inputRefs);
-
     const submitWeightsHandler = () => {
-        console.log('input Refs: ', inputRefs.current);
-        const leagueWeights: inferMutationInput<'example.updateUserScales'>['scales'] = [];
+        const leagueScales: inferMutationInput<'example.updateUserScales'>['scales'] = [];
         for (let i=0; i < leagues.length; i++) {
-            leagueWeights.push({
-                leagueId: leagues[i]?.league_id ?? '',
-                scale: parseInt(inputRefs.current[i]?.value ?? '0'),
+            const leagueId = leagues[i]?.league_id;
+            if (!leagueId) continue;
+            leagueScales.push({
+                leagueId,
+                scale: parseInt(leagueWeightsMap.current?.[leagueId] ?? '0'),
             })
         }
-        console.log('leagueWeights: ', leagueWeights);
-        updateUserScales.mutate({scales: leagueWeights, sleeperId: id as string});
+        console.log('leagueScales: ', leagueScales);
+        // Add loader after mutation
+        updateUserScales.mutate({scales: leagueScales, sleeperId: id as string});
     };
 
     return (
@@ -73,10 +77,11 @@ const UserDashboardPage = () => {
                                     <LeagueWeightInput
                                     key={league.league_id}
                                     leagueName={league.name}
-                                    onInputRef={(element: HTMLInputElement) => inputRefs.current[index] = element}
+                                    onValueHandler={(event: ChangeEvent<HTMLInputElement>) => leagueWeightsMap.current[league.league_id] = event.target.value}
                                     />
                                     ))}
                             </div>
+                            {/* enables only when user db mutation is set */}
                             <button className="text-primary-text rounded-md bg-accent mx-auto px-3 py-1
                             hover:-translate-y-1 active:translate-y-0"
                             onClick={submitWeightsHandler}>
@@ -92,16 +97,16 @@ const UserDashboardPage = () => {
 
 interface LeagueWeightInputProps {
     leagueName: string;
-    onInputRef: (element: HTMLInputElement) => void;
+    onValueHandler: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
 const LeagueWeightInput: React.FC<LeagueWeightInputProps> = (props) => {
-    const {leagueName, onInputRef} = props;
+    const {leagueName, onValueHandler} = props;
 
     return (
         <div className="flex justify-between mt-3">
             <p className="text-primary-text">{leagueName}</p>
-            <input type="number" ref={onInputRef}
+            <input type="number" onChange={onValueHandler}
             defaultValue={0} step={1} min={0}
             className="max-w-[50px] h-full text-center"/>
         </div>
