@@ -1,9 +1,9 @@
-import React, { ChangeEvent, useEffect, useRef } from 'react';
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import useSWR from 'swr';
 import { fetcher } from '@/utils/fetcher';
-import { updateLocalStorageData } from '@/utils/localStorage';
+import { getLocalStorageData, updateLocalStorageData } from '@/utils/localStorage';
 
 const SPORT = 'nfl';
 const SEASON = '2021'; // @TODO: turn to 2022
@@ -18,46 +18,56 @@ type LeagueScale = {
     scale: number;
 }
 
+type LeagueWeightsMap = {[key: string]: number};
+
 type UseSleeperUserLeaguesResult = {
     leagues: LeagueData[],
     isLoading: boolean,
     isError: boolean,
-    leagueWeightsMap: React.MutableRefObject<{[key: string]: string;}>
 }
 
 const useSleeperUserLeagues = (sleeperId: string): UseSleeperUserLeaguesResult => {
     const {data, error} = useSWR(`https://api.sleeper.app/v1/user/${sleeperId}/leagues/${SPORT}/${SEASON}`, fetcher);
-    const leagueWeightsMap = useRef<{[key: string]: string}>({});
-
-    useEffect(() => {
-        data?.forEach((league: LeagueData) => leagueWeightsMap.current[league.league_id] = leagueWeightsMap.current[league.league_id] ?? "0")
-    }, [data]);
 
     return {
         leagues: data,
         isLoading: !error && !data,
         isError: error,
-        leagueWeightsMap,
     }
 }
 
 const UserDashboardPage = () => {
     const router = useRouter();
     const { id } = router.query;
-    const {isLoading, leagues, leagueWeightsMap} = useSleeperUserLeagues(id as string);
+    const {isLoading, leagues} = useSleeperUserLeagues(id as string);
+    const [leagueWeightsMap, setLeagueWeightsMap] = useState<LeagueWeightsMap>({});
+
+    useEffect(() => {
+        const cachedLeagueWeights = getLocalStorageData('user')?.leagueWeights;
+        console.log('cachedLeagueWeights', cachedLeagueWeights)
+        if (cachedLeagueWeights) {
+            setLeagueWeightsMap(cachedLeagueWeights);
+        }
+    }, [])
+
+    useEffect(() => {
+        const defaultLeagueWeights: LeagueWeightsMap = {};
+        leagues?.forEach((league) => {
+            if (!leagueWeightsMap[league.league_id]) {
+                defaultLeagueWeights[league.league_id] = 0;
+            }
+        })
+        setLeagueWeightsMap((currentMap) => {
+            return {
+                ...currentMap,
+                ...defaultLeagueWeights,
+            }
+        })
+    }, [leagues])
+
 
     const submitWeightsHandler = () => {
-        const leagueScales: LeagueScale[] = [];
-        for (let i=0; i < leagues.length; i++) {
-            const leagueId = leagues[i]?.league_id;
-            if (!leagueId) continue;
-            leagueScales.push({
-                leagueId,
-                scale: parseInt(leagueWeightsMap.current?.[leagueId] ?? '0'),
-            })
-        }
-        console.log('leagueScales: ', leagueScales);
-        const updatedData = updateLocalStorageData('user', {leagueScales});
+        const updatedData = updateLocalStorageData('user', {leagueWeights: leagueWeightsMap});
         if (!updatedData) {
             console.error('Error: failed to update user data');
         }
@@ -83,7 +93,13 @@ const UserDashboardPage = () => {
                                     <LeagueWeightInput
                                     key={league.league_id}
                                     leagueName={league.name}
-                                    onValueHandler={(event: ChangeEvent<HTMLInputElement>) => leagueWeightsMap.current[league.league_id] = event.target.value}
+                                    value={leagueWeightsMap[league.league_id]}
+                                    onValueHandler={(event: ChangeEvent<HTMLInputElement>) => setLeagueWeightsMap((currentMap) => {
+                                        return {
+                                            ...currentMap,
+                                            [league.league_id]: parseInt(event.target.value),
+                                        }
+                                    })}
                                     />
                                     ))}
                             </div>
@@ -103,17 +119,18 @@ const UserDashboardPage = () => {
 
 interface LeagueWeightInputProps {
     leagueName: string;
+    value?: number;
     onValueHandler: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
 const LeagueWeightInput: React.FC<LeagueWeightInputProps> = (props) => {
-    const {leagueName, onValueHandler} = props;
+    const {leagueName, onValueHandler, value} = props;
 
     return (
         <div className="flex justify-between mt-3">
             <p className="text-primary-text">{leagueName}</p>
             <input type="number" onChange={onValueHandler}
-            defaultValue={0} step={1} min={0}
+            step={1} min={0} value={value}
             className="max-w-[50px] h-full text-center"/>
         </div>
     )
