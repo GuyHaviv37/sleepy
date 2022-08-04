@@ -2,6 +2,7 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from 'next/router';
+import { getLocalStorageData, setLocalStorageData } from "@/utils/localStorage";
 
 const enum CacheStatus {
   'LOADING',
@@ -25,9 +26,9 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     try {
-      const user = window.localStorage.getItem('user');
+      const user = getLocalStorageData('user');
       if (user) {
-        userFromCache.current = JSON.parse(user);
+        userFromCache.current = user;
         if (userFromCache.current?.username) {
           setUsernameInput(userFromCache.current.username);
           setIsCachedUsername(CacheStatus.HIT);
@@ -62,13 +63,10 @@ const Home: NextPage = () => {
       const userData = await getSleeperUserData(usernameInput);
       console.log('userData', userData);
       if (userData) {
-        if (typeof window !== 'undefined') {
-          window.localStorage.setItem('user', JSON.stringify({
+        setLocalStorageData('user', {
             username: usernameInput,
             sleeperId: userData.user_id
-          }));
-        }
-        // createUser.mutate({sleeperId: userData.user_id, username: usernameInput}); 
+        })
         router.push(`user/${userData.user_id}/settings`);
       } else {
         setErrorMessage(`Could not find user - ${usernameInput}`);

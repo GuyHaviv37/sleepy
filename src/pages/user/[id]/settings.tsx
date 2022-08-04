@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 import useSWR from 'swr';
 import { fetcher } from '@/utils/fetcher';
+import { updateLocalStorageData } from '@/utils/localStorage';
 
 const SPORT = 'nfl';
 const SEASON = '2021'; // @TODO: turn to 2022
@@ -56,19 +57,10 @@ const UserDashboardPage = () => {
             })
         }
         console.log('leagueScales: ', leagueScales);
-        if (typeof window !== 'undefined') {
-            const cachedUserData = window.localStorage.getItem('user');
-            if (cachedUserData) {
-                const exisitingUserData = JSON.parse(cachedUserData); 
-                window.localStorage.setItem('user', JSON.stringify({
-                  ...exisitingUserData,
-                  leagueScales: leagueScales
-                }));
-            } else {
-                // Add re-login message to the user.
-                console.error('No user data cached to update');
-            }
-          }
+        const updatedData = updateLocalStorageData('user', {leagueScales});
+        if (!updatedData) {
+            console.error('Error: failed to update user data');
+        }
     };
 
     return (
