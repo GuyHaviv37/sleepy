@@ -2,7 +2,6 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from 'next/router';
-import { trpc } from "@/utils/trpc";
 
 const enum CacheStatus {
   'LOADING',
@@ -23,7 +22,6 @@ const Home: NextPage = () => {
   const [isCachedUsername, setIsCachedUsername] = useState<CacheStatus>(CacheStatus.LOADING);
   const [errorMessage, setErrorMessage] = useState('');
   const userFromCache = useRef<SleeperUserFromCache>();
-  const createUser = trpc.useMutation('example.createUser');
 
   useEffect(() => {
     try {
@@ -70,7 +68,7 @@ const Home: NextPage = () => {
             sleeperId: userData.user_id
           }));
         }
-        createUser.mutate({sleeperId: userData.user_id, username: usernameInput}); 
+        // createUser.mutate({sleeperId: userData.user_id, username: usernameInput}); 
         router.push(`user/${userData.user_id}/settings`);
       } else {
         setErrorMessage(`Could not find user - ${usernameInput}`);

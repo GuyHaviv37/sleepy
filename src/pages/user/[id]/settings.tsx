@@ -3,7 +3,6 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 import useSWR from 'swr';
 import { fetcher } from '@/utils/fetcher';
-import { inferMutationInput, trpc } from '@/utils/trpc';
 
 const SPORT = 'nfl';
 const SEASON = '2021'; // @TODO: turn to 2022
@@ -11,6 +10,11 @@ const SEASON = '2021'; // @TODO: turn to 2022
 type LeagueData = {
     name: string;
     league_id: string;
+}
+
+type LeagueScale = {
+    leagueId: string;
+    scale: number;
 }
 
 type UseSleeperUserLeaguesResult = {
@@ -40,10 +44,9 @@ const UserDashboardPage = () => {
     const router = useRouter();
     const { id } = router.query;
     const {isLoading, leagues, leagueWeightsMap} = useSleeperUserLeagues(id as string);
-    const updateUserScales = trpc.useMutation('example.updateUserScales');
 
     const submitWeightsHandler = () => {
-        const leagueScales: inferMutationInput<'example.updateUserScales'>['scales'] = [];
+        const leagueScales: LeagueScale[] = [];
         for (let i=0; i < leagues.length; i++) {
             const leagueId = leagues[i]?.league_id;
             if (!leagueId) continue;
@@ -53,8 +56,19 @@ const UserDashboardPage = () => {
             })
         }
         console.log('leagueScales: ', leagueScales);
-        // Add loader after mutation
-        updateUserScales.mutate({scales: leagueScales, sleeperId: id as string});
+        if (typeof window !== 'undefined') {
+            const cachedUserData = window.localStorage.getItem('user');
+            if (cachedUserData) {
+                const exisitingUserData = JSON.parse(cachedUserData); 
+                window.localStorage.setItem('user', JSON.stringify({
+                  ...exisitingUserData,
+                  leagueScales: leagueScales
+                }));
+            } else {
+                // Add re-login message to the user.
+                console.error('No user data cached to update');
+            }
+          }
     };
 
     return (
