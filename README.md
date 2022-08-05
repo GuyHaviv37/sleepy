@@ -5,10 +5,13 @@ This is an app bootstrapped according to the [init.tips](https://init.tips) stac
 # TODO
 - General UI: font pallete - font-primary, font-secondary, font-success, font-error. primary-color, accent-color, alt-color (V)
 - General UI: Loader component
-- General BE: Plantscale setup (V), Prisma schema
+- General BE: Plantscale setup (V), Prisma schema for player data, seed data, automated job for seeding
 - General CI/CD: Deploy to Vercel (V)
 - Login page: titles (V), username form (V), localStorage cache of username (V), submit button + loading state (V)
-Logic: validation, redirect to user on cache hit, redirect to settings on cache miss (new user).
+Logic: validation (V), redirect to user on cache hit (V), redirect to settings on cache miss (new user) (V).
 Styling: Title animations, hover effects for button
-- Settings page: fetch leagues, DB cache, weights form, submit button + loading state, mutate DB
-- User page: weeks navbar, basic view, roots vs. boos view, A LOT OF DATA MAPPING.
+- Settings page: fetch leagues (V), localStorage cache (V), weights form (V), submit button (V) + loading state.
+- User page: weeks navbar
+Basic view:
+Roots vs. boos view:
+BE work: fetch + maps

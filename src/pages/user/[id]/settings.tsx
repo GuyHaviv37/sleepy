@@ -13,11 +13,6 @@ type LeagueData = {
     league_id: string;
 }
 
-type LeagueScale = {
-    leagueId: string;
-    scale: number;
-}
-
 type LeagueWeightsMap = {[key: string]: number};
 
 type UseSleeperUserLeaguesResult = {
@@ -70,6 +65,8 @@ const UserDashboardPage = () => {
         const updatedData = updateLocalStorageData('user', {leagueWeights: leagueWeightsMap});
         if (!updatedData) {
             console.error('Error: failed to update user data');
+        } else {
+            router.replace(`/user/${id}`)
         }
     };
 
@@ -86,9 +83,8 @@ const UserDashboardPage = () => {
                     <br/>
                     {isLoading ? <div>Loading...</div> : (
                         <div className="flex flex-col center-items">
-                            <h5 className="text-primary-text text-lg px-6">Your Leagues:</h5>
+                            <h5 className="text-primary-text text-lg px-6 sm:text-center underline">Your Leagues:</h5>
                             <div className="px-2 mb-3">
-                                <p className='text-green-500 text-right'>By $</p>
                                 {leagues.map((league, index) => (
                                     <LeagueWeightInput
                                     key={league.league_id}
@@ -111,6 +107,11 @@ const UserDashboardPage = () => {
                             </button>
                         </div>
                     )}
+                <p className='text-primary-text text-xs px-6 mt-3 font-thin max-w-sm mx-auto lg:text-sm'>
+                    Here you can enter your leagues entry fees, this will be used
+                    to scale better who you should root for and against.
+                    If you wish to have all players on the same scale submit with 0s.
+                </p>
                 </section>
             </main>
         </>
@@ -127,11 +128,19 @@ const LeagueWeightInput: React.FC<LeagueWeightInputProps> = (props) => {
     const {leagueName, onValueHandler, value} = props;
 
     return (
-        <div className="flex justify-between mt-3">
+        <div className="flex justify-between mt-3 sm:justify-center sm:space-x-5">
             <p className="text-primary-text">{leagueName}</p>
-            <input type="number" onChange={onValueHandler}
-            step={1} min={0} value={value}
-            className="max-w-[50px] h-full text-center"/>
+            <div className="flex space-x-3">
+                <input type="number" onChange={onValueHandler}
+                step={1} min={0} value={value}
+                className="max-w-[50px] h-full text-center rounded-lg text-grey-700
+                border-[3px] border-solid border-grey-300
+                transition ease-in-out
+                focus:text-primary focus:border-accent focus:outline-none
+                md:text-md"
+                />
+                <p className="text-green-500">$</p>
+            </div>
         </div>
     )
 }
