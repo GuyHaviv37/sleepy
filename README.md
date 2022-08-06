@@ -9,9 +9,9 @@ This is an app bootstrapped according to the [init.tips](https://init.tips) stac
 - General CI/CD: Deploy to Vercel (V)
 - Login page: titles (V), username form (V), localStorage cache of username (V), submit button + loading state (V)
 Logic: validation (V), redirect to user on cache hit (V), redirect to settings on cache miss (new user) (V).
-Styling: Title animations, hover effects for button
+Styling: Title animations/gradient, hover effects for button
 - Settings page: fetch leagues (V), localStorage cache (V), weights form (V), submit button (V) + loading state.
-- User page: weeks navbar
+- User page: weeks navbar (V), fetch current week logic for initial state, fetch matchup data
 Basic view:
 Roots vs. boos view:
 BE work: fetch + maps

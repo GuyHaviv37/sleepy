@@ -5,7 +5,7 @@ import { getLocalStorageData, updateLocalStorageData } from '@/utils/localStorag
 import Link from 'next/link';
 import useSWR from 'swr';
 import { fetcher } from '@/utils/fetcher';
-import { extractUserLeagueRosterIds } from '@/utils/sleeper';
+import { extractUserLeagueRosterIds, extractSleeperMatchupData } from '@/utils/sleeper';
 
 
 // @TODO: unify this with login page typings
@@ -76,12 +76,22 @@ const useSleeperUserRosterIds = (sleeperId: string, userData?: UserData) => {
     return {leagueRosterIds};
 }
 
-const UserDashboardPage = () => {
+const useSleeperUserMatchupsData = (leagueRosterIds: LeagueRosterIdsMap, week: WEEKS, sleeperId: string) => {
+    const leagueIds = Object.keys(leagueRosterIds);
+    const matchupRequests = leagueIds.map(leagueId => `https://api.sleeper.app/v1/league/${leagueId}/matchups/${week}`)
+    const {data, error} = useSWR(matchupRequests, fetcher);
+    const {userMatchupData, opponentMatchupData} = extractSleeperMatchupData(data, sleeperId);
+    console.log('userMatchupData', userMatchupData);
+    console.log('opponentMatchupData', opponentMatchupData);
+};
+
+const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
     const router = useRouter();
     const { id } = router.query;
     const userData = useLocalStorageUserData(id as string);
-    const [selectedWeek, setSelectedWeek] = useState<WEEKS>(WEEKS.WEEK1);
+    const [selectedWeek, setSelectedWeek] = useState<WEEKS>(props.nflWeek);
     const {leagueRosterIds} = useSleeperUserRosterIds(id as string, userData);
+    console.log('leagueRosterIds', leagueRosterIds);
 
     const getSelectedWeekHandler = (week: WEEKS) => {
         return () => setSelectedWeek(week);
@@ -179,3 +189,13 @@ const ViewTypeSwitch = () => {
 }
 
 export default UserDashboardPage;
+
+export const getServerSideProps = async () => {
+    const nflWeekObj = await(await fetch('https://api.sleeper.app/v1/state/nfl')).json();
+    const nflWeek = `${nflWeekObj.week}` as WEEKS;
+    return {
+        props: {
+            nflWeek
+        }
+    }
+}

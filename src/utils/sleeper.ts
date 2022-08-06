@@ -8,3 +8,10 @@ export const extractUserLeagueRosterIds = (rostersData: any, sleeperId: string):
     });
     return leagueRosterIds;
 }
+
+export const extractSleeperMatchupData = (matchupsData: any, userSleeperId: string) => {
+    return {
+        userMatchupData: {},
+        opponentMatchupData: {}
+    }
+}
