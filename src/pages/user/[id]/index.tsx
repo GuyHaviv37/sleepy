@@ -1,25 +1,38 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
-import { getLocalStorageData } from '@/utils/localStorage';
+import { getLocalStorageData, updateLocalStorageData } from '@/utils/localStorage';
 import Link from 'next/link';
+import useSWR from 'swr';
+import { fetcher } from '@/utils/fetcher';
+import { extractUserLeagueRosterIds } from '@/utils/sleeper';
+
+
+// @TODO: unify this with login page typings
+const enum CacheStatus {
+    'LOADING',
+    'MISS',
+    'HIT',
+}
 
 // @TODO: unify this with settings page for LocalStorageData typings
 type LeagueWeightsMap = {[key: string]: number};
+type LeagueRosterIdsMap = {[key: string]: string};
 
 type UserData = {
     sleeperId?: string;
     username?: string;
-    leagueWeights?: LeagueWeightsMap
+    leagueWeights?: LeagueWeightsMap;
+    leagueRosterIds?: LeagueRosterIdsMap;
 }
 
 const WEEKS = {
-    WEEK1: 'Week 1',
-    WEEK2: 'Week 2',
-    WEEK3: 'Week 3',
-    WEEK4: 'Week 4',
-    WEEK5: 'Week 5',
-    WEEK6: 'Week 6',
+    WEEK1: '1',
+    WEEK2: '2',
+    WEEK3: '3',
+    WEEK4: '4',
+    WEEK5: '5',
+    WEEK6: '6',
 
 } as const;
 
@@ -36,11 +49,39 @@ const useLocalStorageUserData = (sleeperId: string): UserData | undefined => {
     return userData;
 };
 
+const useSleeperUserRosterIds = (sleeperId: string, userData?: UserData) => {
+    const [leagueRosterIds, setLeagueRosterIds] = useState<LeagueRosterIdsMap>();
+    const [isLoadedFromCache, setIsLoadedFromCache] = useState<CacheStatus>(CacheStatus.LOADING);
+    const leagueIds = Object.keys(userData?.leagueWeights ?? {});
+    const fetchRosterIdRequests = leagueIds.map(leagueId => `https://api.sleeper.app/v1/league/${leagueId}/rosters`);
+    const {data, error} = useSWR(fetchRosterIdRequests, fetcher);
+
+    useEffect(() => {
+        if (userData && userData.leagueRosterIds) {
+            setLeagueRosterIds(userData.leagueRosterIds);
+            setIsLoadedFromCache(CacheStatus.HIT);
+        } else {
+            setIsLoadedFromCache(CacheStatus.MISS);
+        }
+    }, [])
+
+    useEffect(() => {
+        if (isLoadedFromCache === CacheStatus.MISS && data) {
+            const leagueRosterIds = extractUserLeagueRosterIds(data, sleeperId);
+            setLeagueRosterIds(leagueRosterIds)
+            updateLocalStorageData('user', {leagueRosterIds});
+        }
+    }, [isLoadedFromCache, data])
+
+    return {leagueRosterIds};
+}
+
 const UserDashboardPage = () => {
     const router = useRouter();
     const { id } = router.query;
     const userData = useLocalStorageUserData(id as string);
     const [selectedWeek, setSelectedWeek] = useState<WEEKS>(WEEKS.WEEK1);
+    const {leagueRosterIds} = useSleeperUserRosterIds(id as string, userData);
 
     const getSelectedWeekHandler = (week: WEEKS) => {
         return () => setSelectedWeek(week);
@@ -75,7 +116,7 @@ const UserDashboardPage = () => {
                     ) : (
                         <>
                             <WeeksNavbar getSelectedWeekHandler={getSelectedWeekHandler} selectedWeek={selectedWeek}/>
-                            <div>Actual Data View</div>
+                            <div>Actual Data View {userData.username}</div>
                         </>
                     )}
                 </section>
@@ -97,7 +138,12 @@ const WeeksNavbar: React.FC<WeeksNavbarProps> = (props) => {
         mt-3  space-x-0.5 bg-gray-600">
             {Object.values(WEEKS).map((week) => {
                 return (
-                <WeeksNavbarItem isSelected={week === selectedWeek} onSelectHandler={getSelectedWeekHandler(week)} label={week}/>
+                <WeeksNavbarItem
+                    key={week}
+                    isSelected={week === selectedWeek}
+                    onSelectHandler={getSelectedWeekHandler(week)}
+                    label={`Week ${week}`}
+                />
                 )
             })}
         </ul>
@@ -114,7 +160,8 @@ const WeeksNavbarItem: React.FC<WeeksNavbarItemProps> = (props) => {
     const {isSelected, onSelectHandler, label} = props;
 
     return (
-        <li className={`text-primary-text text-sm min-w-fit p-1 ${isSelected ? 'bg-accent' : 'bg-alt'} hover:bg-accent cursor-pointer`} onClick={onSelectHandler}>
+        <li className={`text-primary-text text-sm min-w-fit p-1
+        ${isSelected ? 'bg-accent' : 'bg-alt'} hover:bg-accent transition ease-in-out cursor-pointer`} onClick={onSelectHandler}>
             {label}
         </li>
     )
