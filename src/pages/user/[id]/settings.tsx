@@ -89,7 +89,7 @@ const UserDashboardPage = () => {
                                     <LeagueWeightInput
                                     key={league.league_id}
                                     leagueName={league.name}
-                                    value={leagueWeightsMap[league.league_id]}
+                                    value={leagueWeightsMap[league.league_id] ?? 0}
                                     onValueHandler={(event: ChangeEvent<HTMLInputElement>) => setLeagueWeightsMap((currentMap) => {
                                         return {
                                             ...currentMap,

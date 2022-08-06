@@ -191,7 +191,7 @@ const ViewTypeSwitch = () => {
 export default UserDashboardPage;
 
 export const getServerSideProps = async () => {
-    const nflWeekObj = await(await fetch('https://api.sleeper.app/v1/state/nfl')).json();
+    const nflWeekObj = await fetcher('https://api.sleeper.app/v1/state/nfl');
     const nflWeek = `${nflWeekObj.week}` as WEEKS;
     return {
         props: {

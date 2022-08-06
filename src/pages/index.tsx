@@ -3,6 +3,7 @@ import Head from "next/head";
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from 'next/router';
 import { getLocalStorageData, setLocalStorageData } from "@/utils/localStorage";
+import { fetcher } from '@/utils/fetcher';
 
 const enum CacheStatus {
   'LOADING',
@@ -14,7 +15,7 @@ type SleeperUserFromCache = {username: string; sleeperId: string};
 type SleeperUserData = {username: string, user_id: string};
 
 const getSleeperUserData = async (username: string): Promise<SleeperUserData> => {
-  return await (await fetch(`https://api.sleeper.app/v1/user/${username}`)).json()
+  return fetcher(`https://api.sleeper.app/v1/user/${username}`);
 };
 
 const Home: NextPage = () => {
