@@ -1,3 +1,12 @@
+type LeagueMatchup = {
+    matchup_id: string;
+    roster_id: string;
+    starters: string[];
+    starters_points: number[];
+};
+
+type LeagueMatchupWithLeagueId = LeagueMatchup & {leagueId: string};
+
 export const extractUserLeagueRosterIds = (rostersData: any, sleeperId: string): {[key:string]: string} | undefined => {
     const userRosters = rostersData.map((leagueRosters: any[]) => {
         return leagueRosters.find((leagueRoster: { owner_id: string; }) => leagueRoster.owner_id === sleeperId);
@@ -9,7 +18,50 @@ export const extractUserLeagueRosterIds = (rostersData: any, sleeperId: string):
     return leagueRosterIds;
 }
 
-export const extractSleeperMatchupData = (matchupsData: any, userSleeperId: string) => {
+const isUserMatchup = (rosterId?: string) => (matchup: LeagueMatchup) => matchup.roster_id === rosterId;
+const isOppMatchup = (matchupId?: string, userRosterId?: string) => (matchup: LeagueMatchup) => matchup.matchup_id === matchupId && matchup.roster_id !== userRosterId;
+
+const extractLeaguesData = (matchups: LeagueMatchupWithLeagueId[]) => {
+    const starterData: {[starterId: string]: {leagues: {[leagueId: string]: number}}} = {};
+    for (let leagueMatchup of matchups) {
+        const leagueId = leagueMatchup.leagueId;
+        leagueMatchup.starters.forEach((starter: LeagueMatchup['starters'][0], index: number) => {
+            const starterScore = leagueMatchup.starters_points[index] ?? 0;
+            starterData[starter] = {
+                ...starterData[starter],
+                leagues: {
+                    ...starterData[starter]?.leagues,
+                    [leagueId]: starterScore,
+                }
+            }
+        })
+    }
+    return starterData;
+}
+const extractStartersData = (matchups: LeagueMatchupWithLeagueId[]) => {
+    const startersLeaguesData = extractLeaguesData(matchups);
+    return startersLeaguesData;
+}
+
+// @TODO use LeagueRosterIdsMap from index page, use type for leagueMatchupsData
+export const extractSleeperMatchupData = (leagueMatchupsData: {[leagueId: string]: LeagueMatchup[]}, leagueRosterIds: {[leagueId: string]: string}) => {
+    const userMatchups = Object.entries(leagueMatchupsData).map(([leagueId, leagueMatchups]) => {
+        const userMatchup = leagueMatchups.find(isUserMatchup(leagueRosterIds[leagueId]));
+        if (!userMatchup) throw Error();
+        return {...userMatchup, leagueId}
+    });
+    const userStarters = extractStartersData(userMatchups);
+    console.log('userStarters', userStarters);
+    const oppMatchups = Object.entries(leagueMatchupsData).map(([leagueId, leagueMatchups], index) => {
+        const matchupId = userMatchups[index]?.matchup_id;
+        const userRosterId = leagueRosterIds[leagueId];
+        const oppMatchup = leagueMatchups.find(isOppMatchup(matchupId, userRosterId));
+        if (!oppMatchup) throw Error();
+        return {...oppMatchup, leagueId};
+    })
+    const oppStarters = extractStartersData(oppMatchups);
+    console.log('oppStarters', oppStarters);
+
     return {
         userMatchupData: {},
         opponentMatchupData: {}
