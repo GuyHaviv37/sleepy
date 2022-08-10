@@ -12,6 +12,8 @@ Logic: validation (V), redirect to user on cache hit (V), redirect to settings o
 Styling: Title animations/gradient, hover effects for button
 - Settings page: fetch leagues (V), localStorage cache (V), weights form (V), submit button (V) + loading state.
 - User page: weeks navbar (V), fetch current week logic for initial state, fetch matchup data
+- Sleeper logic: extract user/opp matchups data (V), nflWeek & nflWeekDisplay ?, extract player personal data from DB,
+attach game info data to each player (fetch & attach)
 Basic view:
 Roots vs. boos view:
 BE work: fetch + maps

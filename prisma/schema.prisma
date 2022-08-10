@@ -11,9 +11,12 @@ datasource db {
   referentialIntegrity = "prisma"
 }
 
-model User {
-    id String @id @default(cuid())
-    username String @unique
-    sleeperId String @unique
-    scales Json?
+model Player {
+  id String @id @default(cuid())
+  firstName String
+  lastName String
+  position String?
+  team String?
+  avatarId String?
+  number String?
 }
