@@ -7,6 +7,7 @@ This is an app bootstrapped according to the [init.tips](https://init.tips) stac
 - Login page: Styling - Title animations/gradient, hover effects for button
 - Settings page: loading state on submit.
 - User page: fetch nfl schedule based on selectedWeek
+- Validation: check that leagues are actually available i.e., renewed and active
 Basic view: N/A
 Roots vs. boos view: N/A
 BE work: trpc endpoint to fetch players personal info 
