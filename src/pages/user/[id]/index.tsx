@@ -76,13 +76,20 @@ const useSleeperUserRosterIds = (sleeperId: string, userData?: UserData) => {
     return {leagueRosterIds};
 }
 
-const useSleeperUserMatchupsData = (leagueRosterIds: LeagueRosterIdsMap, week: WEEKS, sleeperId: string) => {
+const useSleeperUserMatchupsData = (leagueRosterIds: LeagueRosterIdsMap = {}, week: WEEKS, sleeperId: string) => {
     const leagueIds = Object.keys(leagueRosterIds);
     const matchupRequests = leagueIds.map(leagueId => `https://api.sleeper.app/v1/league/${leagueId}/matchups/${week}`)
     const {data, error} = useSWR(matchupRequests, fetcher);
-    const {userMatchupData, opponentMatchupData} = extractSleeperMatchupData(data, sleeperId);
-    console.log('userMatchupData', userMatchupData);
-    console.log('opponentMatchupData', opponentMatchupData);
+    if (!data) {
+        // return loading
+    }
+    if (data && data.length !== leagueRosterIds.length) {
+        // return error
+    }
+    // @TODO: type this
+    const leagueMatchupsData: {[key: string]: any} = {};
+    data && leagueIds.forEach((leagueId, index) => leagueMatchupsData[leagueId] = data?.[index]);
+    return extractSleeperMatchupData(leagueMatchupsData, leagueRosterIds);
 };
 
 const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
@@ -91,7 +98,10 @@ const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
     const userData = useLocalStorageUserData(id as string);
     const [selectedWeek, setSelectedWeek] = useState<WEEKS>(props.nflWeek);
     const {leagueRosterIds} = useSleeperUserRosterIds(id as string, userData);
-    console.log('leagueRosterIds', leagueRosterIds);
+    const {userStarters, oppStarters} = useSleeperUserMatchupsData(leagueRosterIds, selectedWeek, id as string);
+    console.log('userStarters', userStarters);
+    console.log('oppStarters', oppStarters);
+    // @TODO get nfl schedule data by selectedWeek
 
     const getSelectedWeekHandler = (week: WEEKS) => {
         return () => setSelectedWeek(week);

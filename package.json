@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "seed-players": "node ./prisma/seed.mjs"
   },
   "dependencies": {
     "@prisma/client": "^4.1.1",
@@ -16,6 +17,7 @@
     "@trpc/react": "^9.26.2",
     "@trpc/server": "^9.26.2",
     "next": "12.2.3",
+    "node-fetch": "^3.2.10",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-query": "3.39.2",
