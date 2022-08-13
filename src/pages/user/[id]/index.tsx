@@ -6,6 +6,7 @@ import Link from 'next/link';
 import useSWR from 'swr';
 import { fetcher } from '@/utils/fetcher';
 import { extractUserLeagueRosterIds, extractSleeperMatchupData } from '@/utils/sleeper';
+import { extractScheduleData, ScheduleData } from '@/utils/schedule';
 
 
 // @TODO: unify this with login page typings
@@ -76,7 +77,7 @@ const useSleeperUserRosterIds = (sleeperId: string, userData?: UserData) => {
     return {leagueRosterIds};
 }
 
-const useSleeperUserMatchupsData = (leagueRosterIds: LeagueRosterIdsMap = {}, week: WEEKS, sleeperId: string) => {
+const useSleeperUserMatchupsData = (leagueRosterIds: LeagueRosterIdsMap = {}, week: WEEKS) => {
     const leagueIds = Object.keys(leagueRosterIds);
     const matchupRequests = leagueIds.map(leagueId => `https://api.sleeper.app/v1/league/${leagueId}/matchups/${week}`)
     const {data, error} = useSWR(matchupRequests, fetcher);
@@ -92,16 +93,26 @@ const useSleeperUserMatchupsData = (leagueRosterIds: LeagueRosterIdsMap = {}, we
     return extractSleeperMatchupData(leagueMatchupsData, leagueRosterIds);
 };
 
+const useNflSchedule = (week: WEEKS) : ScheduleData | undefined => {
+    const {data: espnScoreboardData, error} = useSWR(`https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?seasontype=2&week=${week}`, fetcher);
+    if (error) {
+        console.error(error);
+        return;
+    }
+    if (!espnScoreboardData) return;
+    return extractScheduleData(espnScoreboardData);
+}
+
 const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
     const router = useRouter();
     const { id } = router.query;
     const userData = useLocalStorageUserData(id as string);
     const [selectedWeek, setSelectedWeek] = useState<WEEKS>(props.nflWeek);
     const {leagueRosterIds} = useSleeperUserRosterIds(id as string, userData);
-    const {userStarters, oppStarters} = useSleeperUserMatchupsData(leagueRosterIds, selectedWeek, id as string);
-    console.log('userStarters', userStarters);
-    console.log('oppStarters', oppStarters);
-    // @TODO get nfl schedule data by selectedWeek
+    const {userStarters, oppStarters} = useSleeperUserMatchupsData(leagueRosterIds, selectedWeek);
+    const scheduleData = useNflSchedule(selectedWeek);
+    console.log('schedule: ', scheduleData);
+    const isLoading = !scheduleData || !userStarters || !oppStarters;
 
     const getSelectedWeekHandler = (week: WEEKS) => {
         return () => setSelectedWeek(week);
