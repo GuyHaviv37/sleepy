@@ -5,7 +5,7 @@ This is an app bootstrapped according to the [init.tips](https://init.tips) stac
 # TODO
 - General UI: Loader component
 - Login page: Styling - Title animations/gradient, hover effects for button
-- Settings page: loading state on submit.
+- Settings page: loading state on submit, skip button for 0s
 - User page: fetch nfl schedule based on selectedWeek
 - Validation: check that leagues are actually available i.e., renewed and active
 Basic view: N/A

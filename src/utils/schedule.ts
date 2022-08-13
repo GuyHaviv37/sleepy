@@ -7,7 +7,7 @@ export type ScheduleData = {
     [teamAbv: string]: {
         timeslot?: string; // @TODO - we will see what that should be
         oppTeam?: string;
-        homeAway?: string;
+        isHomeTeam?: boolean;
     }
 }
 
@@ -18,15 +18,16 @@ export const extractScheduleData = (espnScheduleData: EspnScheduleData): Schedul
         if (!teamA || !teamB) {
             throw Error('Schedule Error: an event does not have 2 teams');
         }
+        const isTeamAHome = event.competitions[0]?.competitors[0]?.homeAway === 'home';
         const eventData = {
             [teamA]: {
                 oppTeam: teamB,
-                homeAway: event.competitions[0]?.competitors[0]?.homeAway,
+                isHomeTeam: isTeamAHome,
                 timeslot: event.date
             },
             [teamB]: {
                 oppTeam: teamA,
-                homeAway: event.competitions[0]?.competitors[1]?.homeAway,
+                isHomeTeam: !isTeamAHome,
                 timeslot: event.date
             }
         }
