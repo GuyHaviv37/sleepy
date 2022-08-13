@@ -68,7 +68,10 @@ const Home: NextPage = () => {
             username: usernameInput,
             sleeperId: userData.user_id
         })
-        router.push(`user/${userData.user_id}/settings`);
+        router.push({
+          pathname: `user/${userData.user_id}/settings`,
+          query: {fromLogin: true}
+        }, `user/${userData.user_id}/settings`);
       } else {
         setErrorMessage(`Could not find user - ${usernameInput}`);
       }

@@ -10,4 +10,5 @@ This is an app bootstrapped according to the [init.tips](https://init.tips) stac
 - Validation: check that leagues are actually available i.e., renewed and active
 Basic view: N/A
 Roots vs. boos view: N/A
-BE work: trpc endpoint to fetch players personal info 
+BE work: trpc endpoint to fetch players personal info
+?Optional?: scrollbar for web (tailwind-scrollbar)

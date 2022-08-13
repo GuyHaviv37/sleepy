@@ -4,6 +4,7 @@ import Head from 'next/head';
 import useSWR from 'swr';
 import { fetcher } from '@/utils/fetcher';
 import { getLocalStorageData, updateLocalStorageData } from '@/utils/localStorage';
+import Link from 'next/link';
 
 const SPORT = 'nfl';
 const SEASON = '2021'; // @TODO: turn to 2022
@@ -33,7 +34,7 @@ const useSleeperUserLeagues = (sleeperId: string): UseSleeperUserLeaguesResult =
 
 const UserDashboardPage = () => {
     const router = useRouter();
-    const { id } = router.query;
+    const { id, fromLogin } = router.query;
     const {isLoading, leagues} = useSleeperUserLeagues(id as string);
     const [leagueWeightsMap, setLeagueWeightsMap] = useState<LeagueWeightsMap>({});
 
@@ -79,7 +80,14 @@ const UserDashboardPage = () => {
             </Head>
             <main className="container mx-auto flex flex-col items-center justify-center h-screen p-4 bg-background-main">
                 <section className='bg-primary w-4/5 min-w-min rounded-lg py-4'>
-                    <h3 className='text-primary-text text-xl tracking-wider leading-relaxed px-6'>&#x2699; Settings</h3>
+                    <div className='flex justify-between px-4'>
+                        <h3 className='text-primary-text text-xl tracking-wider leading-relaxed'>
+                            &#x2699; Settings
+                        </h3>
+                        <Link href={`/user/${id}`}>
+                            <button className="text-primary-text text-xl lg:text-2xl">&times;</button>
+                        </Link>
+                    </div>
                     <br/>
                     {isLoading ? <div>Loading...</div> : (
                         <div className="flex flex-col center-items">
@@ -105,12 +113,15 @@ const UserDashboardPage = () => {
                             onClick={submitWeightsHandler}>
                                 Submit
                             </button>
+                            <button className="px-1 mt-2 text-accent text-xs tracking-wide md:text-base"
+                                onClick={submitWeightsHandler}>
+                                or skip for later
+                            </button>
                         </div>
                     )}
                 <p className='text-primary-text text-xs px-6 mt-3 font-thin max-w-sm mx-auto lg:text-sm'>
                     Here you can enter your leagues entry fees, this will be used
                     to scale better who you should root for and against.
-                    If you wish to have all players on the same scale submit with 0s.
                 </p>
                 </section>
             </main>
