@@ -5,6 +5,8 @@ type LeagueMatchup = {
     starters_points: number[];
 };
 
+export type Starters = {[playerId: string]: {leagues: {[leagueId: string]: number}}}
+
 type LeagueMatchupWithLeagueId = LeagueMatchup & {leagueId: string};
 
 export const extractUserLeagueRosterIds = (rostersData: any, sleeperId: string): {[key:string]: string} | undefined => {
@@ -41,7 +43,8 @@ const extractStartersData = (matchups: LeagueMatchupWithLeagueId[]) => {
 }
 
 // @TODO use LeagueRosterIdsMap from index page, use type for leagueMatchupsData
-export const extractSleeperMatchupData = (leagueMatchupsData: {[leagueId: string]: LeagueMatchup[]}, leagueRosterIds: {[leagueId: string]: string}) => {
+export const extractSleeperMatchupData = (leagueMatchupsData: {[leagueId: string]: LeagueMatchup[]}, leagueRosterIds: {[leagueId: string]: string})
+: {userStarters?: Starters; oppStarters?: Starters} => {
     const userMatchups = Object.entries(leagueMatchupsData).map(([leagueId, leagueMatchups]) => {
         const userMatchup = leagueMatchups.find(isUserMatchup(leagueRosterIds[leagueId]));
         if (!userMatchup) throw Error();

@@ -7,6 +7,7 @@ import useSWR from 'swr';
 import { fetcher } from '@/utils/fetcher';
 import { extractUserLeagueRosterIds, extractSleeperMatchupData } from '@/utils/sleeper';
 import { extractScheduleData, ScheduleData } from '@/utils/schedule';
+import DataView from '@/components/DataView';
 
 
 // @TODO: unify this with login page typings
@@ -111,8 +112,7 @@ const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
     const {leagueRosterIds} = useSleeperUserRosterIds(id as string, userData);
     const {userStarters, oppStarters} = useSleeperUserMatchupsData(leagueRosterIds, selectedWeek);
     const scheduleData = useNflSchedule(selectedWeek);
-    console.log('schedule: ', scheduleData);
-    const isLoading = !scheduleData || !userStarters || !oppStarters;
+    const isLoading = !scheduleData || !userStarters || !oppStarters || !userData;
 
     const getSelectedWeekHandler = (week: WEEKS) => {
         return () => setSelectedWeek(week);
@@ -130,7 +130,7 @@ const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
                 <meta name="description" content="Sleeper Fantasy Football Sunday Board" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
-            <main className="container mx-auto flex flex-col items-center justify-center h-screen p-4 bg-background-main">
+            <main className="container mx-auto flex flex-col items-center justify-center p-4 bg-background-main">
                 <h2 className="text-primary text-2xl mb-4 font-bold tracking-wide">Your Board</h2>
                 <section className="bg-primary w-full rounded-lg py-4 flex flex-col">
                     <div className="flex justify-between">
@@ -142,12 +142,16 @@ const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
                             <button className="self-end pr-3 md:pr-6">&#x2699; <span className="text-primary-text hidden md:inline-block">Settings</span></button>
                         </Link>
                     </div>
-                    {!userData ? (
+                    {isLoading ? (
                         <div>Loading...</div>
                     ) : (
                         <>
                             <WeeksNavbar getSelectedWeekHandler={getSelectedWeekHandler} selectedWeek={selectedWeek}/>
-                            <div>Actual Data View {userData.username}</div>
+                            <DataView
+                                userStarters={userStarters}
+                                oppStarters={oppStarters}
+                                scheduleData={scheduleData}
+                            />
                         </>
                     )}
                 </section>
