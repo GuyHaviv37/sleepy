@@ -6,9 +6,10 @@ This is an app bootstrapped according to the [init.tips](https://init.tips) stac
 - General UI: Loader component
 - Login page: Styling - Title animations/gradient, hover effects for button
 - Settings page: loading state on submit, skip button for 0s
-- User page: fetch nfl schedule based on selectedWeek
 - Validation: check that leagues are actually available i.e., renewed and active
-Basic view: N/A
+Basic view: 
+- more sorting options: by game
+- scores UI
+- Next/Image
 Roots vs. boos view: N/A
-BE work: trpc endpoint to fetch players personal info
 ?Optional?: scrollbar for web (tailwind-scrollbar)

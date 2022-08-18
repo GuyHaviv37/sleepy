@@ -126,20 +126,20 @@ const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
     return (
         <>
             <Head>
-                <title>Sleeper Sunday Cheatsheet</title>
+                <title>Sleepy</title>
                 <meta name="description" content="Sleeper Fantasy Football Sunday Board" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <main className="container mx-auto flex flex-col items-center justify-center p-4 bg-background-main">
-                <h2 className="text-primary text-2xl mb-4 font-bold tracking-wide">Your Board</h2>
+                <h2 className="text-primary text-2xl mb-4 font-bold tracking-wide sm:text-3xl md:text-4xl">Sleepy</h2>
                 <section className="bg-primary w-full rounded-lg py-4 flex flex-col">
                     <div className="flex justify-between">
                         <div className="ml-4">
                             {/* Basic vs Roots vs. Boos switch */}
-                            <ViewTypeSwitch/>
+                            {/* <ViewTypeSwitch/> */}
                         </div>
                         <Link href={`/user/${id}/settings`}>
-                            <button className="self-end pr-3 md:pr-6">&#x2699; <span className="text-primary-text hidden md:inline-block">Settings</span></button>
+                            <button className="self-end pr-3 md:pr-6 md:text-lg">&#x2699; <span className="text-primary-text hidden md:inline-block">Settings</span></button>
                         </Link>
                     </div>
                     {isLoading ? (
@@ -195,7 +195,7 @@ const WeeksNavbarItem: React.FC<WeeksNavbarItemProps> = (props) => {
     const {isSelected, onSelectHandler, label} = props;
 
     return (
-        <li className={`text-primary-text text-sm min-w-fit p-1
+        <li className={`text-primary-text text-sm min-w-fit p-1 md:text-base md:p-2
         ${isSelected ? 'bg-accent' : 'bg-alt'} hover:bg-accent transition ease-in-out cursor-pointer`} onClick={onSelectHandler}>
             {label}
         </li>

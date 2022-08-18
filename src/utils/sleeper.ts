@@ -5,7 +5,14 @@ type LeagueMatchup = {
     starters_points: number[];
 };
 
-export type Starters = {[playerId: string]: {leagues: {[leagueId: string]: number}}}
+type StarterInfo = {
+    leagues?: {[leagueId: string]: number};
+    isConflicted?: boolean;
+}
+
+export type Starters = {
+    [playerId: string]: StarterInfo
+}
 
 type LeagueMatchupWithLeagueId = LeagueMatchup & {leagueId: string};
 
@@ -24,7 +31,7 @@ const isUserMatchup = (rosterId?: string) => (matchup: LeagueMatchup) => matchup
 const isOppMatchup = (matchupId?: string, userRosterId?: string) => (matchup: LeagueMatchup) => matchup.matchup_id === matchupId && matchup.roster_id !== userRosterId;
 
 const extractStartersData = (matchups: LeagueMatchupWithLeagueId[]) => {
-    const starterData: {[starterId: string]: {leagues: {[leagueId: string]: number}}} = {};
+    const starterData: Starters = {};
     if (!matchups || matchups.length === 0) return;
     for (let leagueMatchup of matchups) {
         const leagueId = leagueMatchup.leagueId;
@@ -35,7 +42,8 @@ const extractStartersData = (matchups: LeagueMatchupWithLeagueId[]) => {
                 leagues: {
                     ...starterData[starter]?.leagues,
                     [leagueId]: starterScore,
-                }
+                },
+                isConflicted: false,
             }
         })
     }
@@ -59,6 +67,16 @@ export const extractSleeperMatchupData = (leagueMatchupsData: {[leagueId: string
         return {...oppMatchup, leagueId};
     })
     const oppStarters = extractStartersData(oppMatchups);
+
+    // assign conflicts
+    if (userStarters) {
+        Object.keys(userStarters ?? {}).forEach((playerId) => {
+            if (oppStarters?.[playerId]) {
+                userStarters[playerId] = {...userStarters[playerId], isConflicted: true}
+                oppStarters[playerId] = {...oppStarters[playerId], isConflicted: true}
+            }
+        })
+    }
 
     return {
         userStarters,
