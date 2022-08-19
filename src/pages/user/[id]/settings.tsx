@@ -59,7 +59,7 @@ const UserDashboardPage = () => {
                 ...defaultLeagueWeights,
             }
         })
-    }, [leagues, leagueWeightsMap])
+    }, [leagues])
 
 
     const submitWeightsHandler = () => {
