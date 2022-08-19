@@ -35,7 +35,18 @@ const WEEKS = {
     WEEK4: '4',
     WEEK5: '5',
     WEEK6: '6',
-
+    WEEK7: '7',
+    WEEK8: '8',
+    WEEK9: '9',
+    WEEK10: '10',
+    WEEK11: '11',
+    WEEK12: '12',
+    WEEK13: '13',
+    WEEK14: '14',
+    WEEK15: '15',
+    WEEK16: '16',
+    WEEK17: '17',
+    WEEK18: '18',
 } as const;
 
 type WEEKS = typeof WEEKS[keyof typeof WEEKS];
@@ -131,7 +142,9 @@ const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <main className="container mx-auto flex flex-col items-center justify-center p-4 bg-background-main">
-                <h2 className="text-primary text-2xl mb-4 font-bold tracking-wide sm:text-3xl md:text-4xl">Sleepy</h2>
+                <Link href="/">
+                    <h2 className="text-primary text-2xl mb-4 font-bold tracking-wide sm:text-3xl md:text-4xl cursor-pointer">Sleepy</h2>
+                </Link>
                 <section className="bg-primary w-full rounded-lg py-4 flex flex-col">
                     <div className="flex justify-between">
                         <div className="ml-4">
@@ -142,18 +155,18 @@ const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
                             <button className="self-end pr-3 md:pr-6 md:text-lg">&#x2699; <span className="text-primary-text hidden md:inline-block">Settings</span></button>
                         </Link>
                     </div>
-                    {isLoading ? (
-                        <div>Loading...</div>
-                    ) : (
-                        <>
-                            <WeeksNavbar getSelectedWeekHandler={getSelectedWeekHandler} selectedWeek={selectedWeek}/>
+                    <>
+                        <WeeksNavbar getSelectedWeekHandler={getSelectedWeekHandler} selectedWeek={selectedWeek}/>
+                        {isLoading ? (
+                            <div className="px-4"><p className="text-primary-text">Loading...</p></div>
+                        ) : (
                             <DataView
                                 userStarters={userStarters}
                                 oppStarters={oppStarters}
                                 scheduleData={scheduleData}
                             />
-                        </>
-                    )}
+                        )}
+                    </>
                 </section>
             </main>
         </>
@@ -217,7 +230,7 @@ export default UserDashboardPage;
 
 export const getServerSideProps = async () => {
     const nflWeekObj = await fetcher('https://api.sleeper.app/v1/state/nfl');
-    const nflWeek = `${nflWeekObj.week}` as WEEKS;
+    const nflWeek = nflWeekObj.season_type === 'pre' ? WEEKS.WEEK1 : `${nflWeekObj.display_week}` as WEEKS;
     return {
         props: {
             nflWeek
