@@ -56,7 +56,7 @@ const DataView: React.FC<DataViewProps> = (props) => {
                     {timeslots.map(timeslot => {
                         // @TODO: improve date content
                         return (
-                            <div className="col-span-2">
+                            <div className="col-span-2" key={timeslot}>
                                 <p className="lg:text-lg underline underline-offset-2 md:pb-2">{new Date(timeslot).toUTCString()}</p>
                                 <div className='grid grid-cols-2'>
                                     <TimeslotStarters

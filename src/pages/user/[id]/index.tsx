@@ -65,7 +65,7 @@ const useSleeperUserRosterIds = (sleeperId: string, userData?: UserData) => {
         } else {
             setIsLoadedFromCache(CacheStatus.MISS);
         }
-    }, [])
+    }, [userData])
 
     useEffect(() => {
         if (isLoadedFromCache === CacheStatus.MISS && data) {
@@ -73,7 +73,7 @@ const useSleeperUserRosterIds = (sleeperId: string, userData?: UserData) => {
             setLeagueRosterIds(leagueRosterIds)
             updateLocalStorageData('user', {leagueRosterIds});
         }
-    }, [isLoadedFromCache, data])
+    }, [isLoadedFromCache, data, sleeperId])
 
     return {leagueRosterIds};
 }
@@ -122,7 +122,7 @@ const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
         if (id && userData && !userData.leagueWeights) {
             router.replace(`/user/${id}/settings`);
         }
-    }, [userData, id]);
+    }, [userData, id, router]);
     return (
         <>
             <Head>
