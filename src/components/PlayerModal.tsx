@@ -7,10 +7,11 @@ interface PlayerModalProps {
     avatarId?: string | null;
     playerName?: string;
     scores?: StarterInfo['leagues'];
+    leagueNames?: {[leagueId: string]: string};
 };
 
 const PlayerModal: React.FC<PlayerModalProps> = (props) => {
-    const {setOpenModal, avatarId, playerName, scores} = props;
+    const {setOpenModal, avatarId, playerName, scores, leagueNames} = props;
     console.log({avatarId, playerName, scores});
     return (
         <>
@@ -38,7 +39,7 @@ const PlayerModal: React.FC<PlayerModalProps> = (props) => {
                                     {Object.entries(scores ?? {}).map(([leagueId, score]) => {
                                         return (
                                         <p key={leagueId} className="mt-2 text-[15px] text-primary-text lg:text-base lg:font-thin">
-                                            {`${leagueId}: ${score}`}
+                                            {`${leagueNames?.[leagueId]}: ${score}`}
                                         </p>)
                                     })}
                                 </div>

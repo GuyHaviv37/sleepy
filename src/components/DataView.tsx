@@ -7,7 +7,8 @@ import PlayerModal from './PlayerModal';
 interface DataViewProps {
     userStarters: Starters;
     oppStarters: Starters;
-    scheduleData: ScheduleData
+    scheduleData: ScheduleData;
+    leagueNames?: {[leagueId: string]: string};
 }
 
 type PlayersInfo = inferQueryOutput<'example.getPlayersInfoByIds'>;
@@ -41,7 +42,7 @@ const getTimeslotString = (timeslot: string) => {
 }
 
 const DataView: React.FC<DataViewProps> = (props) => {
-    const {userStarters, oppStarters, scheduleData} = props;
+    const {userStarters, oppStarters, scheduleData, leagueNames} = props;
     const [showPlayerModal, setShowPlayerModal] = useState(false);
     const [selectedPlayer, setSelectedPlayer] = useState<string>('24');
     const openPlayerModal = (playerId: string) => {
@@ -99,6 +100,7 @@ const DataView: React.FC<DataViewProps> = (props) => {
                         avatarId={playersInfo[selectedPlayer]?.avatarId}
                         playerName={`${playersInfo[selectedPlayer]?.firstName} ${playersInfo[selectedPlayer]?.lastName}`}
                         scores={userStarters[selectedPlayer]?.leagues ?? oppStarters[selectedPlayer]?.leagues}
+                        leagueNames={leagueNames}
                     />}
                 </section>
             )

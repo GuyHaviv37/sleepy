@@ -63,7 +63,8 @@ const UserDashboardPage = () => {
 
 
     const submitWeightsHandler = () => {
-        const updatedData = updateLocalStorageData('user', {leagueWeights: leagueWeightsMap});
+        const leagueNames = leagues.reduce((acc,league) => ({...acc, [league.league_id]: league.name}), {});
+        const updatedData = updateLocalStorageData('user', {leagueWeights: leagueWeightsMap, leagueNames});
         if (!updatedData) {
             console.error('Error: failed to update user data');
         } else {
@@ -113,10 +114,10 @@ const UserDashboardPage = () => {
                             onClick={submitWeightsHandler}>
                                 Submit
                             </button>
-                            <button className="px-1 mt-2 text-accent text-xs tracking-wide md:text-base"
+                            {fromLogin && <button className="px-1 mt-2 text-accent text-xs tracking-wide md:text-base"
                                 onClick={submitWeightsHandler}>
                                 or skip for later
-                            </button>
+                            </button>}
                         </div>
                     )}
                 <p className='text-primary-text text-xs px-6 mt-3 font-thin max-w-sm mx-auto lg:text-sm'>

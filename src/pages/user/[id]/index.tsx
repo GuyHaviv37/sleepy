@@ -20,12 +20,14 @@ const enum CacheStatus {
 // @TODO: unify this with settings page for LocalStorageData typings
 type LeagueWeightsMap = {[key: string]: number};
 type LeagueRosterIdsMap = {[key: string]: string};
+export type LeagueNamesMap = {[key: string]: string};
 
 type UserData = {
     sleeperId?: string;
     username?: string;
     leagueWeights?: LeagueWeightsMap;
     leagueRosterIds?: LeagueRosterIdsMap;
+    leagueNames?: LeagueNamesMap;
 }
 
 const WEEKS = {
@@ -164,6 +166,7 @@ const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
                                 userStarters={userStarters}
                                 oppStarters={oppStarters}
                                 scheduleData={scheduleData}
+                                leagueNames={userData.leagueNames}
                             />
                         )}
                     </>
