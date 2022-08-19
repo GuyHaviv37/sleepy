@@ -1,7 +1,8 @@
 import type { Starters } from '@/utils/sleeper';
 import type { ScheduleData } from '@/utils/schedule';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { inferQueryOutput, trpc } from '@/utils/trpc';
+import PlayerModal from './PlayerModal';
 
 interface DataViewProps {
     userStarters: Starters;
@@ -41,6 +42,13 @@ const getTimeslotString = (timeslot: string) => {
 
 const DataView: React.FC<DataViewProps> = (props) => {
     const {userStarters, oppStarters, scheduleData} = props;
+    const [showPlayerModal, setShowPlayerModal] = useState(false);
+    const [selectedPlayer, setSelectedPlayer] = useState<string>('24');
+    const openPlayerModal = (playerId: string) => {
+        setSelectedPlayer(playerId);
+        setShowPlayerModal(true);
+    };
+    
     const userStarterIds = useMemo(() => Object.keys(userStarters), [userStarters]);
     const oppStarterIds = useMemo(() => Object.keys(oppStarters), [oppStarters]);
     const {data: playersInfo} = trpc.useQuery(
@@ -69,6 +77,7 @@ const DataView: React.FC<DataViewProps> = (props) => {
                                     playersInfo={playersInfo}
                                     leagueInfo={userStarters}
                                     scheduleData={scheduleData}
+                                    openPlayerModal={openPlayerModal}
                                     isUser
                                     />
                                     <TimeslotStarters
@@ -77,12 +86,20 @@ const DataView: React.FC<DataViewProps> = (props) => {
                                     playersInfo={playersInfo}
                                     leagueInfo={oppStarters}
                                     scheduleData={scheduleData}
+                                    openPlayerModal={openPlayerModal}
                                     />
                                 </div>
                             </div>
                         )
                     })}
                     </div>
+                    {showPlayerModal && 
+                    <PlayerModal 
+                        setOpenModal={setShowPlayerModal}
+                        avatarId={playersInfo[selectedPlayer]?.avatarId}
+                        playerName={`${playersInfo[selectedPlayer]?.firstName} ${playersInfo[selectedPlayer]?.lastName}`}
+                        scores={userStarters[selectedPlayer]?.leagues ?? oppStarters[selectedPlayer]?.leagues}
+                    />}
                 </section>
             )
 };
@@ -92,11 +109,12 @@ interface TimeslotStartersProps {
     playersInfo: PlayersInfo;
     leagueInfo: Starters;
     scheduleData: ScheduleData;
+    openPlayerModal: (playerId: string) => void;
     isUser?: boolean;
 }
 
 const TimeslotStarters: React.FC<TimeslotStartersProps> = (props) => {
-    const {starterIds, playersInfo, leagueInfo, scheduleData, isUser} = props;
+    const {starterIds, playersInfo, leagueInfo, scheduleData, isUser, openPlayerModal} = props;
     return (
         <div className="flex flex-col lg:items-center">
             { starterIds.map(starterId => {
@@ -107,16 +125,17 @@ const TimeslotStarters: React.FC<TimeslotStartersProps> = (props) => {
                 return (
                     <StarterRow
                     key={starterId}
+                    id={starterId}
                     firstName={playersInfo[starterId]?.firstName}
                     lastName={playersInfo[starterId]?.lastName}
                     position={playersInfo[starterId]?.position}
-                    avatarId={playersInfo[starterId]?.avatarId}
                     team={playerTeam}
                     multipliers={Object.keys(leagueInfo[starterId]?.leagues ?? []).length}
                     isConflicted={leagueInfo[starterId]?.isConflicted}
                     oppTeam={oppTeam}
                     isHome={isHome}
                     isUser={isUser}
+                    openPlayerModal={openPlayerModal}
                     />
                 )})
             }
@@ -126,16 +145,17 @@ const TimeslotStarters: React.FC<TimeslotStartersProps> = (props) => {
 
 // @TODO: work out scores UI
 interface StarterRowProps {
+    id: string;
     firstName?: string;
     lastName?: string;
     position?: string | null;
-    avatarId?: string | null;
     team?: string | null;
     multipliers?: number;
     isConflicted?: boolean;
     oppTeam?: string;
     isHome?: boolean;
     isUser?: boolean;
+    openPlayerModal: (playerId: string) => void;
 }
 
 const SWORDS_EMOJI = '⚔';
@@ -152,22 +172,22 @@ const getStarterEmoji = (multipliers?: number, isConflicted?: boolean, isUserTea
 }
 
 const StarterRow: React.FC<StarterRowProps> = (props) => {
-    const {position, firstName, lastName, team, multipliers, avatarId, isConflicted, oppTeam, isHome, isUser: isUserTeam} = props;
+    const {id, position, firstName, lastName, team, multipliers, isConflicted, oppTeam, isHome, isUser: isUserTeam, openPlayerModal} = props;
     const starterEmoji = getStarterEmoji(multipliers, isConflicted, isUserTeam);
     return (
-        <p className="text-sm pb-1 md:text-base lg:text-lg">
-            {/* <img className="hidden sm:inline" 
-            src={`https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/${avatarId}.png&w=100&h=80`}/> */}
-            <span className={`pr-1 lg:pr-2`}>{starterEmoji}</span>
-            <span className={starterEmoji ? 'font-bold' : ''}>
-                <span>{`${position} `}</span>
-                <span className="hidden sm:inline">{`${firstName}\t\t`}</span>
-                <span>{lastName}</span>
-                {position !== 'DEF' && <span>{` ,${team}`}</span>}
-                {multipliers && multipliers > 1 && <span>{` (X${multipliers})`}</span>}
-                <span className="hidden md:inline md:pl-1 lg:pl-2">{isHome ? 'vs.' : '@'}{'\t'}{oppTeam}</span>
-            </span>
-        </p>
+        <div className='flex items-center cursor-pointer' onClick={() => openPlayerModal(id)}>
+            <p className="text-sm pb-1 md:text-base lg:text-lg lg:self-end">
+                <span className={`pr-1 lg:pr-2`}>{starterEmoji}</span>
+                <span className={starterEmoji ? 'font-bold' : ''}>
+                    <span>{`${position} `}</span>
+                    <span className="hidden sm:inline">{`${firstName}\t\t`}</span>
+                    <span>{lastName}</span>
+                    {position !== 'DEF' && <span>{` ,${team}`}</span>}
+                    {multipliers && multipliers > 1 && <span>{` (X${multipliers})`}</span>}
+                    <span className="hidden md:inline md:pl-1 lg:pl-2">{isHome ? 'vs.' : '@'}{'\t'}{oppTeam}</span>
+                </span>
+            </p>
+        </div>
     )
 };
 

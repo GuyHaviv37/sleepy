@@ -5,7 +5,7 @@ type LeagueMatchup = {
     starters_points: number[];
 };
 
-type StarterInfo = {
+export type StarterInfo = {
     leagues?: {[leagueId: string]: number};
     isConflicted?: boolean;
 }
