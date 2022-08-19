@@ -41,7 +41,7 @@ const DataView: React.FC<DataViewProps> = (props) => {
     const oppStarterIds = useMemo(() => Object.keys(oppStarters), [oppStarters]);
     const {data: playersInfo} = trpc.useQuery(
         ['example.getPlayersInfoByIds',
-        {playerIds: Array.from(new Set([...userStarterIds, ...oppStarterIds]))}]);
+        {playerIds: [...userStarterIds, ...oppStarterIds]}]);
     const timeslots = useMemo(() => computeWeekTimeslots(scheduleData), [scheduleData])
     const userStartersByTimeslots = extractStartersByTimeslots(scheduleData, timeslots, userStarterIds, playersInfo)
     const oppStartersByTimeslots = extractStartersByTimeslots(scheduleData, timeslots, oppStarterIds, playersInfo)
