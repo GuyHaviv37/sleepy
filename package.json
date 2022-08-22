@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate",
-    "ci": "rm -rf node_modules && yarn install --immutable --immutable-cache --check-cache"
+    "ci": "rm -rf node_modules && yarn install --immutable --immutable-cache --check-cache",
     "seed-players": "node ./prisma/seed.mjs"
   },
   "dependencies": {
