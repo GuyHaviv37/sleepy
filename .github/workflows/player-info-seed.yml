@@ -11,5 +11,8 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 14
+      - run: |
+          touch .env
+          echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> .env
       - run: yarn run ci
       - run: yarn run seed-players
