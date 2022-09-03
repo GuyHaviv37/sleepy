@@ -1,4 +1,4 @@
-export default () => {
+const Loader = () => {
     return (
         <div className="flex justify-center items-center">
             <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 border-b-transparent rounded-full" role="status">
@@ -7,3 +7,4 @@ export default () => {
         </div>
     )
 };
+export default Loader;
