@@ -4,6 +4,7 @@ import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from 'next/router';
 import { getLocalStorageData, setLocalStorageData } from "@/utils/localStorage";
 import { fetcher } from '@/utils/fetcher';
+import Loader from "@/components/Loader";
 
 const enum CacheStatus {
   'LOADING',
@@ -127,7 +128,7 @@ const Home: NextPage = () => {
             </>
           </section>)
         default: // LOADING
-        return (<div>Loading...</div>)
+        return (<Loader/>)
     }
   }
 

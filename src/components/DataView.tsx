@@ -57,7 +57,7 @@ const DataView: React.FC<DataViewProps> = (props) => {
     const oppStartersByTimeslots = extractStartersByTimeslots(scheduleData.byTeam, timeslots, oppStarterIds, playersInfo)
     const isLoadingData = !userStartersByTimeslots || !oppStartersByTimeslots || !playersInfo;
     return isLoadingData ?
-        (<div className="px-4"><p className="text-primary-text">Loading...</p></div>) :
+        null :
         (
             <section className='px-4 pt-3 grid grid-cols-2 gap-3 text-primary-text lg:px-6 lg:pt-6'>
                 <h6 className="underline underline-offset-2 md:text-lg md:underline-offset-4">You:</h6>

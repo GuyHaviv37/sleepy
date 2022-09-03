@@ -6,6 +6,7 @@ import { fetcher } from '@/utils/fetcher';
 import { getLocalStorageData, updateLocalStorageData } from '@/utils/localStorage';
 import { SPORT, SEASON } from '@/utils/consts';
 import Link from 'next/link';
+import Loader from '@/components/Loader';
 
 type LeagueData = {
     name: string;
@@ -88,7 +89,7 @@ const UserDashboardPage = () => {
                         </Link>
                     </div>
                     <br/>
-                    {isLoading ? <div>Loading...</div> : (
+                    {isLoading ? <Loader/> : (
                         <div className="flex flex-col center-items">
                             <h5 className="text-primary-text text-lg px-6 sm:text-center underline">Your Leagues:</h5>
                             <div className="px-2 mb-3">

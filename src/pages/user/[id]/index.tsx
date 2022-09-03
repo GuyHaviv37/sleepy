@@ -8,6 +8,7 @@ import { fetcher } from '@/utils/fetcher';
 import { extractUserLeagueRosterIds, extractSleeperMatchupData } from '@/utils/sleeper';
 import { extractScheduleData, ScheduleData } from '@/utils/schedule';
 import DataView from '@/components/DataView';
+import Loader from '@/components/Loader';
 
 
 // @TODO: unify this with login page typings
@@ -163,7 +164,9 @@ const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
                     <>
                         <WeeksNavbar getSelectedWeekHandler={getSelectedWeekHandler} selectedWeek={selectedWeek}/>
                         {isLoading ? (
-                            <div className="px-4"><p className="text-primary-text">Loading...</p></div>
+                            <div className='pt-5'>
+                                <Loader/>
+                            </div>
                         ) : (
                             <DataView
                                 userStarters={userStarters}
