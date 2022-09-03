@@ -4,10 +4,8 @@ import Head from 'next/head';
 import useSWR from 'swr';
 import { fetcher } from '@/utils/fetcher';
 import { getLocalStorageData, updateLocalStorageData } from '@/utils/localStorage';
+import { SPORT, SEASON } from '@/utils/consts';
 import Link from 'next/link';
-
-const SPORT = 'nfl';
-const SEASON = '2021'; // @TODO: turn to 2022
 
 type LeagueData = {
     name: string;

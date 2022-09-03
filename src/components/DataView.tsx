@@ -8,19 +8,16 @@ interface DataViewProps {
     userStarters: Starters;
     oppStarters: Starters;
     scheduleData: ScheduleData;
-    leagueNames?: {[leagueId: string]: string};
+    leagueNames?: { [leagueId: string]: string };
+    isByGameViewMode: boolean;
 }
 
 type PlayersInfo = inferQueryOutput<'example.getPlayersInfoByIds'>;
 
 const POSITTION_ORDER = ['QB', 'RB', 'WR', 'TE', 'K', 'DEF'];
 
-const computeWeekTimeslots = (scheduleData: ScheduleData): string[] => {
-    const allTeamTimeslots = Object.values(scheduleData).map(teamGame => teamGame.timeslot ?? 'N/A');
-    return Array.from(new Set(allTeamTimeslots)).filter(timeslot => timeslot !== 'N/A');
-}
-const extractStartersByTimeslots = (scheduleData: ScheduleData, timeslots: string[], starterIds: (keyof PlayersInfo)[], playersInfo?: PlayersInfo)
-: {[timeslot: string]: string[]} | undefined => {
+const extractStartersByTimeslots = (scheduleData: ScheduleData['byTeam'], timeslots: string[], starterIds: string[], playersInfo?: PlayersInfo)
+    : { [timeslot: string]: string[] } | undefined => {
     if (!playersInfo) return;
     return timeslots.reduce((acc, timeslot) => {
         const startersInTimeslot = starterIds.filter(starterId => {
@@ -30,81 +27,155 @@ const extractStartersByTimeslots = (scheduleData: ScheduleData, timeslots: strin
             return teamTimeslot === timeslot;
         }).sort((playerA, playerB) => {
             return POSITTION_ORDER.indexOf(playersInfo[playerA]?.position ?? '') -
-                    POSITTION_ORDER.indexOf(playersInfo[playerB]?.position ?? '')
+                POSITTION_ORDER.indexOf(playersInfo[playerB]?.position ?? '')
         })
-        return {...acc, [timeslot]: startersInTimeslot}
+        return { ...acc, [timeslot]: startersInTimeslot }
     }, {})
 }
 
 const getTimeslotString = (timeslot: string) => {
     const timeslotDate = new Date(timeslot);
-    return timeslotDate.toLocaleString('en', {weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric'});
+    return timeslotDate.toLocaleString('en', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' });
 }
 
 const DataView: React.FC<DataViewProps> = (props) => {
-    const {userStarters, oppStarters, scheduleData, leagueNames} = props;
+    const { userStarters, oppStarters, scheduleData, leagueNames, isByGameViewMode } = props;
     const [showPlayerModal, setShowPlayerModal] = useState(false);
     const [selectedPlayer, setSelectedPlayer] = useState<string>('24');
     const openPlayerModal = (playerId: string) => {
         setSelectedPlayer(playerId);
         setShowPlayerModal(true);
     };
-    
+
     const userStarterIds = useMemo(() => Object.keys(userStarters), [userStarters]);
     const oppStarterIds = useMemo(() => Object.keys(oppStarters), [oppStarters]);
-    const {data: playersInfo} = trpc.useQuery(
+    const { data: playersInfo } = trpc.useQuery(
         ['example.getPlayersInfoByIds',
-        {playerIds: [...userStarterIds, ...oppStarterIds]}]);
-    const timeslots = useMemo(() => computeWeekTimeslots(scheduleData), [scheduleData])
-    const userStartersByTimeslots = extractStartersByTimeslots(scheduleData, timeslots, userStarterIds, playersInfo)
-    const oppStartersByTimeslots = extractStartersByTimeslots(scheduleData, timeslots, oppStarterIds, playersInfo)
+            { playerIds: [...userStarterIds, ...oppStarterIds] }]);
+    const timeslots = Object.keys(scheduleData.byTimeslot);
+    const userStartersByTimeslots = extractStartersByTimeslots(scheduleData.byTeam, timeslots, userStarterIds, playersInfo)
+    const oppStartersByTimeslots = extractStartersByTimeslots(scheduleData.byTeam, timeslots, oppStarterIds, playersInfo)
     const isLoadingData = !userStartersByTimeslots || !oppStartersByTimeslots || !playersInfo;
-    return isLoadingData ? 
-            (<div className="px-4"><p className="text-primary-text">Loading...</p></div>) :
-            (
-                <section className='px-4 pt-3 grid grid-cols-2 gap-3 text-primary-text lg:px-6 lg:pt-6'>
-                    <h6 className="underline underline-offset-2 md:text-lg md:underline-offset-4">You:</h6>  
-                    <h6 className="underline underline-offset-2 md:text-lg md:underline-offset-4">Opponent:</h6>
-                    <div className="grid grid-cols-2 col-span-2 gap-3">
+    return isLoadingData ?
+        (<div className="px-4"><p className="text-primary-text">Loading...</p></div>) :
+        (
+            <section className='px-4 pt-3 grid grid-cols-2 gap-3 text-primary-text lg:px-6 lg:pt-6'>
+                <h6 className="underline underline-offset-2 md:text-lg md:underline-offset-4">You:</h6>
+                <h6 className="underline underline-offset-2 md:text-lg md:underline-offset-4">Opponent:</h6>
+                <div className="grid grid-cols-2 col-span-2 gap-3">
                     {timeslots.map(timeslot => {
-                        // @TODO: improve date content
+                        const TimeslotView = isByGameViewMode ? TimeslotByGameView : TimeslotFullView;
                         return (
                             <div className="col-span-2" key={timeslot}>
                                 <p className="lg:text-lg underline pb-1 underline-offset-4 md:pb-2">🏈 {getTimeslotString(timeslot)}</p>
-                                <div className='grid grid-cols-2'>
-                                    <TimeslotStarters
-                                    key={`user_${timeslot}`}
-                                    starterIds={userStartersByTimeslots[timeslot] ?? []}
+                                <TimeslotView
+                                    timeslot={timeslot}
+                                    userStarterIds={userStartersByTimeslots[timeslot] ?? []}
+                                    oppStarterIds={oppStartersByTimeslots[timeslot] ?? []}
                                     playersInfo={playersInfo}
-                                    leagueInfo={userStarters}
+                                    userLeagueInfo={userStarters}
+                                    oppLeagueInfo={oppStarters}
                                     scheduleData={scheduleData}
                                     openPlayerModal={openPlayerModal}
-                                    isUser
-                                    />
-                                    <TimeslotStarters
-                                    key={`opp_${timeslot}`}
-                                    starterIds={oppStartersByTimeslots[timeslot] ?? []}
-                                    playersInfo={playersInfo}
-                                    leagueInfo={oppStarters}
-                                    scheduleData={scheduleData}
-                                    openPlayerModal={openPlayerModal}
-                                    />
-                                </div>
+                                />
                             </div>
                         )
                     })}
-                    </div>
-                    {showPlayerModal && 
-                    <PlayerModal 
+                </div>
+                {showPlayerModal &&
+                    <PlayerModal
                         setOpenModal={setShowPlayerModal}
                         avatarId={playersInfo[selectedPlayer]?.avatarId}
                         playerName={`${playersInfo[selectedPlayer]?.firstName} ${playersInfo[selectedPlayer]?.lastName}`}
                         scores={userStarters[selectedPlayer]?.leagues ?? oppStarters[selectedPlayer]?.leagues}
                         leagueNames={leagueNames}
                     />}
-                </section>
-            )
+            </section>
+        )
 };
+
+interface TimeslotViewProps {
+    timeslot: string;
+    userStarterIds: string[];
+    oppStarterIds: string[];
+    playersInfo: PlayersInfo;
+    userLeagueInfo: Starters;
+    oppLeagueInfo: Starters;
+    scheduleData: ScheduleData;
+    openPlayerModal: (playerId: string) => void;
+};
+
+const TimeslotFullView: React.FC<TimeslotViewProps> = (props) => {
+    const { timeslot, userStarterIds, oppStarterIds, userLeagueInfo, oppLeagueInfo, playersInfo, scheduleData, openPlayerModal } = props;
+    return (
+        <div className='grid grid-cols-2'>
+            <TimeslotStarters
+                key={`user_${timeslot}`}
+                starterIds={userStarterIds}
+                playersInfo={playersInfo}
+                leagueInfo={userLeagueInfo}
+                scheduleData={scheduleData}
+                openPlayerModal={openPlayerModal}
+                isUser
+            />
+            <TimeslotStarters
+                key={`opp_${timeslot}`}
+                starterIds={oppStarterIds}
+                playersInfo={playersInfo}
+                leagueInfo={oppLeagueInfo}
+                scheduleData={scheduleData}
+                openPlayerModal={openPlayerModal}
+            />
+        </div>
+    )
+}
+
+const TimeslotByGameView: React.FC<TimeslotViewProps> = (props) => {
+    const { timeslot, userStarterIds, oppStarterIds, userLeagueInfo, oppLeagueInfo, playersInfo, scheduleData, openPlayerModal } = props;
+    const startersPerGame = scheduleData.byTimeslot[timeslot]?.map(game => {
+        const userStartersPerGame = userStarterIds.filter(starterId => {
+            const playerTeam = playersInfo[starterId]?.team;
+            return playerTeam === game.homeTeam || playerTeam === game.awayTeam;
+        })
+        const oppStartersPerGame = oppStarterIds.filter(starterId => {
+            const playerTeam = playersInfo[starterId]?.team;
+            return playerTeam === game.homeTeam || playerTeam === game.awayTeam;
+        })
+        return {user: userStartersPerGame, opp: oppStartersPerGame};
+    })
+    return (
+        <div className="col-span-2" key={timeslot}>
+            {scheduleData.byTimeslot[timeslot]?.map((game, index) => {
+            return (
+            <div className="col-span-2" key={`${timeslot}_game_${game.homeTeam}`}>
+                <p className="text-sm md:text-base xl:text-lg pb-1 md:pb-2 italic"> - <span className='underline pb-1 underline-offset-4'>{game.awayTeam} @ {game.homeTeam}</span></p>
+                <div className='grid grid-cols-2'>
+                    <TimeslotStarters
+                        key={`user_${timeslot}`}
+                        starterIds={startersPerGame?.[index]?.user ?? []}
+                        playersInfo={playersInfo}
+                        leagueInfo={userLeagueInfo}
+                        scheduleData={scheduleData}
+                        openPlayerModal={openPlayerModal}
+                        isByGameView
+                        isUser
+                    />
+                    <TimeslotStarters
+                        key={`opp_${timeslot}`}
+                        starterIds={startersPerGame?.[index]?.opp ?? []}
+                        playersInfo={playersInfo}
+                        leagueInfo={oppLeagueInfo}
+                        scheduleData={scheduleData}
+                        openPlayerModal={openPlayerModal}
+                        isByGameView
+                    />
+                </div>
+            </div>
+        )
+    })}
+    </div>
+    )
+}
 
 interface TimeslotStartersProps {
     starterIds: string[];
@@ -113,33 +184,36 @@ interface TimeslotStartersProps {
     scheduleData: ScheduleData;
     openPlayerModal: (playerId: string) => void;
     isUser?: boolean;
+    isByGameView?: boolean;
 }
 
 const TimeslotStarters: React.FC<TimeslotStartersProps> = (props) => {
-    const {starterIds, playersInfo, leagueInfo, scheduleData, isUser, openPlayerModal} = props;
+    const { starterIds, playersInfo, leagueInfo, scheduleData, isUser, openPlayerModal, isByGameView } = props;
     return (
         <div className="flex flex-col lg:items-center">
-            { starterIds.map(starterId => {
+            {starterIds.map(starterId => {
                 if (!playersInfo[starterId]) return null;
                 const playerTeam = playersInfo[starterId]?.team;
-                const oppTeam = playerTeam ? scheduleData[playerTeam]?.oppTeam : undefined;
-                const isHome = playerTeam ? scheduleData[playerTeam]?.isHomeTeam : undefined;
+                const oppTeam = playerTeam ? scheduleData.byTeam[playerTeam]?.oppTeam : undefined;
+                const isHome = playerTeam ? scheduleData.byTeam[playerTeam]?.isHomeTeam : undefined;
                 return (
                     <StarterRow
-                    key={starterId}
-                    id={starterId}
-                    firstName={playersInfo[starterId]?.firstName}
-                    lastName={playersInfo[starterId]?.lastName}
-                    position={playersInfo[starterId]?.position}
-                    team={playerTeam}
-                    multipliers={Object.keys(leagueInfo[starterId]?.leagues ?? []).length}
-                    isConflicted={leagueInfo[starterId]?.isConflicted}
-                    oppTeam={oppTeam}
-                    isHome={isHome}
-                    isUser={isUser}
-                    openPlayerModal={openPlayerModal}
+                        key={starterId}
+                        id={starterId}
+                        firstName={playersInfo[starterId]?.firstName}
+                        lastName={playersInfo[starterId]?.lastName}
+                        position={playersInfo[starterId]?.position}
+                        team={playerTeam}
+                        multipliers={Object.keys(leagueInfo[starterId]?.leagues ?? []).length}
+                        isConflicted={leagueInfo[starterId]?.isConflicted}
+                        oppTeam={oppTeam}
+                        isHome={isHome}
+                        isUser={isUser}
+                        openPlayerModal={openPlayerModal}
+                        isByGameView={isByGameView}
                     />
-                )})
+                )
+            })
             }
         </div>
     )
@@ -158,6 +232,7 @@ interface StarterRowProps {
     isHome?: boolean;
     isUser?: boolean;
     openPlayerModal: (playerId: string) => void;
+    isByGameView?: boolean;
 }
 
 const SWORDS_EMOJI = '⚔';
@@ -174,7 +249,7 @@ const getStarterEmoji = (multipliers?: number, isConflicted?: boolean, isUserTea
 }
 
 const StarterRow: React.FC<StarterRowProps> = (props) => {
-    const {id, position, firstName, lastName, team, multipliers, isConflicted, oppTeam, isHome, isUser: isUserTeam, openPlayerModal} = props;
+    const { id, position, firstName, lastName, team, multipliers, isConflicted, oppTeam, isHome, isUser: isUserTeam, openPlayerModal, isByGameView } = props;
     const starterEmoji = getStarterEmoji(multipliers, isConflicted, isUserTeam);
     return (
         <div className='flex items-center cursor-pointer' onClick={() => openPlayerModal(id)}>
@@ -186,7 +261,7 @@ const StarterRow: React.FC<StarterRowProps> = (props) => {
                     <span>{lastName}</span>
                     {position !== 'DEF' && <span>{` ,${team}`}</span>}
                     {multipliers && multipliers > 1 && <span>{` (X${multipliers})`}</span>}
-                    <span className="hidden md:inline md:pl-1 lg:pl-2">{isHome ? 'vs.' : '@'}{'\t'}{oppTeam}</span>
+                    {isByGameView ? null : <span className="hidden md:inline md:pl-1 lg:pl-2">{isHome ? 'vs.' : '@'}{'\t'}{oppTeam}</span>}
                 </span>
             </p>
         </div>

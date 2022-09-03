@@ -126,6 +126,7 @@ const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
     const {userStarters, oppStarters} = useSleeperUserMatchupsData(leagueRosterIds, selectedWeek);
     const scheduleData = useNflSchedule(selectedWeek);
     const isLoading = !scheduleData || !userStarters || !oppStarters || !userData;
+    const [isByGameViewMode, setIsByGameViewMode] = useState(false);
 
     const getSelectedWeekHandler = (week: WEEKS) => {
         return () => setSelectedWeek(week);
@@ -150,8 +151,10 @@ const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
                 <section className="bg-primary w-full rounded-lg py-4 flex flex-col">
                     <div className="flex justify-between">
                         <div className="ml-4">
-                            {/* Basic vs Roots vs. Boos switch */}
-                            {/* <ViewTypeSwitch/> */}
+                            <ViewTypeSwitch
+                                isByGameViewMode={isByGameViewMode}
+                                onModeChange={setIsByGameViewMode}
+                            />
                         </div>
                         <Link href={`/user/${id}/settings`}>
                             <button className="self-end pr-3 md:pr-6 md:text-lg">&#x2699; <span className="text-primary-text hidden md:inline-block">Settings</span></button>
@@ -167,6 +170,7 @@ const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
                                 oppStarters={oppStarters}
                                 scheduleData={scheduleData}
                                 leagueNames={userData.leagueNames}
+                                isByGameViewMode={isByGameViewMode}
                             />
                         )}
                     </>
@@ -218,13 +222,18 @@ const WeeksNavbarItem: React.FC<WeeksNavbarItemProps> = (props) => {
     )
 }
 
-const ViewTypeSwitch = () => {
+const ViewTypeSwitch = (props: {isByGameViewMode: boolean; onModeChange: (current: boolean) => void}) => {
+    const {isByGameViewMode, onModeChange} = props;
+    const SELECTED_STYLE = 'bg-accent font-semibold text-primary-text';
+    const UNSELECTED_STYLE = 'bg-slate-200';
     return (
         <ul className="flex space-x-2">
-            <li className="bg-gray-200 text-slate-800
-            rounded px-1">Basic</li>
-            <li className="bg-green-500 font-semibold
-            rounded px-1">Roots vs. Boos</li>
+            <li
+            className={`rounded px-1 cursor-pointer ${isByGameViewMode ? UNSELECTED_STYLE : SELECTED_STYLE}`}
+            onClick={() => onModeChange(false)}>Full View</li>
+            <li
+            className={`rounded px-1 cursor-pointer ${isByGameViewMode ? SELECTED_STYLE : UNSELECTED_STYLE}`}
+            onClick={() => onModeChange(true)}>By Game</li>
         </ul>
     )
 }
