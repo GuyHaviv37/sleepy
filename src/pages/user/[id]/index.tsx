@@ -154,7 +154,7 @@ const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
                         <div className="ml-4">
                             <ViewTypeSwitch
                                 isByGameViewMode={isByGameViewMode}
-                                onModeChange={setIsByGameViewMode}
+                                setIsByGameViewMode={setIsByGameViewMode}
                             />
                         </div>
                         <Link href={`/user/${id}/settings`}>
@@ -225,18 +225,18 @@ const WeeksNavbarItem: React.FC<WeeksNavbarItemProps> = (props) => {
     )
 }
 
-const ViewTypeSwitch = (props: {isByGameViewMode: boolean; onModeChange: (current: boolean) => void}) => {
-    const {isByGameViewMode, onModeChange} = props;
+const ViewTypeSwitch = (props: {isByGameViewMode: boolean; setIsByGameViewMode: (current: boolean) => void}) => {
+    const {isByGameViewMode, setIsByGameViewMode} = props;
     const SELECTED_STYLE = 'bg-accent font-semibold text-primary-text';
     const UNSELECTED_STYLE = 'bg-slate-200';
     return (
         <ul className="flex space-x-2">
             <li
             className={`rounded px-1 cursor-pointer ${isByGameViewMode ? UNSELECTED_STYLE : SELECTED_STYLE}`}
-            onClick={() => onModeChange(false)}>Full View</li>
+            onClick={() => setIsByGameViewMode(false)}>Slim View</li>
             <li
             className={`rounded px-1 cursor-pointer ${isByGameViewMode ? SELECTED_STYLE : UNSELECTED_STYLE}`}
-            onClick={() => onModeChange(true)}>By Game</li>
+            onClick={() => setIsByGameViewMode(true)}>By Game</li>
         </ul>
     )
 }

@@ -74,7 +74,7 @@ const UserDashboardPage = () => {
     return (
         <>
             <Head>
-                <title>Sleeper Sunday Cheatsheet</title>
+                <title>Sleepy</title>
                 <meta name="description" content="Sleeper Fantasy Football Sunday Board" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
@@ -82,7 +82,7 @@ const UserDashboardPage = () => {
                 <section className='bg-primary w-4/5 min-w-min rounded-lg py-4'>
                     <div className='flex justify-between px-4'>
                         <h3 className='text-primary-text text-xl tracking-wider leading-relaxed'>
-                            &#x2699; Settings
+                            &#x2699; Settings (WIP)
                         </h3>
                         <Link href={`/user/${id}`}>
                             <button className="text-primary-text text-xl lg:text-2xl">&times;</button>
