@@ -141,7 +141,7 @@ const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
     return (
         <>
             <Head>
-                <title>Sleepy</title>
+                <title>Sleepy - Board</title>
                 <meta name="description" content="Sleeper Fantasy Football Sunday Board" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>

@@ -74,7 +74,7 @@ const UserDashboardPage = () => {
     return (
         <>
             <Head>
-                <title>Sleepy</title>
+                <title>Sleepy - Settings</title>
                 <meta name="description" content="Sleeper Fantasy Football Sunday Board" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
