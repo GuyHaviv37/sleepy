@@ -77,7 +77,8 @@ const Home: NextPage = () => {
         gtag.event({
           action: 'user_submit_form',
           category: 'Main',
-          username: usernameInput,
+          label: 'username',
+          value: usernameInput,
         })
       } else {
         setErrorMessage(`Could not find user - ${usernameInput}`);
