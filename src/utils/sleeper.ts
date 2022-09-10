@@ -20,8 +20,9 @@ export const extractUserLeagueRosterIds = (rostersData: any, sleeperId: string):
     const userRosters = rostersData.map((leagueRosters: any[]) => {
         return leagueRosters.find((leagueRoster: { owner_id: string; }) => leagueRoster.owner_id === sleeperId);
     })
+    const availableUserRosters = userRosters.filter((userRoster: any) => !!userRoster);
     const leagueRosterIds: {[key:string]: string} = {};
-    userRosters.forEach((userRoster: { league_id: string; roster_id: string; }) => {
+    availableUserRosters.forEach((userRoster: { league_id: string; roster_id: string; }) => {
         leagueRosterIds[userRoster.league_id] = userRoster.roster_id;
     });
     return leagueRosterIds;

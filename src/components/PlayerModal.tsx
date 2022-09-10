@@ -12,7 +12,6 @@ interface PlayerModalProps {
 
 const PlayerModal: React.FC<PlayerModalProps> = (props) => {
     const {setOpenModal, avatarId, playerName, scores, leagueNames} = props;
-    console.log({avatarId, playerName, scores});
     return (
         <>
             <div className="fixed inset-0 z-10 overflow-y-auto">
