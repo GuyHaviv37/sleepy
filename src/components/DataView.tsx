@@ -41,9 +41,9 @@ const getTimeslotString = (timeslot: string) => {
 const DataView: React.FC<DataViewProps> = (props) => {
     const { userStarters, oppStarters, scheduleData, leagueNames, isByGameViewMode } = props;
     const [showPlayerModal, setShowPlayerModal] = useState(false);
-    const [selectedPlayer, setSelectedPlayer] = useState<string>('24');
-    const openPlayerModal = (playerId: string) => {
-        setSelectedPlayer(playerId);
+    const [selectedPlayer, setSelectedPlayer] = useState<{playerId: string; isUser: boolean}>({playerId: '', isUser: true});
+    const openPlayerModal = (playerId: string, isUser?: boolean) => {
+        setSelectedPlayer({playerId, isUser: !!isUser});
         setShowPlayerModal(true);
     };
 
@@ -56,6 +56,7 @@ const DataView: React.FC<DataViewProps> = (props) => {
     const userStartersByTimeslots = extractStartersByTimeslots(scheduleData.byTeam, timeslots, userStarterIds, playersInfo)
     const oppStartersByTimeslots = extractStartersByTimeslots(scheduleData.byTeam, timeslots, oppStarterIds, playersInfo)
     const isLoadingData = !userStartersByTimeslots || !oppStartersByTimeslots || !playersInfo;
+    const {playerId: selectedPlayerId, isUser: isUserSelectedPlayer} = selectedPlayer
     return isLoadingData ?
         null :
         (
@@ -85,9 +86,9 @@ const DataView: React.FC<DataViewProps> = (props) => {
                 {showPlayerModal &&
                     <PlayerModal
                         setOpenModal={setShowPlayerModal}
-                        avatarId={playersInfo[selectedPlayer]?.avatarId}
-                        playerName={`${playersInfo[selectedPlayer]?.firstName} ${playersInfo[selectedPlayer]?.lastName}`}
-                        scores={userStarters[selectedPlayer]?.leagues ?? oppStarters[selectedPlayer]?.leagues}
+                        avatarId={playersInfo[selectedPlayerId]?.avatarId}
+                        playerName={`${playersInfo[selectedPlayerId]?.firstName} ${playersInfo[selectedPlayerId]?.lastName}`}
+                        scores={isUserSelectedPlayer ? userStarters[selectedPlayerId]?.leagues : oppStarters[selectedPlayerId]?.leagues}
                         leagueNames={leagueNames}
                     />}
             </section>
@@ -102,7 +103,7 @@ interface TimeslotViewProps {
     userLeagueInfo: Starters;
     oppLeagueInfo: Starters;
     scheduleData: ScheduleData;
-    openPlayerModal: (playerId: string) => void;
+    openPlayerModal: (playerId: string, isUser?: boolean) => void;
 };
 
 const TimeslotFullView: React.FC<TimeslotViewProps> = (props) => {
@@ -182,7 +183,7 @@ interface TimeslotStartersProps {
     playersInfo: PlayersInfo;
     leagueInfo: Starters;
     scheduleData: ScheduleData;
-    openPlayerModal: (playerId: string) => void;
+    openPlayerModal: (playerId: string, isUser?: boolean) => void;
     isUser?: boolean;
     isByGameView?: boolean;
 }
@@ -231,7 +232,7 @@ interface StarterRowProps {
     oppTeam?: string;
     isHome?: boolean;
     isUser?: boolean;
-    openPlayerModal: (playerId: string) => void;
+    openPlayerModal: (playerId: string, isUser?: boolean) => void;
     isByGameView?: boolean;
 }
 
@@ -252,7 +253,7 @@ const StarterRow: React.FC<StarterRowProps> = (props) => {
     const { id, position, firstName, lastName, team, multipliers, isConflicted, oppTeam, isHome, isUser: isUserTeam, openPlayerModal, isByGameView } = props;
     const starterEmoji = getStarterEmoji(multipliers, isConflicted, isUserTeam);
     return (
-        <div className='flex items-center cursor-pointer' onClick={() => openPlayerModal(id)}>
+        <div className='flex items-center cursor-pointer' onClick={() => openPlayerModal(id, isUserTeam)}>
             <p className="text-sm pb-1 md:text-base lg:text-lg lg:self-end">
                 <span className={`pr-1 lg:pr-2`}>{starterEmoji}</span>
                 <span className={starterEmoji ? 'font-bold' : ''}>
