@@ -92,7 +92,7 @@ const UserDashboardPage = () => {
                     {isLoading ? <Loader/> : (
                         <div className="flex flex-col center-items">
                             <h5 className="text-primary-text text-lg px-6 sm:text-center underline">Your Leagues:</h5>
-                            <div className="px-2 mb-3">
+                            <div className="px-2 mb-3 max-h-96 overflow-y-auto self-center">
                                 {leagues.map((league, index) => (
                                     <LeagueWeightInput
                                     key={league.league_id}
