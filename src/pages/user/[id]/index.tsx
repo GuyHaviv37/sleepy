@@ -167,7 +167,7 @@ const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
                             <p className='underline'>Legend:</p>
                             <div className='flex justify-between w-full px-2 sm:justify-center sm:space-x-6'>
                                 <p>⚡ Super root</p>
-                                <p>👎 Super "boo"</p>
+                                <p>👎 Super &quot;boo&quot;</p>
                                 <p>⚔ Conflicted</p>
                             </div>
                         </div>
