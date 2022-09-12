@@ -96,15 +96,18 @@ const useSleeperUserMatchupsData = (leagueRosterIds: LeagueRosterIdsMap = {}, we
     const leagueIds = Object.keys(leagueRosterIds);
     const matchupRequests = leagueIds.map(leagueId => `https://api.sleeper.app/v1/league/${leagueId}/matchups/${week}`)
     const {data, error} = useSWR(matchupRequests, fetcher);
-    if (!data) {
+    const isSingleLeague = data?.[0].roster_id;
+    const refinedData = isSingleLeague ? [data] : data;
+    if (!refinedData) {
         // return loading
     }
-    if (data && data.length !== leagueRosterIds.length) {
+    if (refinedData && refinedData.length !== leagueIds.length) {
         // return error
+        console.log('Error: data and leagueRosterIds are not of the same length', refinedData);
     }
     // @TODO: type this
     const leagueMatchupsData: {[key: string]: any} = {};
-    data && leagueIds.forEach((leagueId, index) => leagueMatchupsData[leagueId] = data?.[index]);
+    refinedData && leagueIds.forEach((leagueId, index) => leagueMatchupsData[leagueId] = refinedData?.[index]);
     return extractSleeperMatchupData(leagueMatchupsData, leagueRosterIds);
 };
 

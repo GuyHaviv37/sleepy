@@ -17,7 +17,9 @@ export type Starters = {
 type LeagueMatchupWithLeagueId = LeagueMatchup & {leagueId: string};
 
 export const extractUserLeagueRosterIds = (rostersData: any, sleeperId: string): {[key:string]: string} | undefined => {
-    const userRosters = rostersData.map((leagueRosters: any[]) => {
+    const isSingleLeague = !!rostersData[0].league_id;
+    const refinedRosterData = isSingleLeague ? [rostersData] : rostersData;
+    const userRosters = refinedRosterData.map((leagueRosters: any[]) => {
         return leagueRosters.find((leagueRoster: { owner_id: string; }) => leagueRoster.owner_id === sleeperId);
     })
     const availableUserRosters = userRosters.filter((userRoster: any) => !!userRoster);
