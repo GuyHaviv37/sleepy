@@ -14,6 +14,7 @@ type LeagueData = {
 }
 
 type LeagueWeightsMap = {[key: string]: number};
+type LeagueIgnoresMap = {[key: string]: boolean};
 
 type UseSleeperUserLeaguesResult = {
     leagues: LeagueData[],
@@ -36,26 +37,44 @@ const UserDashboardPage = () => {
     const { id, fromLogin } = router.query;
     const {isLoading, leagues} = useSleeperUserLeagues(id as string);
     const [leagueWeightsMap, setLeagueWeightsMap] = useState<LeagueWeightsMap>({});
+    const [leagueIgnoresMap, setLeagueIgnoresMap] = useState<LeagueIgnoresMap>({});
 
     useEffect(() => {
         const cachedLeagueWeights = getLocalStorageData('user')?.leagueWeights;
+        const cachedLeagueIgnores = getLocalStorageData('user')?.leagueIgnores;
         console.log('cachedLeagueWeights', cachedLeagueWeights)
+        console.log('cachedLeagueIgnores', cachedLeagueIgnores)
         if (cachedLeagueWeights) {
             setLeagueWeightsMap(cachedLeagueWeights);
+        }
+        if (cachedLeagueIgnores) {
+            setLeagueIgnoresMap(cachedLeagueIgnores)
         }
     }, [])
 
     useEffect(() => {
         const defaultLeagueWeights: LeagueWeightsMap = {};
+        const defaultLeagueIgnores: LeagueIgnoresMap = {};
+        console.log('cached', leagueIgnoresMap);
         leagues?.forEach((league) => {
             if (!leagueWeightsMap[league.league_id]) {
                 defaultLeagueWeights[league.league_id] = 0;
             }
+            if (leagueIgnoresMap[league.league_id] === undefined) {
+                defaultLeagueIgnores[league.league_id] = true;
+            }
         })
+        console.log('defaultIgnores', defaultLeagueIgnores)
         setLeagueWeightsMap((currentMap) => {
             return {
-                ...currentMap,
                 ...defaultLeagueWeights,
+                ...currentMap,
+            }
+        })
+        setLeagueIgnoresMap((currentMap) => {
+            return {
+                ...defaultLeagueIgnores,
+                ...currentMap,
             }
         })
     }, [leagues])
@@ -63,7 +82,7 @@ const UserDashboardPage = () => {
 
     const submitWeightsHandler = () => {
         const leagueNames = leagues.reduce((acc,league) => ({...acc, [league.league_id]: league.name}), {});
-        const updatedData = updateLocalStorageData('user', {leagueWeights: leagueWeightsMap, leagueNames});
+        const updatedData = updateLocalStorageData('user', {leagueWeights: leagueWeightsMap, leagueIgnores: leagueIgnoresMap, leagueNames});
         if (!updatedData) {
             console.error('Error: failed to update user data');
         } else {
@@ -92,18 +111,25 @@ const UserDashboardPage = () => {
                     {isLoading ? <Loader/> : (
                         <div className="flex flex-col center-items">
                             <h5 className="text-primary-text text-lg px-6 sm:text-center underline">Your Leagues:</h5>
-                            <div className="px-2 mb-3 max-h-96 overflow-y-auto self-center">
-                                {leagues.map((league, index) => (
+                            <div className="px-2 mb-3 max-h-96 overflow-y-auto md:self-center">
+                                {leagues.map((league) => (
                                     <LeagueWeightInput
                                     key={league.league_id}
                                     leagueName={league.name}
-                                    value={leagueWeightsMap[league.league_id] ?? 0}
-                                    onValueHandler={(event: ChangeEvent<HTMLInputElement>) => setLeagueWeightsMap((currentMap) => {
+                                    weightValue={leagueWeightsMap[league.league_id] ?? 0}
+                                    onWeightValueHandler={(event: ChangeEvent<HTMLInputElement>) => setLeagueWeightsMap((currentMap) => {
                                         return {
                                             ...currentMap,
                                             [league.league_id]: parseInt(event.target.value),
                                         }
                                     })}
+                                    onCheckboxTickHandler={(event: ChangeEvent<HTMLInputElement>) => setLeagueIgnoresMap((currentMap) => {
+                                        return {
+                                            ...currentMap,
+                                            [league.league_id]: event.target.checked,
+                                        }
+                                    })}
+                                    checkboxValue={leagueIgnoresMap[league.league_id] ?? true}
                                     />
                                     ))}
                             </div>
@@ -120,6 +146,8 @@ const UserDashboardPage = () => {
                         </div>
                     )}
                 <p className='text-primary-text text-xs px-6 mt-3 font-thin max-w-sm mx-auto lg:text-sm'>
+                    <span className='font-semibold'>You can ignore a league by unticking its' checkbox.</span>
+                    <br/>
                     Here you can enter your leagues entry fees, this will be used
                     to scale better who you should root for and against.
                 </p>
@@ -131,19 +159,22 @@ const UserDashboardPage = () => {
 
 interface LeagueWeightInputProps {
     leagueName: string;
-    value?: number;
-    onValueHandler: (event: ChangeEvent<HTMLInputElement>) => void;
+    weightValue?: number;
+    checkboxValue?: boolean;
+    onWeightValueHandler: (event: ChangeEvent<HTMLInputElement>) => void;
+    onCheckboxTickHandler: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
 const LeagueWeightInput: React.FC<LeagueWeightInputProps> = (props) => {
-    const {leagueName, onValueHandler, value} = props;
+    const {leagueName, onWeightValueHandler, onCheckboxTickHandler, weightValue, checkboxValue} = props;
 
     return (
-        <div className="flex justify-between mt-3 sm:justify-center sm:space-x-5">
+        <div className="flex justify-between mt-3 sm:space-x-5">
+            <input type='checkbox' checked={checkboxValue} onChange={onCheckboxTickHandler}/>
             <p className="text-primary-text">{leagueName}</p>
             <div className="flex space-x-3">
-                <input type="number" onChange={onValueHandler}
-                step={1} min={0} value={value}
+                <input type="number" onChange={onWeightValueHandler}
+                step={1} min={0} value={weightValue}
                 className="max-w-[50px] h-full text-center rounded-lg text-grey-700
                 border-[3px] border-solid border-grey-300
                 transition ease-in-out
