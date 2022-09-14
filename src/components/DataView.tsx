@@ -52,7 +52,7 @@ const DataView: React.FC<DataViewProps> = (props) => {
     const { data: playersInfo } = trpc.useQuery(
         ['example.getPlayersInfoByIds',
             { playerIds: [...userStarterIds, ...oppStarterIds] }]);
-    const timeslots = Object.keys(scheduleData.byTimeslot);
+    const timeslots = Object.keys(scheduleData.byTimeslot).sort((a, b) => (new Date(a)).getTime() - (new Date(b)).getTime());
     const userStartersByTimeslots = extractStartersByTimeslots(scheduleData.byTeam, timeslots, userStarterIds, playersInfo)
     const oppStartersByTimeslots = extractStartersByTimeslots(scheduleData.byTeam, timeslots, oppStarterIds, playersInfo)
     const isLoadingData = !userStartersByTimeslots || !oppStartersByTimeslots || !playersInfo;

@@ -166,13 +166,10 @@ const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
                     </div>
                     <>
                         <WeeksNavbar getSelectedWeekHandler={getSelectedWeekHandler} selectedWeek={selectedWeek}/>
-                        <div className="flex flex-col items-center text-primary-text mt-2 md:text-lg">
-                            <p className='underline'>Legend:</p>
-                            <div className='flex justify-between w-full px-2 sm:justify-center sm:space-x-6'>
-                                <p>⚡ Super root</p>
-                                <p>👎 Super &quot;boo&quot;</p>
-                                <p>⚔ Conflicted</p>
-                            </div>
+                        <div className='flex justify-between w-full px-3 sm:justify-center sm:space-x-6 text-primary-text mt-3 md:text-lg'>
+                            <p>⚡ Super root</p>
+                            <p>👎 Super &quot;boo&quot;</p>
+                            <p>⚔ Conflicted</p>
                         </div>
                         {isLoading ? (
                             <div className='pt-5'>
