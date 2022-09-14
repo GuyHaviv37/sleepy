@@ -42,8 +42,6 @@ const UserDashboardPage = () => {
     useEffect(() => {
         const cachedLeagueWeights = getLocalStorageData('user')?.leagueWeights;
         const cachedLeagueIgnores = getLocalStorageData('user')?.leagueIgnores;
-        console.log('cachedLeagueWeights', cachedLeagueWeights)
-        console.log('cachedLeagueIgnores', cachedLeagueIgnores)
         if (cachedLeagueWeights) {
             setLeagueWeightsMap(cachedLeagueWeights);
         }
@@ -55,7 +53,6 @@ const UserDashboardPage = () => {
     useEffect(() => {
         const defaultLeagueWeights: LeagueWeightsMap = {};
         const defaultLeagueIgnores: LeagueIgnoresMap = {};
-        console.log('cached', leagueIgnoresMap);
         leagues?.forEach((league) => {
             if (!leagueWeightsMap[league.league_id]) {
                 defaultLeagueWeights[league.league_id] = 0;
@@ -64,7 +61,6 @@ const UserDashboardPage = () => {
                 defaultLeagueIgnores[league.league_id] = true;
             }
         })
-        console.log('defaultIgnores', defaultLeagueIgnores)
         setLeagueWeightsMap((currentMap) => {
             return {
                 ...defaultLeagueWeights,
