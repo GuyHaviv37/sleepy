@@ -142,7 +142,7 @@ const UserDashboardPage = () => {
                         </div>
                     )}
                 <p className='text-primary-text text-xs px-6 mt-3 font-thin max-w-sm mx-auto lg:text-sm'>
-                    <span className='font-semibold'>You can ignore a league by unticking its' checkbox.</span>
+                    <span className='font-semibold'>You can ignore a league by unticking it&apos; checkbox.</span>
                     <br/>
                     Here you can enter your leagues entry fees, this will be used
                     to scale better who you should root for and against.
