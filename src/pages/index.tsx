@@ -157,6 +157,12 @@ const Home: NextPage = () => {
         </h3>
         <br />
         {renderFormOrCachedUsername()}
+        <br/>
+        <div className="text-sm border-t-2 pt-2">
+          <p>&rarr; Update Sept. 15th:</p>
+          <p>You can now exclude leagues from the Board.</p>
+          <p>Try it out in the Settings page.</p>
+        </div>
       </main>
     </>
   );
