@@ -39,7 +39,8 @@ const extractScheduleTeamData = (espnScheduleData: EspnScheduleData): ScheduleDa
         }
         return {...acc, ...eventData};
     }, {});
-    return scheduleTeamData;
+    const normalizedScheduleTeamData = scheduleTeamData.WSH ? {...scheduleTeamData, WAS: scheduleTeamData.WSH} : scheduleTeamData
+    return normalizedScheduleTeamData;
 }
 
 const extractScheduleTimeslotData = (espnScheduleData: EspnScheduleData): ScheduleData['byTimeslot'] => {
