@@ -41,7 +41,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
             });
           `,
         }} />
-      <Component {...pageProps} />;
+      <Component {...pageProps} />
     </>)
 };
 

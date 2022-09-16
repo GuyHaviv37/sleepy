@@ -6,6 +6,7 @@ import { getLocalStorageData, setLocalStorageData } from "@/utils/localStorage";
 import { fetcher } from '@/utils/fetcher';
 import Loader from "@/components/Loader";
 import * as gtag from '../../lib/gtag';
+import Link from "next/link";
 
 const enum CacheStatus {
   'LOADING',
@@ -157,6 +158,15 @@ const Home: NextPage = () => {
         </h3>
         <br />
         {renderFormOrCachedUsername()}
+        <br/>
+        <div className="text-sm border-t-2 pt-2">
+          <p>&rarr; Update Sept. 15th:</p>
+          <p>You can now exclude leagues from the Board.</p>
+          <p>Try it out in the {isCachedUsername === CacheStatus.HIT ?
+          <Link href={`user/${userFromCache.current?.sleeperId}/settings`}>
+            <span className="text-alt cursor-pointer">Settings </span></Link> :'Settings '}
+          page.</p>
+        </div>
       </main>
     </>
   );
