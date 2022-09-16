@@ -163,7 +163,14 @@ const Home: NextPage = () => {
           <p>&rarr; Update Sept. 15th:</p>
           <p>You can now exclude leagues from the Board.</p>
           <p>Try it out in the {isCachedUsername === CacheStatus.HIT ?
-          <Link href={`user/${userFromCache.current?.sleeperId}/settings`}>
+          <Link href={`user/${userFromCache.current?.sleeperId}/settings`} onClick={() => {
+            gtag.event({
+              action: 'update_notice_click',
+              category: 'Update_Notices',
+              label: 'ignore_leagues_feature',
+              value: true,
+            })
+          }}>
             <span className="text-alt cursor-pointer">Settings </span></Link> :'Settings '}
           page.</p>
         </div>
