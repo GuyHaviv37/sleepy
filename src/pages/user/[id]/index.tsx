@@ -94,7 +94,7 @@ const useSleeperUserRosterIds = (sleeperId: string, userData?: UserData) => {
     return {leagueRosterIds};
 }
 
-const useSleeperUserMatchupsData = (leagueRosterIds: LeagueRosterIdsMap = {}, week: WEEKS, leagueIgnores: LeagueIgnoresMap) => {
+const useSleeperUserMatchupsData = (leagueRosterIds: LeagueRosterIdsMap = {}, week: WEEKS, leagueIgnores?: LeagueIgnoresMap) => {
     const leagueIds = Object.keys(leagueRosterIds);
     const matchupRequests = leagueIds.map(leagueId => `https://api.sleeper.app/v1/league/${leagueId}/matchups/${week}`)
     const {data, error} = useSWR(matchupRequests, fetcher);
@@ -109,7 +109,8 @@ const useSleeperUserMatchupsData = (leagueRosterIds: LeagueRosterIdsMap = {}, we
     }
     // @TODO: type this
     const leagueMatchupsData: {[key: string]: any} = {};
-    refinedData && leagueIds.filter(leagueId => leagueIgnores[leagueId]).forEach((leagueId, index) => leagueMatchupsData[leagueId] = refinedData?.[index]);
+    const filteredLeagueIds = leagueIgnores ? leagueIds.filter(leagueId => leagueIgnores[leagueId]) : leagueIds
+    refinedData && filteredLeagueIds.forEach((leagueId, index) => leagueMatchupsData[leagueId] = refinedData?.[index]);
     return extractSleeperMatchupData(leagueMatchupsData, leagueRosterIds);
 };
 
@@ -129,7 +130,7 @@ const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
     const userData = useLocalStorageUserData(id as string);
     const [selectedWeek, setSelectedWeek] = useState<WEEKS>(props.nflWeek);
     const {leagueRosterIds} = useSleeperUserRosterIds(id as string, userData);
-    const {userStarters, oppStarters} = useSleeperUserMatchupsData(leagueRosterIds, selectedWeek, userData?.leagueIgnores ?? {});
+    const {userStarters, oppStarters} = useSleeperUserMatchupsData(leagueRosterIds, selectedWeek, userData?.leagueIgnores);
     const scheduleData = useNflSchedule(selectedWeek);
     const isLoading = !scheduleData || !userStarters || !oppStarters || !userData;
     const [isByGameViewMode, setIsByGameViewMode] = useState(false);
