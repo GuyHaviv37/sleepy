@@ -110,7 +110,10 @@ const useSleeperUserMatchupsData = (leagueRosterIds: LeagueRosterIdsMap = {}, we
     // @TODO: type this
     const leagueMatchupsData: {[key: string]: any} = {};
     const filteredLeagueIds = leagueIgnores ? leagueIds.filter(leagueId => leagueIgnores[leagueId]) : leagueIds
-    refinedData && filteredLeagueIds.forEach((leagueId, index) => leagueMatchupsData[leagueId] = refinedData?.[index]);
+    refinedData && filteredLeagueIds.forEach((leagueId, index) => {
+        const leagueIndex = leagueIds.findIndex(someLeagueId => someLeagueId === leagueId);
+        leagueMatchupsData[leagueId] = refinedData?.[leagueIndex]
+    });
     return extractSleeperMatchupData(leagueMatchupsData, leagueRosterIds);
 };
 
