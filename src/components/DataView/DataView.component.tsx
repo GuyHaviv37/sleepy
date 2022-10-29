@@ -1,11 +1,11 @@
 import type { Starters } from '@/utils/sleeper';
 import type { ScheduleData } from '@/utils/schedule';
-import React, { useMemo, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { trpc } from '@/utils/trpc';
 import PlayerModal from '../PlayerModal';
-import { extractStartersByTimeslots, getStarterEmoji, getTimeslotString } from './utils';
-import { PlayersInfo } from './consts';
+import { extractStartersByTimeslots , getStartersByGame, getTimeslotString } from './utils';
 import TimeslotStarters from './TimeslotStarters';
+import DataViewContext from './DataView.context';
 
 interface DataViewProps {
     userStarters: Starters;
@@ -47,16 +47,18 @@ const DataView: React.FC<DataViewProps> = (props) => {
                         return (
                             <div className="col-span-2" key={timeslot}>
                                 <p className="lg:text-lg underline pb-1 underline-offset-4 md:pb-2">🏈 {getTimeslotString(timeslot)}</p>
-                                <TimeslotView
-                                    timeslot={timeslot}
-                                    userStarterIds={userStartersByTimeslots[timeslot] ?? []}
-                                    oppStarterIds={oppStartersByTimeslots[timeslot] ?? []}
-                                    playersInfo={playersInfo}
-                                    userLeagueInfo={userStarters}
-                                    oppLeagueInfo={oppStarters}
-                                    scheduleData={scheduleData}
-                                    openPlayerModal={openPlayerModal}
-                                />
+                                <DataViewContext.Provider value={{
+                                        playersInfo, scheduleData, openPlayerModal,
+                                        userLeagueInfo: userStarters,
+                                        oppLeagueInfo: oppStarters
+                                }}>
+                                    <TimeslotView
+                                        timeslot={timeslot}
+                                        userStarterIds={userStartersByTimeslots[timeslot] ?? []}
+                                        oppStarterIds={oppStartersByTimeslots[timeslot] ?? []}
+                                    />
+                                </DataViewContext.Provider>
+
                             </div>
                         )
                     })}
@@ -77,51 +79,30 @@ interface TimeslotViewProps {
     timeslot: string;
     userStarterIds: string[];
     oppStarterIds: string[];
-    playersInfo: PlayersInfo;
-    userLeagueInfo: Starters;
-    oppLeagueInfo: Starters;
-    scheduleData: ScheduleData;
-    openPlayerModal: (playerId: string, isUser?: boolean) => void;
 };
 
 const TimeslotFullView: React.FC<TimeslotViewProps> = (props) => {
-    const { timeslot, userStarterIds, oppStarterIds, userLeagueInfo, oppLeagueInfo, playersInfo, scheduleData, openPlayerModal } = props;
+    const { timeslot, userStarterIds, oppStarterIds } = props;
     return (
         <div className='grid grid-cols-2'>
             <TimeslotStarters
                 key={`user_${timeslot}`}
                 starterIds={userStarterIds}
-                playersInfo={playersInfo}
-                leagueInfo={userLeagueInfo}
-                scheduleData={scheduleData}
-                openPlayerModal={openPlayerModal}
                 isUser
             />
             <TimeslotStarters
                 key={`opp_${timeslot}`}
                 starterIds={oppStarterIds}
-                playersInfo={playersInfo}
-                leagueInfo={oppLeagueInfo}
-                scheduleData={scheduleData}
-                openPlayerModal={openPlayerModal}
             />
         </div>
     )
 }
 
 const TimeslotByGameView: React.FC<TimeslotViewProps> = (props) => {
-    const { timeslot, userStarterIds, oppStarterIds, userLeagueInfo, oppLeagueInfo, playersInfo, scheduleData, openPlayerModal } = props;
-    const startersPerGame = scheduleData.byTimeslot[timeslot]?.map(game => {
-        const userStartersPerGame = userStarterIds.filter(starterId => {
-            const playerTeam = playersInfo[starterId]?.team;
-            return playerTeam === game.homeTeam || playerTeam === game.awayTeam;
-        })
-        const oppStartersPerGame = oppStarterIds.filter(starterId => {
-            const playerTeam = playersInfo[starterId]?.team;
-            return playerTeam === game.homeTeam || playerTeam === game.awayTeam;
-        })
-        return {user: userStartersPerGame, opp: oppStartersPerGame};
-    })
+    const { timeslot, userStarterIds, oppStarterIds } = props;
+    const { playersInfo, scheduleData} = useContext(DataViewContext);
+    const startersPerGame = getStartersByGame(scheduleData, timeslot, userStarterIds, oppStarterIds, playersInfo);
+
     return (
         <div className="col-span-2" key={timeslot}>
             {scheduleData.byTimeslot[timeslot]?.map((game, index) => {
@@ -132,20 +113,12 @@ const TimeslotByGameView: React.FC<TimeslotViewProps> = (props) => {
                     <TimeslotStarters
                         key={`user_${timeslot}`}
                         starterIds={startersPerGame?.[index]?.user ?? []}
-                        playersInfo={playersInfo}
-                        leagueInfo={userLeagueInfo}
-                        scheduleData={scheduleData}
-                        openPlayerModal={openPlayerModal}
                         isByGameView
                         isUser
                     />
                     <TimeslotStarters
                         key={`opp_${timeslot}`}
                         starterIds={startersPerGame?.[index]?.opp ?? []}
-                        playersInfo={playersInfo}
-                        leagueInfo={oppLeagueInfo}
-                        scheduleData={scheduleData}
-                        openPlayerModal={openPlayerModal}
                         isByGameView
                     />
                 </div>

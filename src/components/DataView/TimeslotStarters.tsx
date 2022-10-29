@@ -1,21 +1,17 @@
-import { ScheduleData } from '@/utils/schedule';
-import { Starters } from '@/utils/sleeper';
-import React from 'react';
-import { PlayersInfo } from './consts';
+import React, { useContext } from 'react';
+import DataViewContext from './DataView.context';
 import { getStarterEmoji } from './utils';
 
 interface TimeslotStartersProps {
     starterIds: string[];
-    playersInfo: PlayersInfo;
-    leagueInfo: Starters;
-    scheduleData: ScheduleData;
-    openPlayerModal: (playerId: string, isUser?: boolean) => void;
     isUser?: boolean;
     isByGameView?: boolean;
 }
 
 const TimeslotStarters: React.FC<TimeslotStartersProps> = (props) => {
-    const { starterIds, playersInfo, leagueInfo, scheduleData, isUser, openPlayerModal, isByGameView } = props;
+    const { starterIds,  isUser, isByGameView } = props;
+    const { playersInfo, userLeagueInfo, oppLeagueInfo, scheduleData, openPlayerModal} = useContext(DataViewContext);
+    const leagueInfo = isUser ? userLeagueInfo : oppLeagueInfo;
     return (
         <div className="flex flex-col lg:items-center">
             {starterIds.map(starterId => {
@@ -48,7 +44,6 @@ const TimeslotStarters: React.FC<TimeslotStartersProps> = (props) => {
 
 export default TimeslotStarters;
 
-// @TODO: work out scores UI
 interface StarterRowProps {
     id: string;
     firstName?: string;

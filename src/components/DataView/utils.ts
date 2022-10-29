@@ -31,3 +31,18 @@ export const getStarterEmoji = (multipliers?: number, isConflicted?: boolean, is
     const isBoo = isUnconflictedMultiplier && !isUserTeam;
     if (isBoo) return EMOJIES.THUMBS_DOWN_EMOJI;
 }
+
+export const getStartersByGame = (scheduleData: ScheduleData, timeslot: string, userStarterIds: string[], oppStarterIds: string[], playersInfo: PlayersInfo) => {
+    const startersPerGame = scheduleData.byTimeslot[timeslot]?.map(game => {
+        const userStartersPerGame = userStarterIds.filter(starterId => {
+            const playerTeam = playersInfo[starterId]?.team;
+            return playerTeam === game.homeTeam || playerTeam === game.awayTeam;
+        })
+        const oppStartersPerGame = oppStarterIds.filter(starterId => {
+            const playerTeam = playersInfo[starterId]?.team;
+            return playerTeam === game.homeTeam || playerTeam === game.awayTeam;
+        })
+        return {user: userStartersPerGame, opp: oppStartersPerGame};
+    })
+    return startersPerGame;
+}

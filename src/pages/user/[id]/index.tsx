@@ -71,8 +71,7 @@ const useSleeperUserMatchupsData = (leagueRosterIds: LeagueRosterIdsMap = {}, we
     const {data, error} = useSWR(matchupRequests, fetcher);
     const isSingleLeague = data?.[0].roster_id;
     const refinedData = isSingleLeague ? [data] : data;
-    console.log(refinedData);
-    if (!refinedData || error) {
+    if (error) {
         // @TODO - fedops
         console.error('Error: could not fetch user matcups data', error);
     }
