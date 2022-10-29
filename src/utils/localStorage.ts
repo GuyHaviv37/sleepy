@@ -1,3 +1,14 @@
+export const enum CacheStatus {
+    'LOADING',
+    'MISS',
+    'HIT',
+}
+
+export type LeagueWeightsMap = {[key: string]: number};
+export type LeagueRosterIdsMap = {[key: string]: string};
+export type LeagueIgnoresMap = {[key: string]: boolean};
+export type LeagueNamesMap = {[key: string]: string};
+
 export const getLocalStorageData = (key: string) => {
     if (typeof window !== undefined) {
         const jsonItem = window.localStorage.getItem(key);

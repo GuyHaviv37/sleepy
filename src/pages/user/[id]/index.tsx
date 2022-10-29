@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
-import { getLocalStorageData, updateLocalStorageData } from '@/utils/localStorage';
+import { CacheStatus, getLocalStorageData, updateLocalStorageData } from '@/utils/localStorage';
+import type {LeagueWeightsMap, LeagueRosterIdsMap, LeagueNamesMap, LeagueIgnoresMap} from '@/utils/localStorage';
 import Link from 'next/link';
 import useSWR from 'swr';
 import { fetcher } from '@/utils/fetcher';
@@ -9,20 +10,7 @@ import { extractUserLeagueRosterIds, extractSleeperMatchupData } from '@/utils/s
 import { extractScheduleData, ScheduleData } from '@/utils/schedule';
 import DataView from '@/components/DataView';
 import Loader from '@/components/Loader';
-
-
-// @TODO: unify this with login page typings
-const enum CacheStatus {
-    'LOADING',
-    'MISS',
-    'HIT',
-}
-
-// @TODO: unify this with settings page for LocalStorageData typings
-type LeagueWeightsMap = {[key: string]: number};
-type LeagueRosterIdsMap = {[key: string]: string};
-type LeagueIgnoresMap = {[key: string]: boolean};
-export type LeagueNamesMap = {[key: string]: string};
+import { WEEKS } from '@/utils/consts';
 
 type UserData = {
     sleeperId?: string;
@@ -32,29 +20,6 @@ type UserData = {
     leagueNames?: LeagueNamesMap;
     leagueIgnores?: LeagueIgnoresMap;
 }
-
-const WEEKS = {
-    WEEK1: '1',
-    WEEK2: '2',
-    WEEK3: '3',
-    WEEK4: '4',
-    WEEK5: '5',
-    WEEK6: '6',
-    WEEK7: '7',
-    WEEK8: '8',
-    WEEK9: '9',
-    WEEK10: '10',
-    WEEK11: '11',
-    WEEK12: '12',
-    WEEK13: '13',
-    WEEK14: '14',
-    WEEK15: '15',
-    WEEK16: '16',
-    WEEK17: '17',
-    WEEK18: '18',
-} as const;
-
-type WEEKS = typeof WEEKS[keyof typeof WEEKS];
 
 const useLocalStorageUserData = (sleeperId: string): UserData | undefined => {
     const [userData, setUserData] = useState<UserData>();

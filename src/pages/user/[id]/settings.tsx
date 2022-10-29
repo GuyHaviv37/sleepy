@@ -4,6 +4,7 @@ import Head from 'next/head';
 import useSWR from 'swr';
 import { fetcher } from '@/utils/fetcher';
 import { getLocalStorageData, updateLocalStorageData } from '@/utils/localStorage';
+import type {LeagueIgnoresMap, LeagueWeightsMap} from '@/utils/localStorage';
 import { SPORT, SEASON } from '@/utils/consts';
 import Link from 'next/link';
 import Loader from '@/components/Loader';
@@ -12,9 +13,6 @@ type LeagueData = {
     name: string;
     league_id: string;
 }
-
-type LeagueWeightsMap = {[key: string]: number};
-type LeagueIgnoresMap = {[key: string]: boolean};
 
 type UseSleeperUserLeaguesResult = {
     leagues: LeagueData[],

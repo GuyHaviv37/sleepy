@@ -2,17 +2,11 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from 'next/router';
-import { getLocalStorageData, setLocalStorageData } from "@/utils/localStorage";
+import { CacheStatus, getLocalStorageData, setLocalStorageData } from "@/utils/localStorage";
 import { fetcher } from '@/utils/fetcher';
 import Loader from "@/components/Loader";
 import * as bi from '../../lib/bi';
 import Link from "next/link";
-
-const enum CacheStatus {
-  'LOADING',
-  'MISS',
-  'HIT',
-}
 
 type SleeperUserFromCache = {username: string; sleeperId: string};
 type SleeperUserData = {username: string, user_id: string};
