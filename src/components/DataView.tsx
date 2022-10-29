@@ -12,7 +12,7 @@ interface DataViewProps {
     isByGameViewMode: boolean;
 }
 
-type PlayersInfo = inferQueryOutput<'example.getPlayersInfoByIds'>;
+type PlayersInfo = inferQueryOutput<'players.getPlayersInfoByIds'>;
 
 const POSITTION_ORDER = ['QB', 'RB', 'WR', 'TE', 'K', 'DEF'];
 
@@ -50,7 +50,7 @@ const DataView: React.FC<DataViewProps> = (props) => {
     const userStarterIds = useMemo(() => Object.keys(userStarters), [userStarters]);
     const oppStarterIds = useMemo(() => Object.keys(oppStarters), [oppStarters]);
     const { data: playersInfo } = trpc.useQuery(
-        ['example.getPlayersInfoByIds',
+        ['players.getPlayersInfoByIds',
             { playerIds: [...userStarterIds, ...oppStarterIds] }]);
     const timeslots = Object.keys(scheduleData.byTimeslot).sort((a, b) => (new Date(a)).getTime() - (new Date(b)).getTime());
     const userStartersByTimeslots = extractStartersByTimeslots(scheduleData.byTeam, timeslots, userStarterIds, playersInfo)

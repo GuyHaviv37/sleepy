@@ -65,7 +65,6 @@ const Home: NextPage = () => {
     setErrorMessage('');
     try {
       const userData = await getSleeperUserData(usernameInput);
-      console.log('userData', userData);
       if (userData) {
         setLocalStorageData('user', {
             username: usernameInput,
