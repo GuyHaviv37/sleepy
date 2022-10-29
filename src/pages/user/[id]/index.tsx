@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { getLocalStorageData, updateLocalStorageData } from '@/utils/localStorage';
@@ -205,6 +205,7 @@ interface WeeksNavbarProps {
 const WeeksNavbar: React.FC<WeeksNavbarProps> = (props) => {
     const {selectedWeek, getSelectedWeekHandler} = props;
 
+
     return (
         <ul className="flex max-w-[90%] mx-auto overflow-y-auto border-2 border-black rounded-lg
         mt-3  space-x-0.5 bg-gray-600">
@@ -230,9 +231,15 @@ interface WeeksNavbarItemProps {
 
 const WeeksNavbarItem: React.FC<WeeksNavbarItemProps> = (props) => {
     const {isSelected, onSelectHandler, label} = props;
+    const itemRef = useRef<HTMLLIElement | null>(null);
+    useEffect(() => {
+        if (itemRef.current && isSelected) {
+            itemRef.current.scrollIntoView({inline: 'center'});
+        }
+    })
 
     return (
-        <li className={`text-primary-text text-sm min-w-fit p-1 md:text-base md:p-2
+        <li ref={itemRef} className={`text-primary-text text-sm min-w-fit p-1 md:text-base md:p-2
         ${isSelected ? 'bg-accent' : 'bg-alt'} hover:bg-accent transition ease-in-out cursor-pointer`} onClick={onSelectHandler}>
             {label}
         </li>
