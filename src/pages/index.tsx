@@ -25,6 +25,7 @@ const Home: NextPage = () => {
   const router = useRouter();
   const [usernameInput, setUsernameInput] = useState('');
   const [isCachedUsername, setIsCachedUsername] = useState<CacheStatus>(CacheStatus.LOADING);
+  const [isFetchingUserData, setIsFetchingUserData] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const userFromCache = useRef<SleeperUserFromCache>();
 
@@ -37,14 +38,17 @@ const Home: NextPage = () => {
           setUsernameInput(userFromCache.current.username);
           setIsCachedUsername(CacheStatus.HIT);
         } else {
+          // @TODO: fedops
           console.log('Error: an empty username was saved to cache');
+          setIsCachedUsername(CacheStatus.MISS);
         }
       } else {
         setIsCachedUsername(CacheStatus.MISS);
       }
     }
     catch (error) {
-      console.log(error);
+      // @TODO: fedops
+      console.log('Error fetching username from cache:', error);
       setIsCachedUsername(CacheStatus.MISS);
     }
   }, [])
@@ -57,29 +61,31 @@ const Home: NextPage = () => {
     if (userFromCache.current?.sleeperId) {
       const {sleeperId} = userFromCache.current;
       router.push(`user/${sleeperId}`);
-    } else {
-      console.error('Error with cached data: no sleeper id');
     }
   }
   const onFormSubmit = async () => {
     setErrorMessage('');
     try {
+      setIsFetchingUserData(true);
       const userData = await getSleeperUserData(usernameInput);
       if (userData) {
         setLocalStorageData('user', {
             username: usernameInput,
             sleeperId: userData.user_id
         })
+        bi.registerUsernameSubmit(usernameInput);
         router.push({
           pathname: `user/${userData.user_id}/settings`,
           query: {fromLogin: true}
         }, `user/${userData.user_id}/settings`);
-        bi.registerUsernameSubmit(usernameInput);
       } else {
         setErrorMessage(`Could not find user - ${usernameInput}`);
       }
+      setIsFetchingUserData(false);
     } catch (error) {
-      console.log(error);
+      // @TODO - fedops
+      console.log('Error: fetching sleeper user data from username input', error);
+      setErrorMessage(`Could not fetch user data for username: ${usernameInput}`);
     }
   };
 
@@ -125,7 +131,7 @@ const Home: NextPage = () => {
               <button className="text-primary-text rounded-md bg-accent mx-auto px-3 py-1
               hover:-translate-y-1 active:translate-y-0"
                 onClick={onFormSubmit}>
-                Submit &rarr;
+                {isFetchingUserData ? <Loader customSize="h-5 w-5" customWidth="border-2"/> : <>Submit &rarr;</>}
               </button>
             </>
           </section>)
