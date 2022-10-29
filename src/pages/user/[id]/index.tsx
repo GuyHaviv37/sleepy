@@ -11,6 +11,7 @@ import { extractScheduleData, ScheduleData } from '@/utils/schedule';
 import DataView from '@/components/DataView';
 import Loader from '@/components/Loader';
 import { WEEKS } from '@/utils/consts';
+import { WeeksNavbar } from '@/components/WeeksNavbar';
 
 type UserData = {
     sleeperId?: string;
@@ -167,54 +168,6 @@ const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
         </>
     )
 };
-
-interface WeeksNavbarProps {
-    selectedWeek: WEEKS;
-    getSelectedWeekHandler: (week: WEEKS) => () => void;
-}
-
-const WeeksNavbar: React.FC<WeeksNavbarProps> = (props) => {
-    const {selectedWeek, getSelectedWeekHandler} = props;
-
-    return (
-        <ul className="flex max-w-[90%] mx-auto overflow-y-auto border-2 border-black rounded-lg
-        mt-3  space-x-0.5 bg-gray-600">
-            {Object.values(WEEKS).map((week) => {
-                return (
-                <WeeksNavbarItem
-                    key={week}
-                    isSelected={week === selectedWeek}
-                    onSelectHandler={getSelectedWeekHandler(week)}
-                    label={`Week ${week}`}
-                />
-                )
-            })}
-        </ul>
-    )
-};
-
-interface WeeksNavbarItemProps {
-    isSelected: boolean;
-    onSelectHandler: () => void;
-    label: string;
-}
-
-const WeeksNavbarItem: React.FC<WeeksNavbarItemProps> = (props) => {
-    const {isSelected, onSelectHandler, label} = props;
-    const itemRef = useRef<HTMLLIElement | null>(null);
-    useEffect(() => {
-        if (itemRef.current && isSelected) {
-            itemRef.current.scrollIntoView({inline: 'center'});
-        }
-    })
-
-    return (
-        <li ref={itemRef} className={`text-primary-text text-sm min-w-fit p-1 md:text-base md:p-2
-        ${isSelected ? 'bg-accent' : 'bg-alt'} hover:bg-accent transition ease-in-out cursor-pointer`} onClick={onSelectHandler}>
-            {label}
-        </li>
-    )
-}
 
 const ViewTypeSwitch = (props: {isByGameViewMode: boolean; setIsByGameViewMode: (current: boolean) => void}) => {
     const {isByGameViewMode, setIsByGameViewMode} = props;
