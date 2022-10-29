@@ -1,4 +1,4 @@
-type LeagueMatchup = {
+export type LeagueMatchup = {
     matchup_id: string;
     roster_id: string;
     starters: string[];

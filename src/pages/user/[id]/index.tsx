@@ -6,7 +6,7 @@ import type {LeagueWeightsMap, LeagueRosterIdsMap, LeagueNamesMap, LeagueIgnores
 import Link from 'next/link';
 import useSWR from 'swr';
 import { fetcher } from '@/utils/fetcher';
-import { extractUserLeagueRosterIds, extractSleeperMatchupData } from '@/utils/sleeper';
+import { extractUserLeagueRosterIds, extractSleeperMatchupData, LeagueMatchup } from '@/utils/sleeper';
 import { extractScheduleData, ScheduleData } from '@/utils/schedule';
 import DataView from '@/components/DataView';
 import Loader from '@/components/Loader';
@@ -32,27 +32,32 @@ const useLocalStorageUserData = (sleeperId: string): UserData | undefined => {
     return userData;
 };
 
-const useSleeperUserRosterIds = (sleeperId: string, userData?: UserData) => {
+const useSleeperUserRosterIds = (sleeperId: string, cachedUserData?: UserData) => {
     const [leagueRosterIds, setLeagueRosterIds] = useState<LeagueRosterIdsMap>();
     const [isLoadedFromCache, setIsLoadedFromCache] = useState<CacheStatus>(CacheStatus.LOADING);
-    const leagueIds = Object.keys(userData?.leagueWeights ?? {});
+    const leagueIds = Object.keys(cachedUserData?.leagueWeights ?? {});
     const fetchRosterIdRequests = leagueIds.map(leagueId => `https://api.sleeper.app/v1/league/${leagueId}/rosters`);
     const {data, error} = useSWR(fetchRosterIdRequests, fetcher);
 
     useEffect(() => {
-        if (userData && userData.leagueRosterIds) { 
-            setLeagueRosterIds(userData.leagueRosterIds);
+        if (cachedUserData && cachedUserData.leagueRosterIds) { 
+            setLeagueRosterIds(cachedUserData.leagueRosterIds);
             setIsLoadedFromCache(CacheStatus.HIT);
         } else {
             setIsLoadedFromCache(CacheStatus.MISS);
         }
-    }, [userData])
+    }, [cachedUserData])
 
     useEffect(() => {
-        if (isLoadedFromCache === CacheStatus.MISS && data) {
-            const leagueRosterIds = extractUserLeagueRosterIds(data, sleeperId);
-            setLeagueRosterIds(leagueRosterIds)
-            updateLocalStorageData('user', {leagueRosterIds});
+        if (isLoadedFromCache === CacheStatus.MISS) {
+            if (data) {
+                const leagueRosterIds = extractUserLeagueRosterIds(data, sleeperId);
+                setLeagueRosterIds(leagueRosterIds)
+                updateLocalStorageData('user', {leagueRosterIds});
+            } else if (error) {
+                // @TODO - fedops
+                console.error(`Error: could not fetch rosterIds for sleeperId: ${sleeperId}`)
+            }
         }
     }, [isLoadedFromCache, data, sleeperId])
 
@@ -65,17 +70,18 @@ const useSleeperUserMatchupsData = (leagueRosterIds: LeagueRosterIdsMap = {}, we
     const {data, error} = useSWR(matchupRequests, fetcher);
     const isSingleLeague = data?.[0].roster_id;
     const refinedData = isSingleLeague ? [data] : data;
-    if (!refinedData) {
-        // return loading
+    console.log(refinedData);
+    if (!refinedData || error) {
+        // @TODO - fedops
+        console.error('Error: could not fetch user matcups data', error);
     }
     if (refinedData && refinedData.length !== leagueIds.length) {
-        // return error
-        console.log('Error: data and leagueRosterIds are not of the same length', refinedData);
+        // @TODO - fedops
+        console.error('Error: data and leagueRosterIds are not of the same length', refinedData);
     }
-    // @TODO: type this
-    const leagueMatchupsData: {[key: string]: any} = {};
-    const filteredLeagueIds = leagueIgnores ? leagueIds.filter(leagueId => leagueIgnores[leagueId]) : leagueIds
-    refinedData && filteredLeagueIds.forEach((leagueId, index) => {
+    const filteredLeagueIds = leagueIgnores ? leagueIds.filter(leagueId => leagueIgnores[leagueId]) : leagueIds;
+    const leagueMatchupsData:  {[leagueId: string]: LeagueMatchup[]} = {};
+    refinedData && filteredLeagueIds.forEach((leagueId) => {
         const leagueIndex = leagueIds.findIndex(someLeagueId => someLeagueId === leagueId);
         leagueMatchupsData[leagueId] = refinedData?.[leagueIndex]
     });
@@ -85,7 +91,7 @@ const useSleeperUserMatchupsData = (leagueRosterIds: LeagueRosterIdsMap = {}, we
 const useNflSchedule = (week: WEEKS) : ScheduleData | undefined => {
     const {data: espnScoreboardData, error} = useSWR(`https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?seasontype=2&week=${week}`, fetcher);
     if (error) {
-        console.error(error);
+        console.error('Error: coudl not fetch schefule data:', error);
         return;
     }
     if (!espnScoreboardData) return;
@@ -169,7 +175,6 @@ interface WeeksNavbarProps {
 
 const WeeksNavbar: React.FC<WeeksNavbarProps> = (props) => {
     const {selectedWeek, getSelectedWeekHandler} = props;
-
 
     return (
         <ul className="flex max-w-[90%] mx-auto overflow-y-auto border-2 border-black rounded-lg
