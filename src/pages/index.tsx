@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import { getLocalStorageData, setLocalStorageData } from "@/utils/localStorage";
 import { fetcher } from '@/utils/fetcher';
 import Loader from "@/components/Loader";
-import * as gtag from '../../lib/gtag';
+import * as bi from '../../lib/bi';
 import Link from "next/link";
 
 const enum CacheStatus {
@@ -74,12 +74,7 @@ const Home: NextPage = () => {
           pathname: `user/${userData.user_id}/settings`,
           query: {fromLogin: true}
         }, `user/${userData.user_id}/settings`);
-        gtag.event({
-          action: 'user_submit_form',
-          category: 'Main',
-          label: 'username',
-          value: usernameInput,
-        })
+        bi.registerUsernameSubmit(usernameInput);
       } else {
         setErrorMessage(`Could not find user - ${usernameInput}`);
       }
@@ -164,14 +159,7 @@ const Home: NextPage = () => {
           <p>Try it out in the {isCachedUsername === CacheStatus.HIT ?
           <Link href={`user/${userFromCache.current?.sleeperId}/settings`}>
             <span className="text-alt cursor-pointer"
-            onClick={() => {
-              gtag.event({
-                action: 'update_notice_click',
-                category: 'Update_Notices',
-                label: 'ignore_leagues_feature',
-                value: true,
-              })
-            }}
+            onClick={bi.registerUpdateNoticeClick}
             >Settings </span></Link> :'Settings '}
           page.</p>
         </div>
