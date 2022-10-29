@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import useSWR from 'swr';
@@ -78,7 +78,7 @@ const UserDashboardPage = () => {
         const leagueNames = leagues.reduce((acc,league) => ({...acc, [league.league_id]: league.name}), {});
         const updatedData = updateLocalStorageData('user', {leagueWeights: leagueWeightsMap, leagueIgnores: leagueIgnoresMap, leagueNames});
         if (!updatedData) {
-            console.error('Error: failed to update user data');
+            console.error('Error: failed to update cached user data');
         } else {
             router.replace(`/user/${id}`)
         }
@@ -127,7 +127,6 @@ const UserDashboardPage = () => {
                                     />
                                     ))}
                             </div>
-                            {/* enables only when user db mutation is set */}
                             <button className="text-primary-text rounded-md bg-accent mx-auto px-3 py-1
                             hover:-translate-y-1 active:translate-y-0"
                             onClick={submitWeightsHandler}>
