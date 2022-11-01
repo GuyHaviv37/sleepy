@@ -6,18 +6,20 @@ import PlayerModal from '../PlayerModal';
 import { extractStartersByTimeslots , getStartersByGame, getTimeslotString } from './utils';
 import TimeslotStarters from './TimeslotStarters';
 import DataViewContext from './DataView.context';
+import { PlayersInfo } from './consts';
 
 interface DataViewProps {
     userStarters: Starters;
     oppStarters: Starters;
     scheduleData: ScheduleData;
     leagueNames?: { [leagueId: string]: string };
+    playersInfo?: PlayersInfo;
     isByGameViewMode: boolean;
 }
 
 
 const DataView: React.FC<DataViewProps> = (props) => {
-    const { userStarters, oppStarters, scheduleData, leagueNames, isByGameViewMode } = props;
+    const { userStarters, oppStarters, scheduleData, leagueNames, playersInfo, isByGameViewMode } = props;
     const [showPlayerModal, setShowPlayerModal] = useState(false);
     const [selectedPlayer, setSelectedPlayer] = useState<{playerId: string; isUser: boolean}>({playerId: '', isUser: true});
     const openPlayerModal = (playerId: string, isUser?: boolean) => {
@@ -27,9 +29,6 @@ const DataView: React.FC<DataViewProps> = (props) => {
 
     const userStarterIds = useMemo(() => Object.keys(userStarters), [userStarters]);
     const oppStarterIds = useMemo(() => Object.keys(oppStarters), [oppStarters]);
-    const { data: playersInfo } = trpc.useQuery(
-        ['players.getPlayersInfoByIds',
-            { playerIds: [...userStarterIds, ...oppStarterIds] }]);
     const timeslots = Object.keys(scheduleData.byTimeslot).sort((a, b) => (new Date(a)).getTime() - (new Date(b)).getTime());
     const userStartersByTimeslots = extractStartersByTimeslots(scheduleData.byTeam, timeslots, userStarterIds, playersInfo)
     const oppStartersByTimeslots = extractStartersByTimeslots(scheduleData.byTeam, timeslots, oppStarterIds, playersInfo)

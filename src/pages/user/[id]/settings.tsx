@@ -12,6 +12,7 @@ import Loader from '@/components/Loader';
 type LeagueData = {
     name: string;
     league_id: string;
+    roster_positions: string[];
 }
 
 type UseSleeperUserLeaguesResult = {
@@ -76,7 +77,11 @@ const UserDashboardPage = () => {
 
     const submitWeightsHandler = () => {
         const leagueNames = leagues.reduce((acc,league) => ({...acc, [league.league_id]: league.name}), {});
-        const updatedData = updateLocalStorageData('user', {leagueWeights: leagueWeightsMap, leagueIgnores: leagueIgnoresMap, leagueNames});
+        const leagueStarterSpots = leagues.reduce((acc, league) => {
+            const starterSpotsInLeague = league.roster_positions.filter(position => position !== 'BN').length;
+            return {...acc, [league.league_id]: starterSpotsInLeague};
+        }, {})
+        const updatedData = updateLocalStorageData('user', {leagueWeights: leagueWeightsMap, leagueIgnores: leagueIgnoresMap, leagueNames, leagueStarterSpots});
         if (!updatedData) {
             console.error('Error: failed to update cached user data');
         } else {

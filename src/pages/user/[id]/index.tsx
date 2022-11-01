@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
-import { CacheStatus, getLocalStorageData, updateLocalStorageData } from '@/utils/localStorage';
+import { CacheStatus, getLocalStorageData, updateLocalStorageData, UserData } from '@/utils/localStorage';
 import type {LeagueWeightsMap, LeagueRosterIdsMap, LeagueNamesMap, LeagueIgnoresMap} from '@/utils/localStorage';
 import Link from 'next/link';
 import useSWR from 'swr';
@@ -12,15 +12,8 @@ import DataView from '@/components/DataView';
 import Loader from '@/components/Loader';
 import { WEEKS } from '@/utils/consts';
 import { WeeksNavbar } from '@/components/WeeksNavbar';
-
-type UserData = {
-    sleeperId?: string;
-    username?: string;
-    leagueWeights?: LeagueWeightsMap;
-    leagueRosterIds?: LeagueRosterIdsMap;
-    leagueNames?: LeagueNamesMap;
-    leagueIgnores?: LeagueIgnoresMap;
-}
+import MissingPlayersNotice from '@/components/MissingPlayersNotice';
+import { trpc } from '@/utils/trpc';
 
 const useLocalStorageUserData = (sleeperId: string): UserData | undefined => {
     const [userData, setUserData] = useState<UserData>();
@@ -108,6 +101,9 @@ const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
     const scheduleData = useNflSchedule(selectedWeek);
     const isLoading = !scheduleData || !userStarters || !oppStarters || !userData;
     const [isByGameViewMode, setIsByGameViewMode] = useState(false);
+    const { data: playersInfo } = trpc.useQuery(
+        ['players.getPlayersInfoByIds',
+            { playerIds: [...Object.keys(userStarters ?? {}), ...Object.keys(oppStarters ?? {})] }]);
 
     const getSelectedWeekHandler = (week: WEEKS) => {
         return () => setSelectedWeek(week);
@@ -148,6 +144,13 @@ const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
                             <p>👎 Super &quot;boo&quot;</p>
                             <p>⚔ Conflicted</p>
                         </div>
+                        {!isLoading ? <MissingPlayersNotice
+                            userStarters={userStarters}
+                            userData={userData}
+                            playersInfo={playersInfo}
+                            scheduleData={scheduleData}
+                            />
+                        : null}
                         {isLoading ? (
                             <div className='pt-5'>
                                 <Loader/>
@@ -159,6 +162,7 @@ const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
                                 scheduleData={scheduleData}
                                 leagueNames={userData.leagueNames}
                                 isByGameViewMode={isByGameViewMode}
+                                playersInfo={playersInfo}
                             />
                         )}
                     </>
