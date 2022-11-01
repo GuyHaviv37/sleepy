@@ -7,10 +7,7 @@ This is an app bootstrapped according to the [init.tips](https://init.tips) stac
 - Settings page: loading state on submit
 - Validation: check that leagues are actually available i.e., renewed and active
 ### Basic view: 
-- scores UI: add league names to context for PlayerModal
 - scrollbar for web (tailwind-scrollbar)
 ### Roots vs. boos view: N/A?
 ### Optional?:
 - missing players in total
-- main data props -> context for better visibilty
-- missing images for 2021 rookies

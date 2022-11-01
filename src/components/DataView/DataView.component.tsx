@@ -66,6 +66,7 @@ const DataView: React.FC<DataViewProps> = (props) => {
                 {showPlayerModal &&
                     <PlayerModal
                         setOpenModal={setShowPlayerModal}
+                        playerId={playersInfo[selectedPlayerId]?.id}
                         avatarId={playersInfo[selectedPlayerId]?.avatarId}
                         playerName={`${playersInfo[selectedPlayerId]?.firstName} ${playersInfo[selectedPlayerId]?.lastName}`}
                         scores={isUserSelectedPlayer ? userStarters[selectedPlayerId]?.leagues : oppStarters[selectedPlayerId]?.leagues}

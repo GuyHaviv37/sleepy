@@ -16,6 +16,6 @@ export default defineNextConfig({
   reactStrictMode: true,
   swcMinify: true,
   images: {
-    domains: ['a.espncdn.com'],
+    domains: ['a.espncdn.com', 'sleepercdn.com'],
   },
 });
