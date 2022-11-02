@@ -43,10 +43,12 @@ const MissingPlayersNotice: React.FC<MissingPlayersNoticeProps> = (props) => {
         return {...acc, [leagueId]: diff}
     }, {})
     return isSomeDiff ? (
-        <div>
+        <div className='mx-4 my-2 text-primary-text bg-rose-500 rounded p-2'>
+            <h5 className='text-sm md:text-base'>⚠️ Notice !</h5>
+            <p className='text-xs md:text-sm mb-2'>You got some missing starters in your lineups:</p>
             {Object.entries(diffInStarters).map(([leagueId, diff]) => {
                 return (diff !== 0) ?
-                <li>{leagueNames?.[leagueId]} - {diff}</li> 
+                <li className='text-sm md:text-base list-none'>{leagueNames?.[leagueId]} - {diff}</li> 
                 : null;
             })}
         </div>
