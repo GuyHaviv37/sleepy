@@ -8,6 +8,17 @@ export type LeagueWeightsMap = {[key: string]: number};
 export type LeagueRosterIdsMap = {[key: string]: string};
 export type LeagueIgnoresMap = {[key: string]: boolean};
 export type LeagueNamesMap = {[key: string]: string};
+export type LeagueStarterSpots = {[key: string]: number};
+
+export type UserData = {
+    sleeperId?: string;
+    username?: string;
+    leagueWeights?: LeagueWeightsMap;
+    leagueRosterIds?: LeagueRosterIdsMap;
+    leagueNames?: LeagueNamesMap;
+    leagueIgnores?: LeagueIgnoresMap;
+    leagueStarterSpots?: LeagueStarterSpots;
+}
 
 export const getLocalStorageData = (key: string) => {
     if (typeof window !== undefined) {
