@@ -154,14 +154,16 @@ const Home: NextPage = () => {
         {renderFormOrCachedUsername()}
         <br/>
         <div className="text-sm border-t-2 pt-2">
-          <p>&rarr; Update Sept. 15th:</p>
-          <p>You can now exclude leagues from the Board.</p>
+        <p>&rarr; Update Nov. 5th:</p>
+          <p>You can now enable a notice that warns you from missing starters !</p>
           <p>Try it out in the {isCachedUsername === CacheStatus.HIT ?
           <Link href={`user/${userFromCache.current?.sleeperId}/settings`}>
             <span className="text-alt cursor-pointer"
             onClick={bi.registerUpdateNoticeClick}
             >Settings </span></Link> :'Settings '}
           page.</p>
+          <p>&rarr; Update Sept. 15th:</p>
+          <p>You can now exclude leagues from the Board.</p>
         </div>
       </main>
     </>

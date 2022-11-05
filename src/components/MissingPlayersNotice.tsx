@@ -13,8 +13,7 @@ interface MissingPlayersNoticeProps {
 
 const MissingPlayersNotice: React.FC<MissingPlayersNoticeProps> = (props) => {
     const {userStarters, userData, playersInfo, scheduleData} = props;
-    const {leagueNames, leagueStarterSpots} = userData;
-    console.log('scheduleData', scheduleData);
+    const {leagueNames, leagueStarterSpots, shouldShowMissingStarters} = userData;
     const startersCountPerLeague = useMemo(() => {
         const startersCountPerLeague: {[leagueId: string]: number} = {};
         Object.entries(userStarters).forEach(([starterId, starterData]) => {
@@ -42,7 +41,7 @@ const MissingPlayersNotice: React.FC<MissingPlayersNoticeProps> = (props) => {
         }
         return {...acc, [leagueId]: diff}
     }, {})
-    return isSomeDiff ? (
+    return shouldShowMissingStarters && isSomeDiff ? (
         <div className='mx-4 my-2 text-primary-text bg-rose-500 rounded p-2'>
             <h5 className='text-sm md:text-base'>⚠️ Notice !</h5>
             <p className='text-xs md:text-sm mb-2'>You got some missing starters in your lineups:</p>
