@@ -9,5 +9,3 @@ This is an app bootstrapped according to the [init.tips](https://init.tips) stac
 ### Basic view: 
 - scrollbar for web (tailwind-scrollbar)
 ### Roots vs. boos view: N/A?
-### Optional?:
-- missing players in total

@@ -37,15 +37,20 @@ const UserDashboardPage = () => {
     const {isLoading, leagues} = useSleeperUserLeagues(id as string);
     const [leagueWeightsMap, setLeagueWeightsMap] = useState<LeagueWeightsMap>({});
     const [leagueIgnoresMap, setLeagueIgnoresMap] = useState<LeagueIgnoresMap>({});
+    const [shouldShowMissingStarters, setShouldShowMissingStarters] = useState(true);
 
     useEffect(() => {
         const cachedLeagueWeights = getLocalStorageData('user')?.leagueWeights;
         const cachedLeagueIgnores = getLocalStorageData('user')?.leagueIgnores;
+        const cachedShouldShowMissingStarters = getLocalStorageData('user')?.shouldShowMissingStarters;
         if (cachedLeagueWeights) {
             setLeagueWeightsMap(cachedLeagueWeights);
         }
         if (cachedLeagueIgnores) {
-            setLeagueIgnoresMap(cachedLeagueIgnores)
+            setLeagueIgnoresMap(cachedLeagueIgnores);
+        }
+        if (cachedShouldShowMissingStarters !== undefined) {
+            setShouldShowMissingStarters(cachedShouldShowMissingStarters);
         }
     }, [])
 
@@ -81,7 +86,13 @@ const UserDashboardPage = () => {
             const starterSpotsInLeague = league.roster_positions.filter(position => position !== 'BN').length;
             return {...acc, [league.league_id]: starterSpotsInLeague};
         }, {})
-        const updatedData = updateLocalStorageData('user', {leagueWeights: leagueWeightsMap, leagueIgnores: leagueIgnoresMap, leagueNames, leagueStarterSpots});
+        const updatedData = updateLocalStorageData('user', {
+            leagueWeights: leagueWeightsMap,
+            leagueIgnores: leagueIgnoresMap,
+            leagueNames,
+            leagueStarterSpots,
+            shouldShowMissingStarters,
+        });
         if (!updatedData) {
             console.error('Error: failed to update cached user data');
         } else {
@@ -131,6 +142,12 @@ const UserDashboardPage = () => {
                                     checkboxValue={leagueIgnoresMap[league.league_id] ?? true}
                                     />
                                     ))}
+                                    <div className='border-t-2 mt-3 border-text-primary-text'/>
+                                    <div className='flex mt-3'>
+                                        <input type='checkbox' checked={shouldShowMissingStarters}
+                                        onChange={e => setShouldShowMissingStarters(e.target.checked)}/>
+                                        <p className="text-primary-text text-sm pl-5">Show missing starters notice</p>
+                                    </div>
                             </div>
                             <button className="text-primary-text rounded-md bg-accent mx-auto px-3 py-1
                             hover:-translate-y-1 active:translate-y-0"
