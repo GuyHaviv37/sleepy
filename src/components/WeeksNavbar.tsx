@@ -10,8 +10,9 @@ export const WeeksNavbar: React.FC<WeeksNavbarProps> = (props) => {
     const {selectedWeek, getSelectedWeekHandler} = props;
 
     return (
-        <ul className="flex max-w-[90%] mx-auto overflow-y-auto border-2 border-black rounded-lg
-        mt-3  space-x-0.5 bg-gray-600">
+        <ul className="flex max-w-[90%] mx-auto overflow-y-auto  rounded-lg
+        mt-3  space-x-0.5 bg-gray-600
+        scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-primary-text">
             {Object.values(WEEKS).map((week) => {
                 return (
                 <WeeksNavbarItem
