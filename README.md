@@ -1,7 +1,7 @@
 # Sleepy
 
 ## What is it ?
-Sleepy is a fantasy football helper tool for people playing under the [sleeper app](sleeper.app).
+Sleepy is a fantasy football helper tool for people playing under the [sleeper app](https://sleeper.app).
 #####
 It is most beneficial for players with __multiple__ leagues.
 #####
