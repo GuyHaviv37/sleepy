@@ -8,8 +8,8 @@ import Loader from "@/components/Loader";
 import * as bi from '../../lib/bi';
 import Link from "next/link";
 
-type SleeperUserFromCache = {username: string; sleeperId: string};
-type SleeperUserData = {username: string, user_id: string};
+type SleeperUserFromCache = { username: string; sleeperId: string };
+type SleeperUserData = { username: string, user_id: string };
 
 const getSleeperUserData = async (username: string): Promise<SleeperUserData> => {
   return fetcher(`https://api.sleeper.app/v1/user/${username}`);
@@ -53,7 +53,7 @@ const Home: NextPage = () => {
 
   const onCachedSubmit = () => {
     if (userFromCache.current?.sleeperId) {
-      const {sleeperId} = userFromCache.current;
+      const { sleeperId } = userFromCache.current;
       router.push(`user/${sleeperId}`);
     }
   }
@@ -64,13 +64,13 @@ const Home: NextPage = () => {
       const userData = await getSleeperUserData(usernameInput);
       if (userData) {
         setLocalStorageData('user', {
-            username: usernameInput,
-            sleeperId: userData.user_id
+          username: usernameInput,
+          sleeperId: userData.user_id
         })
         bi.registerUsernameSubmit(usernameInput);
         router.push({
           pathname: `user/${userData.user_id}/settings`,
-          query: {fromLogin: true}
+          query: { fromLogin: true }
         }, `user/${userData.user_id}/settings`);
       } else {
         setErrorMessage(`Could not find user - ${usernameInput}`);
@@ -94,7 +94,7 @@ const Home: NextPage = () => {
               {usernameInput} &rarr;
             </button>
             <button className="px-1 mt-2 text-primary text-xs tracking-wide md:text-base"
-            onClick={() => setIsCachedUsername(CacheStatus.MISS)}>
+              onClick={() => setIsCachedUsername(CacheStatus.MISS)}>
               or change to a different user
             </button>
           </>
@@ -125,12 +125,12 @@ const Home: NextPage = () => {
               <button className="text-primary-text rounded-md bg-accent mx-auto px-3 py-1
               hover:-translate-y-1 active:translate-y-0"
                 onClick={onFormSubmit}>
-                {isFetchingUserData ? <Loader customSize="h-5 w-5" customWidth="border-2"/> : <>Submit &rarr;</>}
+                {isFetchingUserData ? <Loader customSize="h-5 w-5" customWidth="border-2" /> : <>Submit &rarr;</>}
               </button>
             </>
           </section>)
-        default: // LOADING
-        return (<Loader/>)
+      default: // LOADING
+        return (<Loader />)
     }
   }
 
@@ -152,18 +152,16 @@ const Home: NextPage = () => {
         </h3>
         <br />
         {renderFormOrCachedUsername()}
-        <br/>
+        <br />
         <div className="text-sm border-t-2 pt-2">
         <p>&rarr; Update Nov. 5th:</p>
           <p>You can now enable a notice that warns you from missing starters !</p>
           <p>Try it out in the {isCachedUsername === CacheStatus.HIT ?
-          <Link href={`user/${userFromCache.current?.sleeperId}/settings`}>
-            <span className="text-alt cursor-pointer"
-            onClick={bi.registerUpdateNoticeClick}
-            >Settings </span></Link> :'Settings '}
-          page.</p>
-          <p>&rarr; Update Sept. 15th:</p>
-          <p>You can now exclude leagues from the Board.</p>
+            <Link href={`user/${userFromCache.current?.sleeperId}/settings`}>
+              <span className="text-alt cursor-pointer"
+                onClick={bi.registerUpdateNoticeClick}
+              >Settings </span></Link> : 'Settings '}
+            page.</p>
         </div>
       </main>
     </>
