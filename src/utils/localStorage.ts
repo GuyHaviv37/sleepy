@@ -18,6 +18,7 @@ export type UserData = {
     leagueNames?: LeagueNamesMap;
     leagueIgnores?: LeagueIgnoresMap;
     leagueStarterSpots?: LeagueStarterSpots;
+    shouldShowMissingStarters?: boolean;
 }
 
 export const getLocalStorageData = (key: string) => {
