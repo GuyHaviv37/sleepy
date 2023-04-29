@@ -1,14 +1,16 @@
+import { useEffect, useState } from "react";
+
 export const enum CacheStatus {
     'LOADING',
     'MISS',
     'HIT',
 }
 
-export type LeagueWeightsMap = {[key: string]: number};
-export type LeagueRosterIdsMap = {[key: string]: string};
-export type LeagueIgnoresMap = {[key: string]: boolean};
-export type LeagueNamesMap = {[key: string]: string};
-export type LeagueStarterSpots = {[key: string]: number};
+export type LeagueWeightsMap = { [key: string]: number };
+export type LeagueRosterIdsMap = { [key: string]: string };
+export type LeagueIgnoresMap = { [key: string]: boolean };
+export type LeagueNamesMap = { [key: string]: string };
+export type LeagueStarterSpots = { [key: string]: number };
 
 export type UserData = {
     sleeperId?: string;
@@ -40,6 +42,35 @@ export const setLocalStorageData = (key: string, data: any) => {
 export const updateLocalStorageData = (key: string, newData: any) => {
     const existingData = getLocalStorageData(key);
     if (!existingData) return undefined;
-    setLocalStorageData(key, {...existingData, ...newData});
-    return {...existingData, ...newData};
+    setLocalStorageData(key, { ...existingData, ...newData });
+    return { ...existingData, ...newData };
+}
+
+export const useGetLocalStorage = <T = any>(key: string) => {
+    const [cacheStatus, setCacheStatus] = useState(CacheStatus.LOADING);
+    const [data, setData] = useState<T>();
+
+    useEffect(() => {
+        try {
+            const data = getLocalStorageData(key);
+            if (data) {
+                setData(data);
+                setCacheStatus(CacheStatus.HIT)
+            } else {
+                console.log(`Error: a falsy value for ${key} was saved to cache`);
+                setCacheStatus(CacheStatus.MISS);
+            }
+        }
+        catch (error) {
+            // @TODO: fedops
+            console.error(`Error fetching ${key} from cache:`, error);
+            setCacheStatus(CacheStatus.MISS);
+        }
+    }, [])
+
+    const clear = () => {
+        setCacheStatus(CacheStatus.MISS);
+    }
+
+    return {cacheStatus, data, clear};
 }

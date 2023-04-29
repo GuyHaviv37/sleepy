@@ -1,100 +1,62 @@
 import type { NextPage } from "next";
 import Head from "next/head";
-import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useCallback, useState } from "react";
 import { useRouter } from 'next/router';
-import { CacheStatus, getLocalStorageData, setLocalStorageData } from "@/utils/localStorage";
-import { fetcher } from '@/utils/fetcher';
+import { CacheStatus, setLocalStorageData, useGetLocalStorage } from "@/utils/localStorage";
 import Loader from "@/components/Loader";
 import * as bi from '../../lib/bi';
 import Link from "next/link";
+import { useMutation } from "react-query";
+import { submitNewUser } from "@/features/home/data";
 
 type SleeperUserFromCache = { username: string; sleeperId: string };
-type SleeperUserData = { username: string, user_id: string };
-
-const getSleeperUserData = async (username: string): Promise<SleeperUserData> => {
-  return fetcher(`https://api.sleeper.app/v1/user/${username}`);
-};
 
 const Home: NextPage = () => {
   const router = useRouter();
   const [usernameInput, setUsernameInput] = useState('');
-  const [isCachedUsername, setIsCachedUsername] = useState<CacheStatus>(CacheStatus.LOADING);
-  const [isFetchingUserData, setIsFetchingUserData] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const userFromCache = useRef<SleeperUserFromCache>();
 
-  useEffect(() => {
-    try {
-      const user = getLocalStorageData('user');
-      if (user) {
-        userFromCache.current = user;
-        if (userFromCache.current?.username) {
-          setUsernameInput(userFromCache.current.username);
-          setIsCachedUsername(CacheStatus.HIT);
-        } else {
-          // @TODO: fedops
-          console.log('Error: an empty username was saved to cache');
-          setIsCachedUsername(CacheStatus.MISS);
-        }
-      } else {
-        setIsCachedUsername(CacheStatus.MISS);
-      }
-    }
-    catch (error) {
-      // @TODO: fedops
-      console.log('Error fetching username from cache:', error);
-      setIsCachedUsername(CacheStatus.MISS);
-    }
-  }, [])
+  const submitMutation = useMutation(submitNewUser, {
+    onMutate: () => setErrorMessage(''),
+    onSuccess: (user) => {
+      bi.registerUsernameSubmit(user.username);
+      router.push({
+        pathname: `user/${user.user_id}/settings`,
+        query: { fromLogin: true }
+      }, `user/${user.user_id}/settings`);
+    },
+    onError: () => setErrorMessage('Could not fetch data for this user.')
+  })
+
+  const {data: cachedUser, cacheStatus: userCacheStatus, clear: clearUserCache} = useGetLocalStorage<SleeperUserFromCache>('user');
 
   const onUsernameInputChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     setUsernameInput(event.target.value);
   }, [setUsernameInput])
 
   const onCachedSubmit = () => {
-    if (userFromCache.current?.sleeperId) {
-      const { sleeperId } = userFromCache.current;
-      router.push(`user/${sleeperId}`);
-    }
+    const cachedUserId = cachedUser?.sleeperId;
+    if (cachedUserId) {
+      router.push(`user/${cachedUserId}`);
+    } // @TODO: else show error toast
   }
-  const onFormSubmit = async () => {
-    setErrorMessage('');
-    try {
-      setIsFetchingUserData(true);
-      const userData = await getSleeperUserData(usernameInput);
-      if (userData) {
-        setLocalStorageData('user', {
-          username: usernameInput,
-          sleeperId: userData.user_id
-        })
-        bi.registerUsernameSubmit(usernameInput);
-        router.push({
-          pathname: `user/${userData.user_id}/settings`,
-          query: { fromLogin: true }
-        }, `user/${userData.user_id}/settings`);
-      } else {
-        setErrorMessage(`Could not find user - ${usernameInput}`);
-      }
-      setIsFetchingUserData(false);
-    } catch (error) {
-      // @TODO - fedops
-      console.log('Error: fetching sleeper user data from username input', error);
-      setErrorMessage(`Could not fetch user data for username: ${usernameInput}`);
-    }
+
+  const onFormSubmit = () => {
+    submitMutation.mutate(usernameInput);
   };
 
   const renderFormOrCachedUsername = () => {
-    switch (isCachedUsername) {
+    switch (userCacheStatus) {
       case CacheStatus.HIT:
         return (
           <>
             <button className="text-primary-text rounded-md bg-accent mx-auto px-3 py-1
             hover:-translate-y-1 active:translate-y-0"
               onClick={onCachedSubmit}>
-              {usernameInput} &rarr;
+              {cachedUser?.username} &rarr;
             </button>
             <button className="px-1 mt-2 text-primary text-xs tracking-wide md:text-base"
-              onClick={() => setIsCachedUsername(CacheStatus.MISS)}>
+              onClick={clearUserCache}>
               or change to a different user
             </button>
           </>
@@ -125,7 +87,7 @@ const Home: NextPage = () => {
               <button className="text-primary-text rounded-md bg-accent mx-auto px-3 py-1
               hover:-translate-y-1 active:translate-y-0"
                 onClick={onFormSubmit}>
-                {isFetchingUserData ? <Loader customSize="h-5 w-5" customWidth="border-2" /> : <>Submit &rarr;</>}
+                {submitMutation.isLoading ? <Loader customSize="h-5 w-5" customWidth="border-2" /> : <>Submit &rarr;</>}
               </button>
             </>
           </section>)
@@ -154,10 +116,11 @@ const Home: NextPage = () => {
         {renderFormOrCachedUsername()}
         <br />
         <div className="text-sm border-t-2 pt-2">
+        {/* Migrate to updates component */}
         <p>&rarr; Update Nov. 5th:</p>
           <p>You can now enable a notice that warns you from missing starters !</p>
-          <p>Try it out in the {isCachedUsername === CacheStatus.HIT ?
-            <Link href={`user/${userFromCache.current?.sleeperId}/settings`}>
+          <p>Try it out in the {userCacheStatus === CacheStatus.HIT ?
+            <Link href={`user/${cachedUser?.sleeperId}/settings`}>
               <span className="text-alt cursor-pointer"
                 onClick={bi.registerUpdateNoticeClick}
               >Settings </span></Link> : 'Settings '}

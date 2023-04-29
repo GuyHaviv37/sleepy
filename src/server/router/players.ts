@@ -1,6 +1,7 @@
 import { createRouter } from "./context";
 import { z } from "zod";
 import { prisma } from '@/server/db/client';
+import type { Player } from "@prisma/client";
 
 export const playersRouter = createRouter()
   .query("getPlayersInfoByIds", {
@@ -12,7 +13,7 @@ export const playersRouter = createRouter()
       const playersInfo = await prisma.player.findMany({
         where: {id: {in: noDuplicatePlayerIds} }
       });
-      const playersInfoById: {[playerId: string]: typeof playersInfo[0]} = playersInfo.reduce((acc, player) => {
+      const playersInfoById: Record<string, Player> = playersInfo.reduce((acc, player) => {
         return {...acc, [player.id]: player};
       }, {})
       return playersInfoById;
