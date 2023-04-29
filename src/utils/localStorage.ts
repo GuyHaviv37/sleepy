@@ -52,9 +52,9 @@ export const useGetLocalStorage = <T = any>(key: string) => {
 
     useEffect(() => {
         try {
-            const user = getLocalStorageData('user');
-            if (user) {
-                setData(user);
+            const data = getLocalStorageData(key);
+            if (data) {
+                setData(data);
                 setCacheStatus(CacheStatus.HIT)
             } else {
                 console.log(`Error: a falsy value for ${key} was saved to cache`);
