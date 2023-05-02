@@ -1,5 +1,5 @@
 import { fetcher } from "@/utils/fetcher";
-import { setLocalStorageData } from "@/utils/localStorage";
+import { setLocalStorageData } from "@/features/local-storage/local-storage";
 
 type SleeperUserData = { username: string, user_id: string };
 

@@ -1,58 +1,36 @@
-import React, { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
-import useSWR from 'swr';
-import { fetcher } from '@/utils/fetcher';
-import { getLocalStorageData, updateLocalStorageData } from '@/utils/localStorage';
-import type {LeagueIgnoresMap, LeagueWeightsMap} from '@/utils/localStorage';
-import { SPORT, SEASON } from '@/utils/consts';
+import { safeUpdateLocalStorageData } from '@/features/local-storage/local-storage';
+import type {LeagueIgnoresMap, LeagueWeightsMap} from '@/features/local-storage/local-storage';
 import Link from 'next/link';
 import Loader from '@/components/Loader';
-
-type LeagueData = {
-    name: string;
-    league_id: string;
-    roster_positions: string[];
-}
-
-type UseSleeperUserLeaguesResult = {
-    leagues: LeagueData[],
-    isLoading: boolean,
-    isError: boolean,
-}
-
-const useSleeperUserLeagues = (sleeperId: string): UseSleeperUserLeaguesResult => {
-    const {data, error} = useSWR(`https://api.sleeper.app/v1/user/${sleeperId}/leagues/${SPORT}/${SEASON}`, fetcher);
-
-    return {
-        leagues: data,
-        isLoading: !error && !data,
-        isError: error,
-    }
-}
+import { useQuery } from 'react-query';
+import { getSleeperUserLeagues } from '@/features/leagues/data';
+import { useGetLocalStorage } from '@/features/local-storage/hooks';
+import { CacheStatus } from '@/features/local-storage/local-storage.types';
 
 const UserDashboardPage = () => {
     const router = useRouter();
     const { id, fromLogin } = router.query;
-    const {isLoading, leagues} = useSleeperUserLeagues(id as string);
+    // move sleeper user leagues to ssr using https://stackoverflow.com/questions/68518694/nextjs-access-url-params-on-server-side ?
+    const {data: leagues, isLoading} = useQuery({
+        queryKey: ['userLeagues', id],
+        queryFn: () => getSleeperUserLeagues(id as string),
+        enabled: id !== undefined,
+    })
+    const {data: cachedSettings, cacheStatus: cachedSettingsStatus} = useGetLocalStorage('settings');
     const [leagueWeightsMap, setLeagueWeightsMap] = useState<LeagueWeightsMap>({});
     const [leagueIgnoresMap, setLeagueIgnoresMap] = useState<LeagueIgnoresMap>({});
-    const [shouldShowMissingStarters, setShouldShowMissingStarters] = useState(true);
-
+    const [shouldShowMissingStarters, setShouldShowMissingStarters] = useState<boolean>(true);
     useEffect(() => {
-        const cachedLeagueWeights = getLocalStorageData('user')?.leagueWeights;
-        const cachedLeagueIgnores = getLocalStorageData('user')?.leagueIgnores;
-        const cachedShouldShowMissingStarters = getLocalStorageData('user')?.shouldShowMissingStarters;
-        if (cachedLeagueWeights) {
-            setLeagueWeightsMap(cachedLeagueWeights);
+        if (cachedSettingsStatus === CacheStatus.HIT) {
+            setLeagueWeightsMap(cachedSettings.leagueWeightsMap);
+            setLeagueIgnoresMap(cachedSettings.leagueIgnoresMap);
+            setShouldShowMissingStarters(cachedSettings.shouldShowMissingStarters);
         }
-        if (cachedLeagueIgnores) {
-            setLeagueIgnoresMap(cachedLeagueIgnores);
-        }
-        if (cachedShouldShowMissingStarters !== undefined) {
-            setShouldShowMissingStarters(cachedShouldShowMissingStarters);
-        }
-    }, [])
+    }, [cachedSettingsStatus]);
+    
 
     useEffect(() => {
         const defaultLeagueWeights: LeagueWeightsMap = {};
@@ -80,24 +58,23 @@ const UserDashboardPage = () => {
     }, [leagues])
 
 
+    // move outside of component
     const submitWeightsHandler = () => {
-        const leagueNames = leagues.reduce((acc,league) => ({...acc, [league.league_id]: league.name}), {});
-        const leagueStarterSpots = leagues.reduce((acc, league) => {
+        const leagueNames = leagues?.reduce((acc,league) => ({...acc, [league.league_id]: league.name}), {});
+        const leagueStarterSpots = leagues?.reduce((acc, league) => {
             const starterSpotsInLeague = league.roster_positions.filter(position => position !== 'BN').length;
             return {...acc, [league.league_id]: starterSpotsInLeague};
         }, {})
-        const updatedData = updateLocalStorageData('user', {
-            leagueWeights: leagueWeightsMap,
-            leagueIgnores: leagueIgnoresMap,
+        safeUpdateLocalStorageData('settings', {
+            shouldShowMissingStarters,
+            leagueIgnoresMap,
+            leagueWeightsMap
+        });
+        safeUpdateLocalStorageData('leaguesInfo', {
             leagueNames,
             leagueStarterSpots,
-            shouldShowMissingStarters,
         });
-        if (!updatedData) {
-            console.error('Error: failed to update cached user data');
-        } else {
-            router.replace(`/user/${id}`)
-        }
+        router.replace(`/user/${id}`);
     };
 
     return (
@@ -122,7 +99,7 @@ const UserDashboardPage = () => {
                         <div className="flex flex-col center-items">
                             <h5 className="text-primary-text text-lg px-6 sm:text-center underline">Your Leagues:</h5>
                             <div className="px-2 mb-3 max-h-96 overflow-y-auto md:self-center">
-                                {leagues.map((league) => (
+                                {leagues?.map((league) => (
                                     <LeagueWeightInput
                                     key={league.league_id}
                                     leagueName={league.name}
