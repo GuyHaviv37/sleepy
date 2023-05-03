@@ -1,58 +1,35 @@
-import React, { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
-import useSWR from 'swr';
-import { fetcher } from '@/utils/fetcher';
-import { getLocalStorageData, updateLocalStorageData } from '@/utils/localStorage';
-import type {LeagueIgnoresMap, LeagueWeightsMap} from '@/utils/localStorage';
-import { SPORT, SEASON } from '@/utils/consts';
+import { safeUpdateLocalStorageData } from '@/features/local-storage/local-storage';
+import type { LeagueIgnoresMap, LeagueWeightsMap } from '@/features/local-storage/local-storage';
 import Link from 'next/link';
 import Loader from '@/components/Loader';
+import { useQuery } from 'react-query';
+import { getSleeperUserLeagues } from '@/features/leagues/data';
+import { useGetLocalStorage } from '@/features/local-storage/hooks';
+import { CacheStatus } from '@/features/local-storage/local-storage.types';
+import LeagueWeightInput from '@/features/settings/components/SettingsLeagueWeightInput';
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
+import { SleeperLeagueData } from '@/features/leagues/leagues.types';
 
-type LeagueData = {
-    name: string;
-    league_id: string;
-    roster_positions: string[];
-}
+type UserDashboardPageProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
-type UseSleeperUserLeaguesResult = {
-    leagues: LeagueData[],
-    isLoading: boolean,
-    isError: boolean,
-}
-
-const useSleeperUserLeagues = (sleeperId: string): UseSleeperUserLeaguesResult => {
-    const {data, error} = useSWR(`https://api.sleeper.app/v1/user/${sleeperId}/leagues/${SPORT}/${SEASON}`, fetcher);
-
-    return {
-        leagues: data,
-        isLoading: !error && !data,
-        isError: error,
-    }
-}
-
-const UserDashboardPage = () => {
+const UserDashboardPage = ({ leagues }: UserDashboardPageProps) => {
     const router = useRouter();
     const { id, fromLogin } = router.query;
-    const {isLoading, leagues} = useSleeperUserLeagues(id as string);
+    const { data: cachedSettings, cacheStatus: cachedSettingsStatus } = useGetLocalStorage('settings');
     const [leagueWeightsMap, setLeagueWeightsMap] = useState<LeagueWeightsMap>({});
     const [leagueIgnoresMap, setLeagueIgnoresMap] = useState<LeagueIgnoresMap>({});
-    const [shouldShowMissingStarters, setShouldShowMissingStarters] = useState(true);
-
+    const [shouldShowMissingStarters, setShouldShowMissingStarters] = useState<boolean>(true);
     useEffect(() => {
-        const cachedLeagueWeights = getLocalStorageData('user')?.leagueWeights;
-        const cachedLeagueIgnores = getLocalStorageData('user')?.leagueIgnores;
-        const cachedShouldShowMissingStarters = getLocalStorageData('user')?.shouldShowMissingStarters;
-        if (cachedLeagueWeights) {
-            setLeagueWeightsMap(cachedLeagueWeights);
+        if (cachedSettingsStatus === CacheStatus.HIT) {
+            setLeagueWeightsMap(cachedSettings.leagueWeightsMap);
+            setLeagueIgnoresMap(cachedSettings.leagueIgnoresMap);
+            setShouldShowMissingStarters(cachedSettings.shouldShowMissingStarters);
         }
-        if (cachedLeagueIgnores) {
-            setLeagueIgnoresMap(cachedLeagueIgnores);
-        }
-        if (cachedShouldShowMissingStarters !== undefined) {
-            setShouldShowMissingStarters(cachedShouldShowMissingStarters);
-        }
-    }, [])
+    }, [cachedSettingsStatus]);
+
 
     useEffect(() => {
         const defaultLeagueWeights: LeagueWeightsMap = {};
@@ -80,24 +57,23 @@ const UserDashboardPage = () => {
     }, [leagues])
 
 
+    // move outside of component
     const submitWeightsHandler = () => {
-        const leagueNames = leagues.reduce((acc,league) => ({...acc, [league.league_id]: league.name}), {});
-        const leagueStarterSpots = leagues.reduce((acc, league) => {
+        const leagueNames = leagues?.reduce((acc, league) => ({ ...acc, [league.league_id]: league.name }), {});
+        const leagueStarterSpots = leagues?.reduce((acc, league) => {
             const starterSpotsInLeague = league.roster_positions.filter(position => position !== 'BN').length;
-            return {...acc, [league.league_id]: starterSpotsInLeague};
+            return { ...acc, [league.league_id]: starterSpotsInLeague };
         }, {})
-        const updatedData = updateLocalStorageData('user', {
-            leagueWeights: leagueWeightsMap,
-            leagueIgnores: leagueIgnoresMap,
+        safeUpdateLocalStorageData('settings', {
+            shouldShowMissingStarters,
+            leagueIgnoresMap,
+            leagueWeightsMap
+        });
+        safeUpdateLocalStorageData('leaguesInfo', {
             leagueNames,
             leagueStarterSpots,
-            shouldShowMissingStarters,
         });
-        if (!updatedData) {
-            console.error('Error: failed to update cached user data');
-        } else {
-            router.replace(`/user/${id}`)
-        }
+        router.replace(`/user/${id}`);
     };
 
     return (
@@ -117,13 +93,12 @@ const UserDashboardPage = () => {
                             <button className="text-primary-text text-xl lg:text-2xl">&times;</button>
                         </Link>
                     </div>
-                    <br/>
-                    {isLoading ? <Loader/> : (
-                        <div className="flex flex-col center-items">
-                            <h5 className="text-primary-text text-lg px-6 sm:text-center underline">Your Leagues:</h5>
-                            <div className="px-2 mb-3 max-h-96 overflow-y-auto md:self-center">
-                                {leagues.map((league) => (
-                                    <LeagueWeightInput
+                    <br />
+                    <div className="flex flex-col center-items">
+                        <h5 className="text-primary-text text-lg px-6 sm:text-center underline">Your Leagues:</h5>
+                        <div className="px-2 mb-3 max-h-96 overflow-y-auto md:self-center">
+                            {leagues?.map((league) => (
+                                <LeagueWeightInput
                                     key={league.league_id}
                                     leagueName={league.name}
                                     weightValue={leagueWeightsMap[league.league_id] ?? 0}
@@ -140,66 +115,42 @@ const UserDashboardPage = () => {
                                         }
                                     })}
                                     checkboxValue={leagueIgnoresMap[league.league_id] ?? true}
-                                    />
-                                    ))}
-                                    <div className='border-t-2 mt-3 border-text-primary-text'/>
-                                    <div className='flex mt-3'>
-                                        <input type='checkbox' checked={shouldShowMissingStarters}
-                                        onChange={e => setShouldShowMissingStarters(e.target.checked)}/>
-                                        <p className="text-primary-text text-sm pl-5">Show missing starters notice</p>
-                                    </div>
+                                />
+                            ))}
+                            <div className='border-t-2 mt-3 border-text-primary-text' />
+                            <div className='flex mt-3'>
+                                <input type='checkbox' checked={shouldShowMissingStarters}
+                                    onChange={e => setShouldShowMissingStarters(e.target.checked)} />
+                                <p className="text-primary-text text-sm pl-5">Show missing starters notice</p>
                             </div>
-                            <button className="text-primary-text rounded-md bg-accent mx-auto px-3 py-1
+                        </div>
+                        <button className="text-primary-text rounded-md bg-accent mx-auto px-3 py-1
                             hover:-translate-y-1 active:translate-y-0"
                             onClick={submitWeightsHandler}>
-                                Submit
-                            </button>
-                            {fromLogin && <button className="px-1 mt-2 text-accent text-xs tracking-wide md:text-base"
-                                onClick={submitWeightsHandler}>
-                                or skip for later
-                            </button>}
-                        </div>
-                    )}
-                <p className='text-primary-text text-xs px-6 mt-3 font-thin max-w-sm mx-auto lg:text-sm'>
-                    <span className='font-semibold'>You can ignore a league by unticking it&apos; checkbox.</span>
-                    <br/>
-                    Here you can enter your leagues entry fees, this will be used
-                    to scale better who you should root for and against.
-                </p>
+                            Submit
+                        </button>
+                        {fromLogin && <button className="px-1 mt-2 text-accent text-xs tracking-wide md:text-base"
+                            onClick={submitWeightsHandler}>
+                            or skip for later
+                        </button>}
+                    </div>
+                    <p className='text-primary-text text-xs px-6 mt-3 font-thin max-w-sm mx-auto lg:text-sm'>
+                        <span className='font-semibold'>You can ignore a league by unticking it&apos; checkbox.</span>
+                        <br />
+                        Here you can enter your leagues entry fees, this will be used
+                        to scale better who you should root for and against.
+                    </p>
                 </section>
             </main>
         </>
     )
 };
 
-interface LeagueWeightInputProps {
-    leagueName: string;
-    weightValue?: number;
-    checkboxValue?: boolean;
-    onWeightValueHandler: (event: ChangeEvent<HTMLInputElement>) => void;
-    onCheckboxTickHandler: (event: ChangeEvent<HTMLInputElement>) => void;
-}
-
-const LeagueWeightInput: React.FC<LeagueWeightInputProps> = (props) => {
-    const {leagueName, onWeightValueHandler, onCheckboxTickHandler, weightValue, checkboxValue} = props;
-
-    return (
-        <div className="flex justify-between mt-3 sm:space-x-5">
-            <input type='checkbox' checked={checkboxValue} onChange={onCheckboxTickHandler}/>
-            <p className="text-primary-text">{leagueName}</p>
-            <div className="flex space-x-3">
-                <input type="number" onChange={onWeightValueHandler}
-                step={1} min={0} value={weightValue}
-                className="max-w-[50px] h-full text-center rounded-lg text-grey-700
-                border-[3px] border-solid border-grey-300
-                transition ease-in-out
-                focus:text-primary focus:border-accent focus:outline-none
-                md:text-md"
-                />
-                <p className="text-green-500">$</p>
-            </div>
-        </div>
-    )
+export const getServerSideProps: GetServerSideProps<{ leagues: SleeperLeagueData[] }> = async (ctx) => {
+    const sleeperUserId = ctx.params?.id;
+    if (!sleeperUserId) return { props: { leagues: [] } };
+    const leagues = await getSleeperUserLeagues(sleeperUserId as string);
+    return { props: { leagues } };
 }
 
 export default UserDashboardPage;

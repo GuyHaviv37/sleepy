@@ -2,12 +2,13 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import { ChangeEvent, useCallback, useState } from "react";
 import { useRouter } from 'next/router';
-import { CacheStatus, setLocalStorageData, useGetLocalStorage } from "@/utils/localStorage";
 import Loader from "@/components/Loader";
 import * as bi from '../../lib/bi';
 import Link from "next/link";
 import { useMutation } from "react-query";
-import { submitNewUser } from "@/features/home/data";
+import { submitNewUser } from "@/features/user/data";
+import { useGetLocalStorage } from "@/features/local-storage/hooks";
+import { CacheStatus } from "@/features/local-storage/local-storage.types";
 
 type SleeperUserFromCache = { username: string; sleeperId: string };
 

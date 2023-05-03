@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
-import { CacheStatus, getLocalStorageData, updateLocalStorageData, UserData } from '@/utils/localStorage';
-import type {LeagueWeightsMap, LeagueRosterIdsMap, LeagueNamesMap, LeagueIgnoresMap} from '@/utils/localStorage';
+import { getLocalStorageData, updateLocalStorageData, UserData } from '@/features/local-storage/local-storage';
+import type {LeagueWeightsMap, LeagueRosterIdsMap, LeagueNamesMap, LeagueIgnoresMap} from '@/features/local-storage/local-storage';
 import Link from 'next/link';
 import useSWR from 'swr';
 import { fetcher } from '@/utils/fetcher';
@@ -14,6 +14,7 @@ import { WEEKS } from '@/utils/consts';
 import { WeeksNavbar } from '@/components/WeeksNavbar';
 import MissingPlayersNotice from '@/components/MissingPlayersNotice';
 import { trpc } from '@/utils/trpc';
+import { CacheStatus } from '@/features/local-storage/local-storage.types';
 
 const useLocalStorageUserData = (sleeperId: string): UserData | undefined => {
     const [userData, setUserData] = useState<UserData>();

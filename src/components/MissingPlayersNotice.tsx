@@ -1,4 +1,4 @@
-import { UserData } from '@/utils/localStorage';
+import { UserData } from '@/features/local-storage/local-storage';
 import { ScheduleData } from '@/utils/schedule';
 import { Starters } from '@/utils/sleeper';
 import React, { useMemo } from 'react';
