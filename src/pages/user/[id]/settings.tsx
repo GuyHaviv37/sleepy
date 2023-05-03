@@ -4,8 +4,6 @@ import Head from 'next/head';
 import { safeUpdateLocalStorageData } from '@/features/local-storage/local-storage';
 import type { LeagueIgnoresMap, LeagueWeightsMap } from '@/features/local-storage/local-storage';
 import Link from 'next/link';
-import Loader from '@/components/Loader';
-import { useQuery } from 'react-query';
 import { getSleeperUserLeagues } from '@/features/leagues/data';
 import { useGetLocalStorage } from '@/features/local-storage/hooks';
 import { CacheStatus } from '@/features/local-storage/local-storage.types';
