@@ -10,6 +10,7 @@ import { CacheStatus } from '@/features/local-storage/local-storage.types';
 import LeagueWeightInput from '@/features/settings/components/SettingsLeagueWeightInput';
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { SleeperLeagueData } from '@/features/leagues/leagues.types';
+import { mergeLeagueSettings } from '@/features/settings/mergeLeagueSettings';
 
 type UserDashboardPageProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
@@ -30,28 +31,9 @@ const UserDashboardPage = ({ leagues }: UserDashboardPageProps) => {
 
 
     useEffect(() => {
-        const defaultLeagueWeights: LeagueWeightsMap = {};
-        const defaultLeagueIgnores: LeagueIgnoresMap = {};
-        leagues?.forEach((league) => {
-            if (!leagueWeightsMap[league.league_id]) {
-                defaultLeagueWeights[league.league_id] = 0;
-            }
-            if (leagueIgnoresMap[league.league_id] === undefined) {
-                defaultLeagueIgnores[league.league_id] = true;
-            }
-        })
-        setLeagueWeightsMap((currentMap) => {
-            return {
-                ...defaultLeagueWeights,
-                ...currentMap,
-            }
-        })
-        setLeagueIgnoresMap((currentMap) => {
-            return {
-                ...defaultLeagueIgnores,
-                ...currentMap,
-            }
-        })
+        const {mergeLeagueIgnoresMap, mergeLeagueWeightsMap} = mergeLeagueSettings(leagues, leagueWeightsMap, leagueIgnoresMap);
+        setLeagueWeightsMap(mergeLeagueWeightsMap)
+        setLeagueIgnoresMap(mergeLeagueIgnoresMap)
     }, [leagues])
 
 
