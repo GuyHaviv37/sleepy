@@ -1,6 +1,5 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import Head from 'next/head';
 import { safeUpdateLocalStorageData } from '@/features/local-storage/local-storage';
 import type { LeagueIgnoresMap, LeagueWeightsMap } from '@/features/local-storage/local-storage';
 import Link from 'next/link';
@@ -11,6 +10,7 @@ import LeagueWeightInput from '@/features/settings/components/SettingsLeagueWeig
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { SleeperLeagueData } from '@/features/leagues/leagues.types';
 import { mergeLeagueSettings } from '@/features/settings/mergeLeagueSettings';
+import AppHeader from '@/components/layout/AppHeader';
 
 type UserDashboardPageProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
@@ -58,11 +58,7 @@ const UserDashboardPage = ({ leagues }: UserDashboardPageProps) => {
 
     return (
         <>
-            <Head>
-                <title>Sleepy - Settings</title>
-                <meta name="description" content="Sleeper Fantasy Football Sunday Board" />
-                <link rel="icon" href="/favicon.ico" />
-            </Head>
+            <AppHeader title={'Sleepy - Settings'}/>
             <main className="container mx-auto flex flex-col items-center justify-center h-screen p-4 bg-background-main">
                 <section className='bg-primary w-4/5 min-w-min rounded-lg py-4'>
                     <div className='flex justify-between px-4'>

@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
-import Head from 'next/head';
 import { getLocalStorageData, updateLocalStorageData, UserData } from '@/features/local-storage/local-storage';
 import type {LeagueWeightsMap, LeagueRosterIdsMap, LeagueNamesMap, LeagueIgnoresMap} from '@/features/local-storage/local-storage';
 import Link from 'next/link';
@@ -15,6 +14,7 @@ import { WeeksNavbar } from '@/components/WeeksNavbar';
 import MissingPlayersNotice from '@/components/MissingPlayersNotice';
 import { trpc } from '@/utils/trpc';
 import { CacheStatus } from '@/features/local-storage/local-storage.types';
+import AppHeader from '@/components/layout/AppHeader';
 
 const useLocalStorageUserData = (sleeperId: string): UserData | undefined => {
     const [userData, setUserData] = useState<UserData>();
@@ -117,11 +117,7 @@ const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
     }, [userData, id, router]);
     return (
         <>
-            <Head>
-                <title>Sleepy - Board</title>
-                <meta name="description" content="Sleeper Fantasy Football Sunday Board" />
-                <link rel="icon" href="/favicon.ico" />
-            </Head>
+            <AppHeader title={'Sleepy - Board'}/>
             <main className="container mx-auto flex flex-col items-center justify-center p-4 bg-background-main">
                 <Link href="/">
                     <h2 className="text-primary text-2xl mb-4 font-bold tracking-wide sm:text-3xl md:text-4xl cursor-pointer">Sleepy</h2>
