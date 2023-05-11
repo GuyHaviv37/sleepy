@@ -11,31 +11,15 @@ import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { SleeperLeagueData } from '@/features/leagues/leagues.types';
 import { mergeLeagueSettings } from '@/features/settings/mergeLeagueSettings';
 import AppHeader from '@/components/layout/AppHeader';
+import { useSettings } from '@/features/settings/useSettings';
 
 type UserDashboardPageProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
 const UserDashboardPage = ({ leagues }: UserDashboardPageProps) => {
     const router = useRouter();
     const { id, fromLogin } = router.query;
-    const { data: cachedSettings, cacheStatus: cachedSettingsStatus } = useGetLocalStorage('settings');
-    const [leagueWeightsMap, setLeagueWeightsMap] = useState<LeagueWeightsMap>({});
-    const [leagueIgnoresMap, setLeagueIgnoresMap] = useState<LeagueIgnoresMap>({});
-    const [shouldShowMissingStarters, setShouldShowMissingStarters] = useState<boolean>(true);
-    useEffect(() => {
-        if (cachedSettingsStatus === CacheStatus.HIT) {
-            setLeagueWeightsMap(cachedSettings.leagueWeightsMap);
-            setLeagueIgnoresMap(cachedSettings.leagueIgnoresMap);
-            setShouldShowMissingStarters(cachedSettings.shouldShowMissingStarters);
-        }
-    }, [cachedSettingsStatus]);
-
-
-    useEffect(() => {
-        const {mergeLeagueIgnoresMap, mergeLeagueWeightsMap} = mergeLeagueSettings(leagues, leagueWeightsMap, leagueIgnoresMap);
-        setLeagueWeightsMap(mergeLeagueWeightsMap)
-        setLeagueIgnoresMap(mergeLeagueIgnoresMap)
-    }, [leagues])
-
+    const { leagueIgnoresMap, leagueWeightsMap, shouldShowMissingStarters,
+    onChangeLeagueIgnore, onChangeLeagueWeight, onChangeShowMissingStarters } = useSettings(leagues);
 
     // move outside of component
     const submitWeightsHandler = () => {
@@ -78,25 +62,15 @@ const UserDashboardPage = ({ leagues }: UserDashboardPageProps) => {
                                     key={league.league_id}
                                     leagueName={league.name}
                                     weightValue={leagueWeightsMap[league.league_id] ?? 0}
-                                    onWeightValueHandler={(event: ChangeEvent<HTMLInputElement>) => setLeagueWeightsMap((currentMap) => {
-                                        return {
-                                            ...currentMap,
-                                            [league.league_id]: parseInt(event.target.value),
-                                        }
-                                    })}
-                                    onCheckboxTickHandler={(event: ChangeEvent<HTMLInputElement>) => setLeagueIgnoresMap((currentMap) => {
-                                        return {
-                                            ...currentMap,
-                                            [league.league_id]: event.target.checked,
-                                        }
-                                    })}
+                                    onWeightValueHandler={event => onChangeLeagueWeight(league.league_id, parseInt(event.target.value))}
+                                    onCheckboxTickHandler={event => onChangeLeagueIgnore(league.league_id, event.target.checked)}
                                     checkboxValue={leagueIgnoresMap[league.league_id] ?? true}
                                 />
                             ))}
                             <div className='border-t-2 mt-3 border-text-primary-text' />
                             <div className='flex mt-3'>
                                 <input type='checkbox' checked={shouldShowMissingStarters}
-                                    onChange={e => setShouldShowMissingStarters(e.target.checked)} />
+                                    onChange={event => onChangeShowMissingStarters(event.target.checked)} />
                                 <p className="text-primary-text text-sm pl-5">Show missing starters notice</p>
                             </div>
                         </div>

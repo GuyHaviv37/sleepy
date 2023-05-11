@@ -29,7 +29,7 @@ const Home: NextPage = () => {
     onError: () => setErrorMessage('Could not fetch data for this user.')
   })
 
-  const {data: cachedUser, cacheStatus: userCacheStatus, clear: clearUserCache} = useGetLocalStorage<SleeperUserFromCache>('user');
+  const {data: cachedUser, cacheStatus: userCacheStatus, clear: clearUserCache} = useGetLocalStorage('user');
 
   const onUsernameInputChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     setUsernameInput(event.target.value);

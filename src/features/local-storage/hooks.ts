@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { getLocalStorageData } from "./local-storage";
 import { CacheStatus } from "./local-storage.types";
+import type { Cache } from './local-storage';
 
-export const useGetLocalStorage = <T = any>(key: string) => {
+export const useGetLocalStorage = <K extends keyof Cache>(key: K): {data: Cache[K] | undefined; cacheStatus: CacheStatus; clear: () => void} => {
     const [cacheStatus, setCacheStatus] = useState(CacheStatus.LOADING);
-    const [data, setData] = useState<T>();
+    const [data, setData] = useState<Cache[typeof key]>();
 
     useEffect(() => {
         try {
