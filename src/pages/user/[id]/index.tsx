@@ -10,11 +10,11 @@ import DataView from '@/components/DataView';
 import Loader from '@/components/Loader';
 import { WEEKS } from '@/utils/consts';
 import { WeeksNavbar } from '@/components/WeeksNavbar';
-import MissingPlayersNotice from '@/components/MissingPlayersNotice';
+import MissingPlayersNotice from '@/features/missing-players/MissingPlayersNotice';
 import { trpc } from '@/utils/trpc';
 import AppHeader from '@/components/layout/AppHeader';
 import { useGetLocalStorage } from '@/features/local-storage/hooks';
-import { useSleeperUserRosterIds } from '@/features/leagues/hooks/useGetUserRosterIds';
+import { useSleeperUserRosterIds } from '@/features/leagues/hooks/useSleeperUserRosterIds';
 
 const useSleeperUserMatchupsData = (leagueRosterIds: LeagueRosterIdsMap = {}, week: WEEKS, leagueIgnores?: LeagueIgnoresMap) => {
     const leagueIds = Object.keys(leagueRosterIds);
@@ -55,11 +55,9 @@ const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
     const { id } = router.query;
     const [selectedWeek, setSelectedWeek] = useState<WEEKS>(props.nflWeek);
     // @TODO: useGetLocalStorage('settings') and bump into the presetner;
-    // const userData = useLocalStorageUserData(id as string);
     const {data: cachedSettings} = useGetLocalStorage('settings');
     // DONE - could be wrapped in another presenter
     const {leagueRosterIds, isLeagueRosterIdsLoading} = useSleeperUserRosterIds(id as string);
-    console.log('@UI/leagueRosterIds', leagueRosterIds);
     const {userStarters, oppStarters} = useSleeperUserMatchupsData(leagueRosterIds, selectedWeek, cachedSettings?.leagueIgnoresMap);
     // @TODO: react-query
     const scheduleData = useNflSchedule(selectedWeek);
@@ -108,8 +106,6 @@ const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
                         </div>
                         {!isLoading ? <MissingPlayersNotice
                             userStarters={userStarters}
-                            // move localstorage call to component
-                            userData={userData}
                             playersInfo={playersInfo}
                             scheduleData={scheduleData}
                             />
@@ -123,8 +119,6 @@ const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
                                 userStarters={userStarters}
                                 oppStarters={oppStarters}
                                 scheduleData={scheduleData}
-                                // move localstorage call to component
-                                leagueNames={userData.leagueNames}
                                 isByGameViewMode={isByGameViewMode}
                                 playersInfo={playersInfo}
                             />
