@@ -1,66 +1,24 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { getLocalStorageData, updateLocalStorageData, UserData } from '@/features/local-storage/local-storage';
-import type {LeagueWeightsMap, LeagueRosterIdsMap, LeagueNamesMap, LeagueIgnoresMap} from '@/features/local-storage/local-storage';
+import type { LeagueRosterIdsMap, LeagueIgnoresMap} from '@/features/local-storage/local-storage';
 import Link from 'next/link';
 import useSWR from 'swr';
 import { fetcher } from '@/utils/fetcher';
-import { extractUserLeagueRosterIds, extractSleeperMatchupData, LeagueMatchup } from '@/utils/sleeper';
+import { extractSleeperMatchupData, LeagueMatchup } from '@/utils/sleeper';
 import { extractScheduleData, ScheduleData } from '@/utils/schedule';
 import DataView from '@/components/DataView';
 import Loader from '@/components/Loader';
 import { WEEKS } from '@/utils/consts';
 import { WeeksNavbar } from '@/components/WeeksNavbar';
-import MissingPlayersNotice from '@/components/MissingPlayersNotice';
+import MissingPlayersNotice from '@/features/missing-players/MissingPlayersNotice';
 import { trpc } from '@/utils/trpc';
-import { CacheStatus } from '@/features/local-storage/local-storage.types';
 import AppHeader from '@/components/layout/AppHeader';
-
-const useLocalStorageUserData = (sleeperId: string): UserData | undefined => {
-    const [userData, setUserData] = useState<UserData>();
-    useEffect(() => {
-        const cachedUserData = getLocalStorageData('user');
-        if (cachedUserData?.sleeperId === sleeperId) {
-            setUserData(cachedUserData);
-        }
-    }, [sleeperId]);
-    return userData;
-};
-
-const useSleeperUserRosterIds = (sleeperId: string, cachedUserData?: UserData) => {
-    const [leagueRosterIds, setLeagueRosterIds] = useState<LeagueRosterIdsMap>();
-    const [isLoadedFromCache, setIsLoadedFromCache] = useState<CacheStatus>(CacheStatus.LOADING);
-    const leagueIds = Object.keys(cachedUserData?.leagueWeights ?? {});
-    const fetchRosterIdRequests = leagueIds.map(leagueId => `https://api.sleeper.app/v1/league/${leagueId}/rosters`);
-    const {data, error} = useSWR(fetchRosterIdRequests, fetcher);
-
-    useEffect(() => {
-        if (cachedUserData && cachedUserData.leagueRosterIds) { 
-            setLeagueRosterIds(cachedUserData.leagueRosterIds);
-            setIsLoadedFromCache(CacheStatus.HIT);
-        } else {
-            setIsLoadedFromCache(CacheStatus.MISS);
-        }
-    }, [cachedUserData])
-
-    useEffect(() => {
-        if (isLoadedFromCache === CacheStatus.MISS) {
-            if (data) {
-                const leagueRosterIds = extractUserLeagueRosterIds(data, sleeperId);
-                setLeagueRosterIds(leagueRosterIds)
-                updateLocalStorageData('user', {leagueRosterIds});
-            } else if (error) {
-                // @TODO - fedops
-                console.error(`Error: could not fetch rosterIds for sleeperId: ${sleeperId}`)
-            }
-        }
-    }, [isLoadedFromCache, data, sleeperId])
-
-    return {leagueRosterIds};
-}
+import { useGetLocalStorage } from '@/features/local-storage/hooks';
+import { useSleeperUserRosterIds } from '@/features/leagues/hooks/useSleeperUserRosterIds';
 
 const useSleeperUserMatchupsData = (leagueRosterIds: LeagueRosterIdsMap = {}, week: WEEKS, leagueIgnores?: LeagueIgnoresMap) => {
     const leagueIds = Object.keys(leagueRosterIds);
+    // @TODO: I think we should move to server since this is not effecient for so many calls in client for a simple JSON response
     const matchupRequests = leagueIds.map(leagueId => `https://api.sleeper.app/v1/league/${leagueId}/matchups/${week}`)
     const {data, error} = useSWR(matchupRequests, fetcher);
     const isSingleLeague = data?.[0].roster_id;
@@ -95,12 +53,16 @@ const useNflSchedule = (week: WEEKS) : ScheduleData | undefined => {
 const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
     const router = useRouter();
     const { id } = router.query;
-    const userData = useLocalStorageUserData(id as string);
     const [selectedWeek, setSelectedWeek] = useState<WEEKS>(props.nflWeek);
-    const {leagueRosterIds} = useSleeperUserRosterIds(id as string, userData);
-    const {userStarters, oppStarters} = useSleeperUserMatchupsData(leagueRosterIds, selectedWeek, userData?.leagueIgnores);
+    // @TODO: useGetLocalStorage('settings') and bump into the presetner;
+    const {data: cachedSettings} = useGetLocalStorage('settings');
+    // DONE - could be wrapped in another presenter
+    const {leagueRosterIds, isLeagueRosterIdsLoading} = useSleeperUserRosterIds(id as string);
+    const {userStarters, oppStarters} = useSleeperUserMatchupsData(leagueRosterIds, selectedWeek, cachedSettings?.leagueIgnoresMap);
+    // @TODO: react-query
     const scheduleData = useNflSchedule(selectedWeek);
-    const isLoading = !scheduleData || !userStarters || !oppStarters || !userData;
+    // @TODO handle loading
+    const isLoading = !scheduleData || !userStarters || !oppStarters || !cachedSettings;
     const [isByGameViewMode, setIsByGameViewMode] = useState(false);
     const { data: playersInfo } = trpc.useQuery(
         ['players.getPlayersInfoByIds',
@@ -111,10 +73,11 @@ const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
     }
 
     useEffect(() => {
-        if (id && userData && !userData.leagueWeights) {
+        if (id && cachedSettings && !cachedSettings.leagueWeightsMap) {
             router.replace(`/user/${id}/settings`);
         }
-    }, [userData, id, router]);
+    }, [cachedSettings, id, router]);
+
     return (
         <>
             <AppHeader title={'Sleepy - Board'}/>
@@ -143,7 +106,6 @@ const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
                         </div>
                         {!isLoading ? <MissingPlayersNotice
                             userStarters={userStarters}
-                            userData={userData}
                             playersInfo={playersInfo}
                             scheduleData={scheduleData}
                             />
@@ -157,7 +119,6 @@ const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
                                 userStarters={userStarters}
                                 oppStarters={oppStarters}
                                 scheduleData={scheduleData}
-                                leagueNames={userData.leagueNames}
                                 isByGameViewMode={isByGameViewMode}
                                 playersInfo={playersInfo}
                             />

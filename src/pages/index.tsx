@@ -10,8 +10,6 @@ import { useGetLocalStorage } from "@/features/local-storage/hooks";
 import { CacheStatus } from "@/features/local-storage/local-storage.types";
 import AppHeader from "@/components/layout/AppHeader";
 
-type SleeperUserFromCache = { username: string; sleeperId: string };
-
 const Home: NextPage = () => {
   const router = useRouter();
   const [usernameInput, setUsernameInput] = useState('');

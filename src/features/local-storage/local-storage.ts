@@ -29,6 +29,7 @@ type CacheUserSettings = {
 type CacheUserLeaguesInfo = {
     leagueNames?: LeagueNamesMap;
     leagueStarterSpots?: LeagueStarterSpots;
+    leagueRosterIds?: LeagueRosterIdsMap;
 }
 
 export type Cache = {
@@ -64,6 +65,11 @@ export const safeUpdateLocalStorageData = (key: CacheKey, data: CacheValue) => {
         setLocalStorageData(key, data);
     }
 };
+
+export const patchLocalStorageData = (key: CacheKey, data: CacheValue) => {
+    const existingData = getLocalStorageData(key);
+    updateLocalStorageData(key, {...existingData, ...data});
+}
 
 // @TODO: change newData to CacheValue after user/id index page
 export const updateLocalStorageData = (key: CacheKey, newData: any) => {

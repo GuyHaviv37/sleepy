@@ -7,19 +7,21 @@ import { extractStartersByTimeslots , getStartersByGame, getTimeslotString } fro
 import TimeslotStarters from './TimeslotStarters';
 import DataViewContext from './DataView.context';
 import { PlayersInfo } from './consts';
+import { useGetLocalStorage } from '@/features/local-storage/hooks';
 
 interface DataViewProps {
     userStarters: Starters;
     oppStarters: Starters;
     scheduleData: ScheduleData;
-    leagueNames?: { [leagueId: string]: string };
     playersInfo?: PlayersInfo;
     isByGameViewMode: boolean;
 }
 
 
 const DataView: React.FC<DataViewProps> = (props) => {
-    const { userStarters, oppStarters, scheduleData, leagueNames, playersInfo, isByGameViewMode } = props;
+    const { userStarters, oppStarters, scheduleData, playersInfo, isByGameViewMode } = props;
+    const {data: cachedLeaguesInfo} = useGetLocalStorage('leaguesInfo');
+    const leagueNames = cachedLeaguesInfo?.leagueNames;
     const [showPlayerModal, setShowPlayerModal] = useState(false);
     const [selectedPlayer, setSelectedPlayer] = useState<{playerId: string; isUser: boolean}>({playerId: '', isUser: true});
     const openPlayerModal = (playerId: string, isUser?: boolean) => {
