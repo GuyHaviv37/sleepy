@@ -12,7 +12,6 @@ export interface MissingPlayersNoticeProps {
 }
 
 const MissingPlayersNotice: React.FC<MissingPlayersNoticeProps> = (props) => {
-    // const {userStarters, playersInfo, scheduleData} = props;
     const {data: cachedSettings} = useGetLocalStorage('settings');
     const {data: cachedLeaguesInfo} = useGetLocalStorage('leaguesInfo');
     const {leagueNames, leagueStarterSpots} = cachedLeaguesInfo ?? {};
