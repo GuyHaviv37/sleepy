@@ -5,7 +5,6 @@ import Link from 'next/link';
 import useSWR from 'swr';
 import { fetcher } from '@/utils/fetcher';
 import { extractSleeperMatchupData, LeagueMatchup } from '@/utils/sleeper';
-import { extractScheduleData, ScheduleData } from '@/utils/schedule';
 import DataView from '@/components/DataView';
 import Loader from '@/components/Loader';
 import { WEEKS } from '@/utils/consts';
@@ -15,6 +14,8 @@ import { trpc } from '@/utils/trpc';
 import AppHeader from '@/components/layout/AppHeader';
 import { useGetLocalStorage } from '@/features/local-storage/hooks';
 import { useSleeperUserRosterIds } from '@/features/leagues/hooks/useSleeperUserRosterIds';
+import { useQuery } from 'react-query';
+import { getScheduleData } from '@/features/schedule/data';
 
 const useSleeperUserMatchupsData = (leagueRosterIds: LeagueRosterIdsMap = {}, week: WEEKS, leagueIgnores?: LeagueIgnoresMap) => {
     const leagueIds = Object.keys(leagueRosterIds);
@@ -40,16 +41,6 @@ const useSleeperUserMatchupsData = (leagueRosterIds: LeagueRosterIdsMap = {}, we
     return extractSleeperMatchupData(leagueMatchupsData, leagueRosterIds);
 };
 
-const useNflSchedule = (week: WEEKS) : ScheduleData | undefined => {
-    const {data: espnScoreboardData, error} = useSWR(`https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?seasontype=2&week=${week}`, fetcher);
-    if (error) {
-        console.error('Error: coudl not fetch schefule data:', error);
-        return;
-    }
-    if (!espnScoreboardData) return;
-    return extractScheduleData(espnScoreboardData);
-}
-
 const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
     const router = useRouter();
     const { id } = router.query;
@@ -59,8 +50,10 @@ const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
     // DONE - could be wrapped in another presenter
     const {leagueRosterIds, isLeagueRosterIdsLoading} = useSleeperUserRosterIds(id as string);
     const {userStarters, oppStarters} = useSleeperUserMatchupsData(leagueRosterIds, selectedWeek, cachedSettings?.leagueIgnoresMap);
-    // @TODO: react-query
-    const scheduleData = useNflSchedule(selectedWeek);
+    const {data: scheduleData} = useQuery({
+        queryKey: ['nfl-schedule'],
+        queryFn: () => getScheduleData(selectedWeek)
+    })
     // @TODO handle loading
     const isLoading = !scheduleData || !userStarters || !oppStarters || !cachedSettings;
     const [isByGameViewMode, setIsByGameViewMode] = useState(false);

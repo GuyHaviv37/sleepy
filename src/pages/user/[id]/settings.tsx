@@ -1,15 +1,11 @@
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React from 'react';
 import { useRouter } from 'next/router';
 import { safeUpdateLocalStorageData } from '@/features/local-storage/local-storage';
-import type { LeagueIgnoresMap, LeagueWeightsMap } from '@/features/local-storage/local-storage';
 import Link from 'next/link';
 import { getSleeperUserLeagues } from '@/features/leagues/data';
-import { useGetLocalStorage } from '@/features/local-storage/hooks';
-import { CacheStatus } from '@/features/local-storage/local-storage.types';
 import LeagueWeightInput from '@/features/settings/components/SettingsLeagueWeightInput';
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { SleeperLeagueData } from '@/features/leagues/leagues.types';
-import { mergeLeagueSettings } from '@/features/settings/mergeLeagueSettings';
 import AppHeader from '@/components/layout/AppHeader';
 import { useSettings } from '@/features/settings/useSettings';
 
