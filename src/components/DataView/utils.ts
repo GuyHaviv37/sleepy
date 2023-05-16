@@ -1,4 +1,4 @@
-import { ScheduleData } from "@/utils/schedule";
+import { ScheduleData } from "@/features/schedule/schedule.types";
 import { EMOJIES, PlayersInfo, POSITTION_ORDER } from "./consts";
 
 export const extractStartersByTimeslots = (scheduleData: ScheduleData['byTeam'], timeslots: string[], starterIds: string[], playersInfo?: PlayersInfo)

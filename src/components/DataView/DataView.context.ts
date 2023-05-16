@@ -1,7 +1,7 @@
-import { ScheduleData } from '@/utils/schedule';
-import { Starters } from '@/utils/sleeper';
 import { createContext } from 'react';
 import { PlayersInfo } from './consts';
+import { Starters } from '@/features/leagues/leagues.types';
+import { ScheduleData } from '@/features/schedule/schedule.types';
 
 type DataViewContextType = {
     playersInfo: PlayersInfo;

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { StarterInfo } from '@/utils/sleeper';
+import { StarterInfo } from '@/features/leagues/leagues.types';
 
 interface PlayerModalProps {
     setOpenModal: (openOrClose: boolean) => void;

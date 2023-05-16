@@ -2,9 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import type { LeagueRosterIdsMap, LeagueIgnoresMap} from '@/features/local-storage/local-storage';
 import Link from 'next/link';
-import useSWR from 'swr';
 import { fetcher } from '@/utils/fetcher';
-import { extractSleeperMatchupData, LeagueMatchup } from '@/utils/sleeper';
 import DataView from '@/components/DataView';
 import Loader from '@/components/Loader';
 import { WEEKS } from '@/utils/consts';
@@ -17,29 +15,27 @@ import { useSleeperUserRosterIds } from '@/features/leagues/hooks/useSleeperUser
 import { useQuery } from 'react-query';
 import { getScheduleData } from '@/features/schedule/data';
 
-const useSleeperUserMatchupsData = (leagueRosterIds: LeagueRosterIdsMap = {}, week: WEEKS, leagueIgnores?: LeagueIgnoresMap) => {
-    const leagueIds = Object.keys(leagueRosterIds);
-    // @TODO: I think we should move to server since this is not effecient for so many calls in client for a simple JSON response
-    const matchupRequests = leagueIds.map(leagueId => `https://api.sleeper.app/v1/league/${leagueId}/matchups/${week}`)
-    const {data, error} = useSWR(matchupRequests, fetcher);
-    const isSingleLeague = data?.[0].roster_id;
-    const refinedData = isSingleLeague ? [data] : data;
-    if (error) {
-        // @TODO - fedops
-        console.error('Error: could not fetch user matcups data', error);
-    }
-    if (refinedData && refinedData.length !== leagueIds.length) {
-        // @TODO - fedops
-        console.error('Error: data and leagueRosterIds are not of the same length', refinedData);
-    }
-    const filteredLeagueIds = leagueIgnores ? leagueIds.filter(leagueId => leagueIgnores[leagueId]) : leagueIds;
-    const leagueMatchupsData:  {[leagueId: string]: LeagueMatchup[]} = {};
-    refinedData && filteredLeagueIds.forEach((leagueId) => {
-        const leagueIndex = leagueIds.findIndex(someLeagueId => someLeagueId === leagueId);
-        leagueMatchupsData[leagueId] = refinedData?.[leagueIndex]
-    });
-    return extractSleeperMatchupData(leagueMatchupsData, leagueRosterIds);
-};
+// @TODO: error handling
+const useSleeperUserMatchupsData = (week: WEEKS, leagueRosterIds?: LeagueRosterIdsMap, leagueIgnores?: LeagueIgnoresMap) => {
+    const [filteredLeagueRosterIds, setFilteredRosterIds] = useState<LeagueRosterIdsMap>();
+    const {data: matchups, isLoading: isMatchupsLoading} = trpc.useQuery(['sleeper-api.getMatchupsData', {week, leagueRosterIds: leagueRosterIds!}], {
+        enabled: filteredLeagueRosterIds !== undefined,
+    })
+
+    useEffect(() => {
+        if (leagueRosterIds && leagueIgnores) {
+            const newLeagueRosterIds = {...leagueRosterIds};
+            Object.entries(leagueIgnores).map(([leagueId, shouldInclude]) => {
+                if (!shouldInclude) {
+                    delete newLeagueRosterIds[leagueId];
+                }
+            });
+            setFilteredRosterIds(newLeagueRosterIds);
+        }
+    }, [leagueRosterIds]);
+
+    return {matchups, isMatchupsLoading};
+}
 
 const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
     const router = useRouter();
@@ -49,13 +45,14 @@ const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
     const {data: cachedSettings} = useGetLocalStorage('settings');
     // DONE - could be wrapped in another presenter
     const {leagueRosterIds, isLeagueRosterIdsLoading} = useSleeperUserRosterIds(id as string);
-    const {userStarters, oppStarters} = useSleeperUserMatchupsData(leagueRosterIds, selectedWeek, cachedSettings?.leagueIgnoresMap);
-    const {data: scheduleData} = useQuery({
+    const {matchups, isMatchupsLoading} = useSleeperUserMatchupsData(selectedWeek, leagueRosterIds, cachedSettings?.leagueIgnoresMap);
+    const {userStarters, oppStarters} = matchups ?? {};
+    const {data: scheduleData, isLoading: isScheduleLoading} = useQuery({
         queryKey: ['nfl-schedule'],
         queryFn: () => getScheduleData(selectedWeek)
     })
-    // @TODO handle loading
-    const isLoading = !scheduleData || !userStarters || !oppStarters || !cachedSettings;
+    // const isLoading = isScheduleLoading || isMatchupsLoading || isLeagueRosterIdsLoading;
+    const isLoading = !userStarters || !oppStarters || !scheduleData;
     const [isByGameViewMode, setIsByGameViewMode] = useState(false);
     const { data: playersInfo } = trpc.useQuery(
         ['players.getPlayersInfoByIds',

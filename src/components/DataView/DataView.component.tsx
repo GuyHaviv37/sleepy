@@ -1,13 +1,12 @@
-import type { Starters } from '@/utils/sleeper';
-import type { ScheduleData } from '@/utils/schedule';
 import React, { useContext, useMemo, useState } from 'react';
-import { trpc } from '@/utils/trpc';
 import PlayerModal from '../PlayerModal';
 import { extractStartersByTimeslots , getStartersByGame, getTimeslotString } from './utils';
 import TimeslotStarters from './TimeslotStarters';
 import DataViewContext from './DataView.context';
 import { PlayersInfo } from './consts';
 import { useGetLocalStorage } from '@/features/local-storage/hooks';
+import { Starters } from '@/features/leagues/leagues.types';
+import { ScheduleData } from '@/features/schedule/schedule.types';
 
 interface DataViewProps {
     userStarters: Starters;

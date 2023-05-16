@@ -1,9 +1,9 @@
-import { ScheduleData } from '@/utils/schedule';
-import { Starters } from '@/utils/sleeper';
 import React, { useMemo } from 'react';
 import { PlayersInfo } from '../../components/DataView/consts';
 import { useGetLocalStorage } from '../local-storage/hooks';
 import { getMissingPlayersDiff } from './getMissingPlayersDiff';
+import { Starters } from '../leagues/leagues.types';
+import { ScheduleData } from '../schedule/schedule.types';
 
 export interface MissingPlayersNoticeProps {
     userStarters: Starters;

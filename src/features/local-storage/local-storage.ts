@@ -1,5 +1,5 @@
 export type LeagueWeightsMap = { [key: string]: number };
-export type LeagueRosterIdsMap = { [key: string]: string };
+export type LeagueRosterIdsMap = { [key: string]: number };
 export type LeagueIgnoresMap = { [key: string]: boolean };
 export type LeagueNamesMap = { [key: string]: string };
 export type LeagueStarterSpots = { [key: string]: number };
