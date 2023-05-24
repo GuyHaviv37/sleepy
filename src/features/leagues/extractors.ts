@@ -39,7 +39,6 @@ const extractStartersData = (matchups: Partial<LeagueMatchupWithLeagueId>[]) => 
     return starterData;
 }
 
-// @TODO use LeagueRosterIdsMap from index page, use type for leagueMatchupsData
 export const extractSleeperMatchupData = (leagueMatchupsData: {[leagueId: string]: LeagueMatchup[]}, leagueRosterIds: LeagueRosterIdsMap)
 : {userStarters?: Starters; oppStarters?: Starters} => {
     const userMatchups = Object.entries(leagueMatchupsData).map(([leagueId, leagueMatchups]) => {
@@ -57,6 +56,7 @@ export const extractSleeperMatchupData = (leagueMatchupsData: {[leagueId: string
     })
     const oppStarters = extractStartersData(oppMatchups);
 
+    // @TODO: assign SCORES + playerRootType: ROOT/BOO/CONFLICTED/DEFAULT
     // assign conflicts
     if (userStarters) {
         Object.keys(userStarters ?? {}).forEach((playerId) => {

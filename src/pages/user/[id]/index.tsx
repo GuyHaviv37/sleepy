@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import type { LeagueRosterIdsMap, LeagueIgnoresMap} from '@/features/local-storage/local-storage';
 import Link from 'next/link';
 import { fetcher } from '@/utils/fetcher';
 import DataView from '@/components/DataView';
@@ -11,39 +10,16 @@ import MissingPlayersNotice from '@/features/missing-players/MissingPlayersNotic
 import { trpc } from '@/utils/trpc';
 import AppHeader from '@/components/layout/AppHeader';
 import { useGetLocalStorage } from '@/features/local-storage/hooks';
-import { useSleeperUserRosterIds } from '@/features/leagues/hooks/useSleeperUserRosterIds';
+import { useSleeperUserRosterIds } from '@/features/user/hooks/useSleeperUserRosterIds';
 import { useQuery } from 'react-query';
 import { getScheduleData } from '@/features/schedule/data';
-
-// @TODO: error handling
-const useSleeperUserMatchupsData = (week: WEEKS, leagueRosterIds?: LeagueRosterIdsMap, leagueIgnores?: LeagueIgnoresMap) => {
-    const [filteredLeagueRosterIds, setFilteredRosterIds] = useState<LeagueRosterIdsMap>();
-    const {data: matchups, isLoading: isMatchupsLoading} = trpc.useQuery(['sleeper-api.getMatchupsData', {week, leagueRosterIds: leagueRosterIds!}], {
-        enabled: filteredLeagueRosterIds !== undefined,
-    })
-
-    useEffect(() => {
-        if (leagueRosterIds && leagueIgnores) {
-            const newLeagueRosterIds = {...leagueRosterIds};
-            Object.entries(leagueIgnores).map(([leagueId, shouldInclude]) => {
-                if (!shouldInclude) {
-                    delete newLeagueRosterIds[leagueId];
-                }
-            });
-            setFilteredRosterIds(newLeagueRosterIds);
-        }
-    }, [leagueRosterIds]);
-
-    return {matchups, isMatchupsLoading};
-}
+import { useSleeperUserMatchupsData } from '@/features/user/hooks/useSleeperUserMatchupsData';
 
 const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
     const router = useRouter();
     const { id } = router.query;
     const [selectedWeek, setSelectedWeek] = useState<WEEKS>(props.nflWeek);
-    // @TODO: useGetLocalStorage('settings') and bump into the presetner;
     const {data: cachedSettings} = useGetLocalStorage('settings');
-    // DONE - could be wrapped in another presenter
     const {leagueRosterIds, isLeagueRosterIdsLoading} = useSleeperUserRosterIds(id as string);
     const {matchups, isMatchupsLoading} = useSleeperUserMatchupsData(selectedWeek, leagueRosterIds, cachedSettings?.leagueIgnoresMap);
     const {userStarters, oppStarters} = matchups ?? {};
@@ -51,23 +27,22 @@ const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
         queryKey: ['nfl-schedule'],
         queryFn: () => getScheduleData(selectedWeek)
     })
-    // const isLoading = isScheduleLoading || isMatchupsLoading || isLeagueRosterIdsLoading;
-    const isLoading = !userStarters || !oppStarters || !scheduleData;
     const [isByGameViewMode, setIsByGameViewMode] = useState(false);
-    const { data: playersInfo } = trpc.useQuery(
+    const { data: playersInfo, isLoading: isPlayersInfoLoading } = trpc.useQuery(
         ['players.getPlayersInfoByIds',
-            { playerIds: [...Object.keys(userStarters ?? {}), ...Object.keys(oppStarters ?? {})] }]);
-
-    const getSelectedWeekHandler = (week: WEEKS) => {
-        return () => setSelectedWeek(week);
-    }
-
-    useEffect(() => {
-        if (id && cachedSettings && !cachedSettings.leagueWeightsMap) {
-            router.replace(`/user/${id}/settings`);
+        { playerIds: [...Object.keys(userStarters ?? {}), ...Object.keys(oppStarters ?? {})] }]);
+        
+        const getSelectedWeekHandler = (week: WEEKS) => {
+            return () => setSelectedWeek(week);
         }
-    }, [cachedSettings, id, router]);
-
+        
+        useEffect(() => {
+            if (id && cachedSettings && !cachedSettings.leagueWeightsMap) {
+                router.replace(`/user/${id}/settings`);
+            }
+        }, [cachedSettings, id, router]);
+        
+    const isLoading = isScheduleLoading || isMatchupsLoading || isLeagueRosterIdsLoading || isPlayersInfoLoading;
     return (
         <>
             <AppHeader title={'Sleepy - Board'}/>
@@ -95,9 +70,9 @@ const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
                             <p>⚔ Conflicted</p>
                         </div>
                         {!isLoading ? <MissingPlayersNotice
-                            userStarters={userStarters}
+                            userStarters={userStarters!}
                             playersInfo={playersInfo}
-                            scheduleData={scheduleData}
+                            scheduleData={scheduleData!}
                             />
                         : null}
                         {isLoading ? (
@@ -106,11 +81,11 @@ const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
                             </div>
                         ) : (
                             <DataView
-                                userStarters={userStarters}
-                                oppStarters={oppStarters}
-                                scheduleData={scheduleData}
+                                userStarters={userStarters!}
+                                oppStarters={oppStarters!}
+                                scheduleData={scheduleData!}
                                 isByGameViewMode={isByGameViewMode}
-                                playersInfo={playersInfo}
+                                playersInfo={playersInfo!}
                             />
                         )}
                     </>

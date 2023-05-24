@@ -1,9 +1,8 @@
 import { ScheduleData } from "@/features/schedule/schedule.types";
 import { EMOJIES, PlayersInfo, POSITTION_ORDER } from "./consts";
 
-export const extractStartersByTimeslots = (scheduleData: ScheduleData['byTeam'], timeslots: string[], starterIds: string[], playersInfo?: PlayersInfo)
-    : { [timeslot: string]: string[] } | undefined => {
-    if (!playersInfo) return;
+export const extractStartersByTimeslots = (scheduleData: ScheduleData['byTeam'], timeslots: string[], starterIds: string[], playersInfo: PlayersInfo)
+    : { [timeslot: string]: string[] } => {
     return timeslots.reduce((acc, timeslot) => {
         const startersInTimeslot = starterIds.filter(starterId => {
             const playerTeam = playersInfo[starterId]?.team;
