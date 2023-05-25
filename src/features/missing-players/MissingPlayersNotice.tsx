@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { PlayersInfo } from '../../components/DataView/consts';
+import { PlayersInfo } from '../dashboard/consts';
 import { useGetLocalStorage } from '../local-storage/hooks';
 import { getMissingPlayersDiff } from './getMissingPlayersDiff';
 import { Starters } from '../leagues/leagues.types';

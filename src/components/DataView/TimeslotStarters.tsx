@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
-import DataViewContext from './DataView.context';
+import DashboardContext from '../../features/dashboard/DashboardContext';
 import { getStarterEmoji } from './utils';
+import PlayerModalContext from '@/features/dashboard/player-modal/PlayerModalContext';
 
 interface TimeslotStartersProps {
     starterIds: string[];
@@ -10,7 +11,8 @@ interface TimeslotStartersProps {
 
 const TimeslotStarters: React.FC<TimeslotStartersProps> = (props) => {
     const { starterIds,  isUser, isByGameView } = props;
-    const { playersInfo, userLeagueInfo, oppLeagueInfo, scheduleData, openPlayerModal} = useContext(DataViewContext);
+    const { playersInfo, userLeagueInfo, oppLeagueInfo, scheduleData} = useContext(DashboardContext);
+    const { openPlayerModal } = useContext(PlayerModalContext);
     const leagueInfo = isUser ? userLeagueInfo : oppLeagueInfo;
     return (
         <div className="flex flex-col lg:items-center">

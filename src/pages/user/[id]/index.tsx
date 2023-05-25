@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { fetcher } from '@/utils/fetcher';
-import DataView from '@/components/DataView';
 import Loader from '@/components/Loader';
 import { WEEKS } from '@/utils/consts';
 import { WeeksNavbar } from '@/components/WeeksNavbar';
@@ -14,6 +13,8 @@ import { useSleeperUserRosterIds } from '@/features/user/hooks/useSleeperUserRos
 import { useQuery } from 'react-query';
 import { getScheduleData } from '@/features/schedule/data';
 import { useSleeperUserMatchupsData } from '@/features/user/hooks/useSleeperUserMatchupsData';
+import Dashboard from '@/features/dashboard/Dashboard';
+import DashboardContext from '@/features/dashboard/DashboardContext';
 
 const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
     const router = useRouter();
@@ -69,25 +70,29 @@ const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
                             <p>👎 Super &quot;boo&quot;</p>
                             <p>⚔ Conflicted</p>
                         </div>
-                        {!isLoading ? <MissingPlayersNotice
-                            userStarters={userStarters!}
-                            playersInfo={playersInfo}
-                            scheduleData={scheduleData!}
-                            />
-                        : null}
-                        {isLoading ? (
-                            <div className='pt-5'>
-                                <Loader/>
-                            </div>
-                        ) : (
-                            <DataView
+                        {/* Missing players notice should also be in context */}
+                        <DashboardContext.Provider value={{
+                            playersInfo: playersInfo!,
+                            scheduleData: scheduleData!,
+                            userLeagueInfo: userStarters!,
+                            oppLeagueInfo: oppStarters!
+                        }}>
+                            {!isLoading ? <MissingPlayersNotice
                                 userStarters={userStarters!}
-                                oppStarters={oppStarters!}
+                                playersInfo={playersInfo}
                                 scheduleData={scheduleData!}
-                                isByGameViewMode={isByGameViewMode}
-                                playersInfo={playersInfo!}
-                            />
-                        )}
+                                />
+                            : null}
+                            {isLoading ? (
+                                <div className='pt-5'>
+                                    <Loader/>
+                                </div>
+                            ) : (
+                                <Dashboard
+                                    isByGameViewMode={isByGameViewMode}
+                                />
+                            )}
+                        </DashboardContext.Provider>
                     </>
                 </section>
             </main>
@@ -115,7 +120,7 @@ export default UserDashboardPage;
 
 export const getServerSideProps = async () => {
     const nflWeekObj = await fetcher('https://api.sleeper.app/v1/state/nfl');
-    const nflWeek = nflWeekObj.season_type === 'pre' ? WEEKS.WEEK1 : `${nflWeekObj.display_week}` as WEEKS;
+    const nflWeek = nflWeekObj.season_type === 'pre' || nflWeekObj.season_type === 'off' ? WEEKS.WEEK1 : `${nflWeekObj.display_week}` as WEEKS;
     return {
         props: {
             nflWeek
