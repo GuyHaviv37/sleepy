@@ -1,4 +1,4 @@
-import { extractStartersByTimeslot } from "@/components/DataView/utils";
+import { extractStartersByTimeslot } from "./extractors";
 import { useMemo, useContext } from "react";
 import DashboardContext from "./DashboardContext";
 

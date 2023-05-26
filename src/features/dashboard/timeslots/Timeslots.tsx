@@ -1,7 +1,7 @@
 import React from 'react';
 import { StartersByTimeslot, TimeslotViewMode } from './timeslot.types';
-import { getTimeslotString } from '@/components/DataView/utils';
-import { TimeslotByGameView, TimeslotFullView } from '../Dashboard';
+import { TimeslotByGameView, TimeslotFullView } from './TimeslotView';
+import { getTimeslotString } from './content-utils';
 
 interface TimeslotsProps {
     timeslots: string[];
