@@ -4,13 +4,13 @@ import { getMissingPlayersDiff } from './getMissingPlayersDiff';
 import DashboardContext from '../dashboard/DashboardContext';
 
 
-const MissingPlayersNotice: React.FC<MissingPlayersNoticeProps> = (props) => {
+const MissingPlayersNotice: React.FC = () => {
     const {data: cachedSettings} = useGetLocalStorage('settings');
     const {data: cachedLeaguesInfo} = useGetLocalStorage('leaguesInfo');
     const {leagueNames, leagueStarterSpots} = cachedLeaguesInfo ?? {};
     const {shouldShowMissingStarters} = cachedSettings ?? {};
     const {userLeagueInfo: userStarters, playersInfo, scheduleData} = useContext(DashboardContext);
-    const {diffInStarters, isSomeDiff} = useMemo(() => getMissingPlayersDiff({userStarters, playersInfo, leagueStarterSpots, scheduleData}), [props, leagueStarterSpots]);
+    const {diffInStarters, isSomeDiff} = useMemo(() => getMissingPlayersDiff({userStarters, playersInfo, leagueStarterSpots, scheduleData}), [leagueStarterSpots]);
 
     return shouldShowMissingStarters && isSomeDiff ? (
         <div className='mx-4 my-2 text-primary-text bg-rose-500 rounded p-2'>
