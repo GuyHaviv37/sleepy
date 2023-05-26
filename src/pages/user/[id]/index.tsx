@@ -77,12 +77,7 @@ const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
                             userLeagueInfo: userStarters!,
                             oppLeagueInfo: oppStarters!
                         }}>
-                            {!isLoading ? <MissingPlayersNotice
-                                userStarters={userStarters!}
-                                playersInfo={playersInfo}
-                                scheduleData={scheduleData!}
-                                />
-                            : null}
+                            {!isLoading && <MissingPlayersNotice/>}
                             {isLoading ? (
                                 <div className='pt-5'>
                                     <Loader/>

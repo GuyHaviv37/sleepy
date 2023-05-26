@@ -1,7 +1,14 @@
+import { PlayersInfo } from '../dashboard/consts';
+import { Starters } from '../leagues/leagues.types';
 import { LeagueStarterSpots } from '../local-storage/local-storage';
-import type {MissingPlayersNoticeProps} from './MissingPlayersNotice';
+import { ScheduleData } from '../schedule/schedule.types';
 
-export const getMissingPlayersDiff = ({userStarters, playersInfo, scheduleData, leagueStarterSpots}: MissingPlayersNoticeProps & {leagueStarterSpots?: LeagueStarterSpots}) => {
+export const getMissingPlayersDiff = ({userStarters, playersInfo, scheduleData, leagueStarterSpots}: {
+    playersInfo: PlayersInfo;
+    userStarters: Starters;
+    scheduleData: ScheduleData;
+    leagueStarterSpots?: LeagueStarterSpots
+}) => {
     const startersCountPerLeague: {[leagueId: string]: number} = {};
     Object.entries(userStarters).forEach(([starterId, starterData]) => {
         const starterLeagueIds = Object.keys(starterData.leagues ?? {});

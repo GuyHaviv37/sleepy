@@ -1,14 +1,12 @@
-import React, { useMemo } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { PlayersInfo } from '../dashboard/consts';
 import { useGetLocalStorage } from '../local-storage/hooks';
 import { getMissingPlayersDiff } from './getMissingPlayersDiff';
 import { Starters } from '../leagues/leagues.types';
 import { ScheduleData } from '../schedule/schedule.types';
+import DashboardContext from '../dashboard/DashboardContext';
 
 export interface MissingPlayersNoticeProps {
-    userStarters: Starters;
-    playersInfo?: PlayersInfo;
-    scheduleData: ScheduleData
 }
 
 const MissingPlayersNotice: React.FC<MissingPlayersNoticeProps> = (props) => {
@@ -16,7 +14,8 @@ const MissingPlayersNotice: React.FC<MissingPlayersNoticeProps> = (props) => {
     const {data: cachedLeaguesInfo} = useGetLocalStorage('leaguesInfo');
     const {leagueNames, leagueStarterSpots} = cachedLeaguesInfo ?? {};
     const {shouldShowMissingStarters} = cachedSettings ?? {};
-    const {diffInStarters, isSomeDiff} = useMemo(() => getMissingPlayersDiff({...props, leagueStarterSpots}), [props, leagueStarterSpots]);
+    const {userLeagueInfo: userStarters, playersInfo, scheduleData} = useContext(DashboardContext);
+    const {diffInStarters, isSomeDiff} = useMemo(() => getMissingPlayersDiff({userStarters, playersInfo, leagueStarterSpots, scheduleData}), [props, leagueStarterSpots]);
 
     return shouldShowMissingStarters && isSomeDiff ? (
         <div className='mx-4 my-2 text-primary-text bg-rose-500 rounded p-2'>

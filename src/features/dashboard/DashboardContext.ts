@@ -8,7 +8,6 @@ type DashboardContextType = {
     userLeagueInfo: Starters;
     oppLeagueInfo: Starters;
     scheduleData: ScheduleData;
-    // openPlayerModal: (playerId: string, isUser?: boolean) => void;
 }
 
 export default createContext<DashboardContextType>({
@@ -16,5 +15,4 @@ export default createContext<DashboardContextType>({
     userLeagueInfo: {},
     oppLeagueInfo: {},
     scheduleData: {byTeam: {}, byTimeslot: {}},
-    // openPlayerModal: () =>  {return;},
 });
