@@ -10,7 +10,8 @@ export const getMissingPlayersDiff = ({userStarters, playersInfo, scheduleData, 
     leagueStarterSpots?: LeagueStarterSpots
 }) => {
     const startersCountPerLeague: {[leagueId: string]: number} = {};
-    Object.entries(userStarters).forEach(([starterId, starterData]) => {
+    // @TODO: check if userStarters can be undefined here, I could be type-lying
+    Object.entries(userStarters ?? {}).forEach(([starterId, starterData]) => {
         const starterLeagueIds = Object.keys(starterData.leagues ?? {});
         const starterTeam = playersInfo?.[starterId]?.team ?? 'N/A';
         const starterIsPlaying = !!scheduleData.byTeam[starterTeam];
