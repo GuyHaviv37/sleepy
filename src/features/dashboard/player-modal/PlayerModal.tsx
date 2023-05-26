@@ -1,25 +1,27 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { StarterInfo } from '@/features/leagues/leagues.types';
+import { useGetLocalStorage } from '../../local-storage/hooks';
 
 interface PlayerModalProps {
-    setOpenModal: (openOrClose: boolean) => void;
+    dismissPlayerModal: () => void;
     avatarId?: string | null;
     playerId?: string;
     playerName?: string;
     scores?: StarterInfo['leagues'];
-    leagueNames?: {[leagueId: string]: string};
 };
 
 const PlayerModal: React.FC<PlayerModalProps> = (props) => {
-    const {setOpenModal, avatarId, playerName, scores, leagueNames, playerId} = props;
+    const { data: cachedLeaguesInfo } = useGetLocalStorage('leaguesInfo');
+    const leagueNames = cachedLeaguesInfo?.leagueNames;
+    const {dismissPlayerModal, avatarId, playerName, scores, playerId} = props;
     const [imageError, setImageError] = useState(false);
     return (
         <>
             <div className="fixed inset-0 z-10 overflow-y-auto">
                 <div
                     className="fixed inset-0 w-full h-full bg-black opacity-40"
-                    onClick={() => setOpenModal(false)}
+                    onClick={dismissPlayerModal}
                 ></div>
                 <div className="flex items-center min-h-screen px-4 py-8">
                     <div className="relative w-full max-w-lg p-4 mx-auto bg-primary rounded-md shadow-lg">
@@ -51,7 +53,7 @@ const PlayerModal: React.FC<PlayerModalProps> = (props) => {
                                     className="w-1/4 sm:w-full mt-2 p-1 flex-1 text-primary-text bg-alt rounded-md
                                     sm:flex-end sm:max-h-10 sm:mt-auto
                                     outline-none border ring-offset-2 ring-alt-600 focus:ring-2"
-                                    onClick={() => setOpenModal(false)}
+                                    onClick={dismissPlayerModal}
                                 >
                                     Cancel
                                 </button>

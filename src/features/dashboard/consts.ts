@@ -6,7 +6,7 @@ export const EMOJIES = {
     THUMBS_DOWN_EMOJI: '👎',
 }
 
-export const POSITTION_ORDER = ['QB', 'RB', 'WR', 'TE', 'K', 'DEF'];
+export const POSITION_ORDER = ['QB', 'RB', 'WR', 'TE', 'K', 'DEF'];
 
 export type PlayersInfo = inferQueryOutput<'players.getPlayersInfoByIds'>;
 
