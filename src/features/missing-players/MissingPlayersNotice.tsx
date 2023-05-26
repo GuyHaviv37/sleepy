@@ -1,13 +1,8 @@
 import React, { useContext, useMemo } from 'react';
-import { PlayersInfo } from '../dashboard/consts';
 import { useGetLocalStorage } from '../local-storage/hooks';
 import { getMissingPlayersDiff } from './getMissingPlayersDiff';
-import { Starters } from '../leagues/leagues.types';
-import { ScheduleData } from '../schedule/schedule.types';
 import DashboardContext from '../dashboard/DashboardContext';
 
-export interface MissingPlayersNoticeProps {
-}
 
 const MissingPlayersNotice: React.FC<MissingPlayersNoticeProps> = (props) => {
     const {data: cachedSettings} = useGetLocalStorage('settings');
