@@ -9,6 +9,7 @@ import { submitNewUser } from "@/features/user/data";
 import { useGetLocalStorage } from "@/features/local-storage/hooks";
 import { CacheStatus } from "@/features/local-storage/local-storage.types";
 import AppHeader from "@/components/layout/AppHeader";
+import { deleteLocalStorageData } from "@/features/local-storage/local-storage";
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -27,7 +28,7 @@ const Home: NextPage = () => {
     onError: () => setErrorMessage('Could not fetch data for this user.')
   })
 
-  const {data: cachedUser, cacheStatus: userCacheStatus, clear: clearUserCache} = useGetLocalStorage('user');
+  const { data: cachedUser, cacheStatus: userCacheStatus, clear: clearUserCache } = useGetLocalStorage('user');
 
   const onUsernameInputChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     setUsernameInput(event.target.value);
@@ -44,6 +45,13 @@ const Home: NextPage = () => {
     submitMutation.mutate(usernameInput);
   };
 
+  const logOffUser = () => {
+    if (window.confirm('Switching user will delete all saved settings for the previous user. Continue?')) {
+      clearUserCache();
+      deleteLocalStorageData('settings');
+    }
+  };
+
   const renderFormOrCachedUsername = () => {
     switch (userCacheStatus) {
       case CacheStatus.HIT:
@@ -55,7 +63,7 @@ const Home: NextPage = () => {
               {cachedUser?.username} &rarr;
             </button>
             <button className="px-1 mt-2 text-primary text-xs tracking-wide md:text-base"
-              onClick={clearUserCache}>
+              onClick={logOffUser}>
               or change to a different user
             </button>
           </>
@@ -97,7 +105,7 @@ const Home: NextPage = () => {
 
   return (
     <>
-      <AppHeader title={'Sleepy'}/>
+      <AppHeader title={'Sleepy'} />
 
       <main className="container mx-auto flex flex-col items-center justify-center h-screen p-4 bg-background-main">
         <h1 className="text-4xl md:text-5xl leading-tight tracking-wide text-center md:leading-normal font-bold md:font-extrabold text-primary">
@@ -111,8 +119,8 @@ const Home: NextPage = () => {
         {renderFormOrCachedUsername()}
         <br />
         <div className="text-sm border-t-2 pt-2">
-        {/* Migrate to updates component */}
-        <p>&rarr; Update Nov. 5th:</p>
+          {/* Migrate to updates component */}
+          <p>&rarr; Update Nov. 5th:</p>
           <p>You can now enable a notice that warns you from missing starters !</p>
           <p>Try it out in the {userCacheStatus === CacheStatus.HIT ?
             <Link href={`user/${cachedUser?.sleeperId}/settings`}>
