@@ -57,6 +57,12 @@ export const setLocalStorageData = (key: CacheKey, data: CacheValue) => {
     return data;
 }
 
+export const deleteLocalStorageData = (key: CacheKey) => {
+    if (typeof window !== undefined) {
+        window.localStorage.removeItem(key);
+    }
+}
+
 export const safeUpdateLocalStorageData = (key: CacheKey, data: CacheValue) => {
     const existingData = getLocalStorageData(key);
     if (existingData) {
