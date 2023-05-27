@@ -6,9 +6,7 @@ import { useState, useEffect } from "react";
 // @TODO: error handling
 export const useSleeperUserMatchupsData = (week: WEEKS, leagueRosterIds?: LeagueRosterIdsMap, leagueIgnores?: LeagueIgnoresMap) => {
     const [filteredLeagueRosterIds, setFilteredRosterIds] = useState<LeagueRosterIdsMap>();
-    const {data: matchups, isLoading: isMatchupsLoading} = trpc.useQuery(['sleeper-api.getMatchupsData', {week, leagueRosterIds: leagueRosterIds!}], {
-        enabled: filteredLeagueRosterIds !== undefined,
-    })
+    const {data: matchups, isLoading: isMatchupsLoading} = trpc.useQuery(['sleeper-api.getMatchupsData', {week, leagueRosterIds: filteredLeagueRosterIds!}]);
 
     useEffect(() => {
         if (leagueRosterIds && leagueIgnores) {
