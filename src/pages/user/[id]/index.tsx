@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { fetcher } from '@/utils/fetcher';
 import Loader from '@/components/Loader';
 import { WEEKS } from '@/utils/consts';
-import { WeeksNavbar } from '@/components/WeeksNavbar';
 import MissingPlayersNotice from '@/features/missing-players/MissingPlayersNotice';
 import { trpc } from '@/utils/trpc';
 import AppHeader from '@/components/layout/AppHeader';
@@ -15,6 +14,7 @@ import { getScheduleData } from '@/features/schedule/data';
 import { useSleeperUserMatchupsData } from '@/features/user/hooks/useSleeperUserMatchupsData';
 import Dashboard from '@/features/dashboard/Dashboard';
 import DashboardContext from '@/features/dashboard/DashboardContext';
+import { ViewTypePicker, WeeksNavbar } from '@/features/dashboard/DashboardFilters';
 
 const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
     const router = useRouter();
@@ -54,7 +54,7 @@ const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
                 <section className="bg-primary w-full rounded-lg py-4 flex flex-col">
                     <div className="flex justify-between">
                         <div className="ml-4">
-                            <ViewTypeSwitch
+                            <ViewTypePicker
                                 isByGameViewMode={isByGameViewMode}
                                 setIsByGameViewMode={setIsByGameViewMode}
                             />
@@ -95,21 +95,7 @@ const UserDashboardPage = (props: {nflWeek: WEEKS}) => {
     )
 };
 
-const ViewTypeSwitch = (props: {isByGameViewMode: boolean; setIsByGameViewMode: (current: boolean) => void}) => {
-    const {isByGameViewMode, setIsByGameViewMode} = props;
-    const SELECTED_STYLE = 'bg-accent font-semibold text-primary-text';
-    const UNSELECTED_STYLE = 'bg-slate-200';
-    return (
-        <ul className="flex space-x-2">
-            <li
-            className={`rounded px-1 cursor-pointer ${isByGameViewMode ? UNSELECTED_STYLE : SELECTED_STYLE}`}
-            onClick={() => setIsByGameViewMode(false)}>Slim View</li>
-            <li
-            className={`rounded px-1 cursor-pointer ${isByGameViewMode ? SELECTED_STYLE : UNSELECTED_STYLE}`}
-            onClick={() => setIsByGameViewMode(true)}>By Game</li>
-        </ul>
-    )
-}
+
 
 export default UserDashboardPage;
 
