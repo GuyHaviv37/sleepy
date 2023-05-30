@@ -48,6 +48,7 @@ const Home: NextPage = () => {
   const logOffUser = () => {
     if (window.confirm('Switching user will delete all saved settings for the previous user. Continue?')) {
       clearUserCache();
+      deleteLocalStorageData('user');
       deleteLocalStorageData('settings');
     }
   };
@@ -56,10 +57,11 @@ const Home: NextPage = () => {
     switch (userCacheStatus) {
       case CacheStatus.HIT:
         return (
-          <section className="flex flex-col align-items-start">
+          <section className="flex flex-col items-center
+          md:justify-end">
             <button className="text-primary-text rounded-md bg-alt py-3 px-5 w-fit"
               onClick={onCachedSubmit}>
-              {cachedUser?.username} &rarr;
+              Continue with {cachedUser?.username} &rarr;
             </button>
             <button className="px-1 mt-2 text-primary-text text-xs tracking-wide md:text-base w-fit"
               onClick={logOffUser}>
@@ -69,7 +71,8 @@ const Home: NextPage = () => {
         )
       case CacheStatus.MISS:
         return (
-          <section className="flex flex-col space-y-3 bg-accent px-5 py-3 rounded-lg">
+          <section className="flex flex-col space-y-3 bg-accent px-5 py-3 rounded-lg
+          md:w-1/2 md:max-w-md">
             <>
               <label className="text-primary-text w-full"
                 htmlFor="usernameInput">
@@ -107,12 +110,15 @@ const Home: NextPage = () => {
       <AppHeader title={'Sleepy'} />
 
       <main className="mx-auto flex flex-col items-center justify-center h-screen p-5 bg-primary w-screen">
-        <div className="flex flex-col space-y-9">
-          <section className="w-full h-1/2">
-            <h1 className="text-xl text-primary-text font-bold absolute top-5 left-3">
+        <div className="flex flex-col space-y-9 md:flex-row md:justify-center md:space-y-0 md:space-x-9">
+          <section className="w-full h-1/2 md:w-1/2">
+            <h1 className="text-xl md:text-2xl text-primary-text font-bold
+            absolute top-5 left-3
+            md:relative md:top-0 md:left-0 md:mb-3"
+            >
               🏈 Sleepy
             </h1>
-            <h3 className="text-3xl tracking-wide text-primary-text font-thin">
+            <h3 className="text-3xl lg:text-5xl tracking-wide text-primary-text font-thin">
               Complete Weekly Summary of Your Sleeper Leagues
             </h3>
           </section>
