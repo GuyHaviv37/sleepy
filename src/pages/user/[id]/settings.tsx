@@ -51,14 +51,13 @@ const UserDashboardPage = ({ leagues }: UserDashboardPageProps) => {
                         <button className="text-primary-text text-2xl lg:text-2xl absolute top-5 right-5">&times;</button>
                     </Link>}
                 <FlexibleContainer>
-                    <p className='text-primary-text text-2xl px-6 mt-3 mx-auto lg:text-4xl'>
+                    <p className='text-primary-text text-2xl px-6 mt-3 mx-auto md:mx-0 lg:text-4xl md:w-1/2'>
                         Enter your leagues entry fees so you can scale better to who you should root for and against.
                         <br />
-                        <span className='text-alt text-sm font-thin'>Ignore a league by unticking its checkbox</span>
+                        <span className='text-alt text-sm font-thin md:text-lg'>Ignore a league by unticking its checkbox</span>
                     </p>
-                    <section className='flex flex-col space-y-3 bg-accent px-5 py-3 rounded-lg
-                        md:w-1/2 md:max-w-md'>
-                        <h5 className='text-primary-text text-xl font-semibold tracking-wide'>Your Leagues</h5>
+                    <section className='flex flex-col space-y-3 bg-accent px-5 py-3 rounded-lg md:w-1/2 md:max-w-md'>
+                        <h5 className='text-primary-text text-xl font-semibold tracking-wide md:text-2xl'>Your Leagues</h5>
                         <div className="flex flex-col center-items">
                             <div className="px-2 mb-3 max-h-96 overflow-y-auto md:self-center">
                                 {leagues?.map((league) => (
@@ -74,10 +73,12 @@ const UserDashboardPage = ({ leagues }: UserDashboardPageProps) => {
                                 <div className='border-t-[1px] mt-3 border-alt' />
                                 <div className='flex mt-3'>
                                     <input type='checkbox'
-                                        className='w-4 checked:accent-alt rounded-lg'
+                                        id='missing_players_checkbox'
+                                        className='w-4 checked:accent-alt rounded-lg md:w-5'
                                         checked={shouldShowMissingStarters}
                                         onChange={event => onChangeShowMissingStarters(event.target.checked)} />
-                                    <p className="text-primary-text text-sm pl-5">Show missing starters notice</p>
+                                    <label htmlFor='missing_players_checkbox'
+                                        className="text-primary-text text-sm pl-5 md:text-base">Show missing starters notice</label>
                                 </div>
                             </div>
                             <button className="text-primary-text rounded-lg bg-alt w-full py-3"
