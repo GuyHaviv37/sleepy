@@ -48,7 +48,7 @@ const UserDashboardPage = ({ leagues }: UserDashboardPageProps) => {
                 </h3>
                 {fromLogin ? null :
                     <Link href={`/user/${id}`}>
-                        <button className="text-primary-text text-2xl lg:text-2xl absolute top-5 right-5">&times;</button>
+                        <button className="text-primary-text text-2xl lg:text-4xl absolute top-5 right-5">&times;</button>
                     </Link>}
                 <FlexibleContainer>
                     <p className='text-primary-text text-2xl px-6 mt-3 mx-auto md:mx-0 lg:text-4xl md:w-1/2'>
@@ -91,42 +91,6 @@ const UserDashboardPage = ({ leagues }: UserDashboardPageProps) => {
                             </button>}
                         </div>
                     </section>
-                    {/* <section className='bg-primary rounded-lg py-4'>
-                        <div className='flex justify-between px-4'>
-
-                        </div>
-                        <br />
-                        <div className="flex flex-col center-items">
-                            <h5 className="text-primary-text text-lg px-6 sm:text-center underline">Your Leagues:</h5>
-                            <div className="px-2 mb-3 max-h-96 overflow-y-auto md:self-center">
-                                {leagues?.map((league) => (
-                                    <LeagueWeightInput
-                                        key={league.league_id}
-                                        leagueName={league.name}
-                                        weightValue={leagueWeightsMap[league.league_id] ?? 0}
-                                        onWeightValueHandler={event => onChangeLeagueWeight(league.league_id, parseInt(event.target.value))}
-                                        onCheckboxTickHandler={event => onChangeLeagueIgnore(league.league_id, event.target.checked)}
-                                        checkboxValue={leagueIgnoresMap[league.league_id] ?? true}
-                                    />
-                                ))}
-                                <div className='border-t-2 mt-3 border-text-primary-text' />
-                                <div className='flex mt-3'>
-                                    <input type='checkbox' checked={shouldShowMissingStarters}
-                                        onChange={event => onChangeShowMissingStarters(event.target.checked)} />
-                                    <p className="text-primary-text text-sm pl-5">Show missing starters notice</p>
-                                </div>
-                            </div>
-                            <button className="text-primary-text rounded-md bg-accent mx-auto px-3 py-1
-                            hover:-translate-y-1 active:translate-y-0"
-                                onClick={submitWeightsHandler}>
-                                Submit
-                            </button>
-                            {fromLogin && <button className="px-1 mt-2 text-accent text-xs tracking-wide md:text-base"
-                                onClick={submitWeightsHandler}>
-                                or skip for later
-                            </button>}
-                        </div>
-                    </section> */}
                 </FlexibleContainer>
 
             </main>
