@@ -10,6 +10,7 @@ import { useGetLocalStorage } from "@/features/local-storage/hooks";
 import { CacheStatus } from "@/features/local-storage/local-storage.types";
 import AppHeader from "@/components/layout/AppHeader";
 import { deleteLocalStorageData } from "@/features/local-storage/local-storage";
+import FlexibleContainer from "@/components/layout/FlexibleContainer";
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -110,7 +111,7 @@ const Home: NextPage = () => {
       <AppHeader title={'Sleepy'} />
 
       <main className="mx-auto flex flex-col items-center justify-center h-screen p-5 bg-primary w-screen">
-        <div className="flex flex-col space-y-9 md:flex-row md:justify-center md:space-y-0 md:space-x-9">
+        <FlexibleContainer>
           <section className="w-full h-1/2 md:w-1/2">
             <h1 className="text-xl md:text-2xl text-primary-text font-bold
             absolute top-5 left-3
@@ -123,7 +124,7 @@ const Home: NextPage = () => {
             </h3>
           </section>
           {renderFormOrCachedUsername()}
-        </div>
+        </FlexibleContainer>
         {/* <div className="text-sm border-t-2 pt-2 text-primary-text">
           <p>&rarr; Update Nov. 5th:</p>
           <p>You can now enable a notice that warns you from missing starters !</p>
