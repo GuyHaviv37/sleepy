@@ -9,6 +9,7 @@ import { SleeperLeagueData } from '@/features/leagues/leagues.types';
 import AppHeader from '@/components/layout/AppHeader';
 import { useSettings } from '@/features/settings/useSettings';
 import FlexibleContainer from '@/components/layout/FlexibleContainer';
+import PageLogo from '@/components/PageLogo';
 
 type UserDashboardPageProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
@@ -41,11 +42,7 @@ const UserDashboardPage = ({ leagues }: UserDashboardPageProps) => {
         <>
             <AppHeader title={'Sleepy - Settings'} />
             <main className="flex flex-col items-center justify-center h-screen p-4 bg-primary">
-                <h3 className="text-xl md:text-2xl text-primary-text font-bold
-                absolute top-5 left-3"
-                >
-                    {fromLogin ? '🏈 Sleepy' : `⚙️ Settings`}
-                </h3>
+                <PageLogo title={fromLogin ? '🏈 Sleepy' : `⚙️ Settings`} />
                 {fromLogin ? null :
                     <Link href={`/user/${id}`}>
                         <button className="text-primary-text text-2xl lg:text-4xl absolute top-5 right-5">&times;</button>
