@@ -21,7 +21,7 @@ const DashboardDropdown: React.FC<DashboardDropdownProps> = (props) => {
                     <p className='text-sm'>{currentValue}</p>
                 </div>
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
                 </svg>
             </button>
             <div className={`bg-accent text-base z-50 list-none rounded shadow my-2
