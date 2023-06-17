@@ -3,7 +3,6 @@ import { ChangeEvent, useCallback, useState } from "react";
 import { useRouter } from 'next/router';
 import Loader from "@/components/Loader";
 import * as bi from '../../lib/bi';
-import Link from "next/link";
 import { useMutation } from "react-query";
 import { submitNewUser } from "@/features/user/data";
 import { useGetLocalStorage } from "@/features/local-storage/hooks";

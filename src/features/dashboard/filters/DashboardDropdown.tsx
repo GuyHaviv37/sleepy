@@ -25,7 +25,7 @@ const DashboardDropdown: React.FC<DashboardDropdownProps> = (props) => {
                 </svg>
             </button>
             <div className={`bg-accent text-base z-50 list-none rounded shadow my-2
-            absolute w-full overflow-y-auto h-64 md:h-auto
+            absolute w-full overflow-y-auto max-h-64 md:h-auto
             ${isOpen ? '' : 'hidden'}`} id="dropdown">
                 {children}
             </div>

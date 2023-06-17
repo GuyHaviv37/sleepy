@@ -2,13 +2,16 @@ import React from 'react';
 
 interface PageLogoProps {
     title: string;
+    href?: string;
+    onClick?: () => void;
 }
-const PageLogo = (props: PageLogoProps) => {
+const PageLogo = React.forwardRef<HTMLAnchorElement, PageLogoProps>(({ title, href, onClick }, ref) => {
     return (
-        <h3 className='text-xl md:text-2xl text-primary-text font-bold absolute top-5 left-3'>
-            {props.title}
-        </h3>
+        <a className='text-xl md:text-2xl text-primary-text font-bold absolute top-5 left-3'
+            ref={ref} onClick={onClick} href={href}>
+            {title}
+        </a>
     )
-}
+});
 
 export default React.memo(PageLogo);

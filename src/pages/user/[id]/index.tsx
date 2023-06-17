@@ -46,14 +46,13 @@ const UserDashboardPage = (props: { nflWeek: WEEKS }) => {
         <>
             <AppHeader title={'Sleepy - Board'} />
             <main className="mx-auto flex flex-col items-center justify-center p-4 bg-primary">
-                <Link href="/">
+                <Link href="/" passHref>
                     <PageLogo title={'🏈 Sleepy'} />
                 </Link>
                 <Link href={`/user/${id}/settings`}>
                     <button className='text-md text-primary-text font-semibold absolute top-5 right-5'>⚙️ Settings</button>
                 </Link>
-                {/* @TODO: remove color */}
-                <div className='h-10 bg-red-500 w-full' />
+                <div className='h-10 w-full' />
                 <h1 className='text-primary-text text-3xl text-semibold text-left w-full'>Hello, {cachedUserInfo?.username ?? 'Player'}</h1>
                 {/* Highlighted players */}
                 <DashboardFilters
