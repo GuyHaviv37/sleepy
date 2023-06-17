@@ -14,4 +14,6 @@ const PageLogo = React.forwardRef<HTMLAnchorElement, PageLogoProps>(({ title, hr
     )
 });
 
+PageLogo.displayName = 'PageLogo';
+
 export default React.memo(PageLogo);
