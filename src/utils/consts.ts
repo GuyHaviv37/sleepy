@@ -25,7 +25,7 @@ export const WEEKS = {
 export type WEEKS = typeof WEEKS[keyof typeof WEEKS];
 
 export const DashboardViewTypes = {
-    SLIM: 'Slim',
-    FULL: 'Full'
+    SLIM: 'Default',
+    FULL: 'By Game'
 } as const;
 export type DashboardViewType = typeof DashboardViewTypes[keyof typeof DashboardViewTypes];

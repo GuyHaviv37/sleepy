@@ -22,18 +22,21 @@ const StarterRow: React.FC<StarterRowProps> = (props) => {
     const { openPlayerModal } = useContext(PlayerModalContext);
 
     return (
-        <div className='flex items-center cursor-pointer' onClick={() => openPlayerModal(id, isUserTeam)}>
-            <p className="text-sm pb-1 md:text-base lg:text-lg lg:self-end">
-                <span className={`pr-1 lg:pr-2`}>{starterEmoji}</span>
-                <span className={starterEmoji ? 'font-bold' : ''}>
-                    <span>{`${position} `}</span>
+        <div className='flex items-center cursor-pointer py-2' onClick={() => openPlayerModal(id, isUserTeam)}>
+            {/* <span className={`pr-1 lg:pr-2`}>{starterEmoji}</span> */}
+            <div className={`text-sm pb-1 md:text-base lg:text-lg grid grid-cols-3
+            w-full ${starterEmoji ? 'font-bold' : ''}`}>
+                <p>{`${position}`}</p>
+                <p>
                     <span className="hidden sm:inline">{`${firstName}\t\t`}</span>
                     <span>{lastName}</span>
-                    {position !== 'DEF' && <span>{` ,${team}`}</span>}
-                    {multipliers && multipliers > 1 && <span>{` (X${multipliers})`}</span>}
+                </p>
+                <p className='justify-self-end'>
+                    {position !== 'DEF' && <span>{`${team}`}</span>}
                     {isByGameView ? null : <span className="hidden md:inline md:pl-1 lg:pl-2">{isHome ? 'vs.' : '@'}{'\t'}{oppTeam}</span>}
-                </span>
-            </p>
+                </p>
+                {/* {multipliers && multipliers > 1 && <span>{` (X${multipliers})`}</span>} */}
+            </div>
         </div>
     )
 };

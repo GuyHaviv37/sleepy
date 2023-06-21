@@ -53,7 +53,7 @@ const UserDashboardPage = (props: { nflWeek: WEEKS }) => {
                     <button className='text-md text-primary-text font-semibold absolute top-5 right-5'>⚙️ Settings</button>
                 </Link>
                 <div className='h-10 w-full' />
-                <h1 className='text-primary-text text-3xl text-semibold text-left w-full'>Hello, {cachedUserInfo?.username ?? 'Player'}</h1>
+                <h1 className='text-primary-text text-3xl font-semibold text-left w-full'>Hello, {cachedUserInfo?.username ?? 'Player'}</h1>
                 {/* Highlighted players */}
                 <DashboardFilters
                     selectedWeek={selectedWeek} setSelectedWeek={setSelectedWeek}

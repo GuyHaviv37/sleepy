@@ -27,11 +27,11 @@ const DashboardFilters = (props: DashboardFiltersProps) => {
 
     return (
         <div className='w-full flex flex-start flex-col my-3'>
-            <h5 className='text-primary-text text-lg mb-2'>Your Week</h5>
+            <h5 className='text-primary-text text-lg font-semibold mb-2'>Your Week</h5>
             <div className='flex gap-3 text-primary-text'>
                 <DashboardDropdown
                     isOpen={isWeeksDropdownOpen}
-                    placeholder='choose a week'
+                    placeholder='Choose a week'
                     toggleDropdown={() => setIsWeeksDropdownOpen(v => !v)}
                     currentValue={`Week ${selectedWeek}`} >
                     <ul className="py-1 divide-y divide-secondary-accent" aria-labelledby="dropdown">
@@ -43,10 +43,10 @@ const DashboardFilters = (props: DashboardFiltersProps) => {
                     isOpen={isDashboardViewDropdownOpen}
                     placeholder='Choose a view'
                     toggleDropdown={() => setIsDashboardViewDropdownOpen(v => !v)}
-                    currentValue={`${dashboardViewType} View`} >
+                    currentValue={`${dashboardViewType}`} >
                     <ul className="py-1 divide-y divide-secondary-accent" aria-labelledby="dropdown">
                         {Object.values(DashboardViewTypes).map(viewType =>
-                            <DashboardDropdownItem key={viewType} label={`${viewType} View`} onClick={() => onViewTypeOptionClick(viewType)} isSelected={viewType === dashboardViewType} />)}
+                            <DashboardDropdownItem key={viewType} label={`${viewType}`} onClick={() => onViewTypeOptionClick(viewType)} isSelected={viewType === dashboardViewType} />)}
                     </ul>
                 </DashboardDropdown>
             </div>

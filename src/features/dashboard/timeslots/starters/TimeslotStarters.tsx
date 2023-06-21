@@ -9,11 +9,11 @@ interface TimeslotStartersProps {
 }
 
 const TimeslotStarters: React.FC<TimeslotStartersProps> = (props) => {
-    const { starterIds,  isUser, isByGameView } = props;
-    const { playersInfo, userLeagueInfo, oppLeagueInfo, scheduleData} = useContext(DashboardContext);
+    const { starterIds, isUser, isByGameView } = props;
+    const { playersInfo, userLeagueInfo, oppLeagueInfo, scheduleData } = useContext(DashboardContext);
     const leagueInfo = isUser ? userLeagueInfo : oppLeagueInfo;
     return (
-        <div className="flex flex-col lg:items-center">
+        <ul className="flex flex-col lg:items-center bg-accent divide-y divide-secondary-accent px-3 py-1 rounded">
             {starterIds.map(starterId => {
                 if (!playersInfo[starterId]) return null;
                 const playerTeam = playersInfo[starterId]?.team;
@@ -37,7 +37,7 @@ const TimeslotStarters: React.FC<TimeslotStartersProps> = (props) => {
                 )
             })
             }
-        </div>
+        </ul>
     )
 }
 
