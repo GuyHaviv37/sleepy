@@ -13,7 +13,7 @@ const TimeslotStarters: React.FC<TimeslotStartersProps> = (props) => {
     const { playersInfo, userLeagueInfo, oppLeagueInfo, scheduleData } = useContext(DashboardContext);
     const leagueInfo = isUser ? userLeagueInfo : oppLeagueInfo;
     return (
-        <ul className="flex flex-col lg:items-center bg-accent divide-y divide-secondary-accent px-3 py-1 rounded">
+        <ul className="flex flex-col bg-accent divide-y divide-secondary-accent px-3 py-1 rounded">
             {starterIds.map(starterId => {
                 if (!playersInfo[starterId]) return null;
                 const playerTeam = playersInfo[starterId]?.team;
