@@ -61,7 +61,7 @@ const UserDashboardPage = (props: { nflWeek: WEEKS }) => {
                 />
                 <section className="w-full rounded-lg py-4 flex flex-col">
                     {isLoading ? (
-                        <div className='pt-5'>
+                        <div className='pt-5 min-h-screen'>
                             <Loader />
                         </div>
                     ) : (
