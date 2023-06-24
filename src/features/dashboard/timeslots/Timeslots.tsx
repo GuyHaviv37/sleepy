@@ -16,13 +16,16 @@ const Timeslots: React.FC<TimeslotsProps> = (props) => {
         <>
             {timeslots.map(timeslot => {
                 const TimeslotView = viewMode === TimeslotViewMode.BY_GAME ? TimeslotByGameView : TimeslotFullView;
+                const userStarterIds = userStartersByTimeslot[timeslot] ?? [];
+                const oppStarterIds = oppStartersByTimeslot[timeslot] ?? [];
+                if (userStarterIds.length === 0 && oppStarterIds.length === 0) return null;
                 return (
                     <div className="col-span-2" key={timeslot}>
                         <p className="lg:text-lg pb-1 md:pb-2">📅 {getTimeslotString(timeslot)}</p>
                         <TimeslotView
                             timeslot={timeslot}
-                            userStarterIds={userStartersByTimeslot[timeslot] ?? []}
-                            oppStarterIds={oppStartersByTimeslot[timeslot] ?? []}
+                            userStarterIds={userStarterIds}
+                            oppStarterIds={oppStarterIds}
                         />
                     </div>
                 )
