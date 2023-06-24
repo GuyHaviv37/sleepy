@@ -23,7 +23,7 @@ const StarterRow: React.FC<StarterRowProps> = (props) => {
 
     return (
         <div className='flex items-center cursor-pointer py-2' onClick={() => openPlayerModal(id, isUserTeam)}>
-            <div className={`text-sm pb-1 md:text-base lg:text-lg grid grid-cols-4
+            <div className={`text-sm pb-1 md:text-base grid grid-cols-4
             w-full ${starterEmoji ? 'font-bold' : ''}`}>
                 <div className='flex w-full col-span-3'>
                     <p className='w-[4ch]'>{`${position}`}</p>

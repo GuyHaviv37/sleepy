@@ -45,14 +45,14 @@ const UserDashboardPage = (props: { nflWeek: WEEKS }) => {
     return (
         <>
             <AppHeader title={'Sleepy - Board'} />
-            <main className="mx-auto flex flex-col items-center justify-center p-4 bg-primary">
+            <main className="mx-auto flex flex-col items-center justify-center p-4 md:px-8 bg-primary">
                 <Link href="/" passHref>
                     <PageLogo title={'🏈 Sleepy'} />
                 </Link>
                 <Link href={`/user/${id}/settings`}>
                     <button className='text-md text-primary-text font-semibold absolute top-5 right-5'>⚙️ Settings</button>
                 </Link>
-                <div className='h-10 w-full' />
+                <div className='h-10 w-full md:h-12' />
                 <h1 className='text-primary-text text-3xl font-semibold text-left w-full'>Hello, {cachedUserInfo?.username ?? 'Player'}</h1>
                 {/* Highlighted players */}
                 <DashboardFilters

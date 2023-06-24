@@ -21,7 +21,7 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
     const { playerId: selectedPlayerId, isUser: isUserSelectedPlayer } = selectedPlayer
 
     return (
-        <section className='px-4 pt-3 grid grid-cols-2 gap-3 text-primary-text lg:px-6 lg:pt-6'>
+        <section className='pt-3 grid grid-cols-2 gap-3 text-primary-text lg:pt-6'>
             <h6 className="text-lg">You</h6>
             <h6 className="text-lg">Opponent</h6>
             {/* HIGHLIGHTED PLAYERS */}
