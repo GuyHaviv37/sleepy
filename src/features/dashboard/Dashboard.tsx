@@ -21,28 +21,30 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
     const { playerId: selectedPlayerId, isUser: isUserSelectedPlayer } = selectedPlayer
 
     return (
-        <section className='pt-3 grid grid-cols-2 gap-3 text-primary-text lg:pt-6'>
-            <h6 className="text-lg">You</h6>
-            <h6 className="text-lg">Opponent</h6>
-            {/* HIGHLIGHTED PLAYERS */}
-            <div className="grid grid-cols-2 col-span-2 gap-3">
-                <PlayerModalContext.Provider value={{ openPlayerModal }}>
-                    <Timeslots timeslots={timeslots}
-                        viewMode={isByGameViewMode ? TimeslotViewMode.BY_GAME : TimeslotViewMode.FULL}
-                        userStartersByTimeslot={userStartersByTimeslot}
-                        oppStartersByTimeslot={oppStartersByTimeslot}
-                    />
-                </PlayerModalContext.Provider>
+        <>
+            <div className='grid text-primary-text grid-cols-2 gap-3 md:gap-16 sticky top-0 bg-red-300'>
+                <h6 className="text-lg">You</h6>
+                <h6 className="text-lg">Opponent</h6>
             </div>
-            {showPlayerModal &&
-                <PlayerModal
-                    dismissPlayerModal={dismissPlayerModal}
-                    playerId={playersInfo[selectedPlayerId]?.id}
-                    avatarId={playersInfo[selectedPlayerId]?.avatarId}
-                    playerName={`${playersInfo[selectedPlayerId]?.firstName} ${playersInfo[selectedPlayerId]?.lastName}`}
-                    scores={isUserSelectedPlayer ? userLeagueInfo[selectedPlayerId]?.leagues : oppLeagueInfo[selectedPlayerId]?.leagues}
-                />}
-        </section>
+            <section className='pt-3 grid grid-cols-2 gap-3 text-primary-text lg:pt-6'>
+                {/* HIGHLIGHTED PLAYERS */}
+                <div className="grid grid-cols-2 col-span-2 gap-3">
+                    <PlayerModalContext.Provider value={{ openPlayerModal }}>
+                        <Timeslots timeslots={timeslots}
+                            viewMode={isByGameViewMode ? TimeslotViewMode.BY_GAME : TimeslotViewMode.FULL}
+                            userStartersByTimeslot={userStartersByTimeslot}
+                            oppStartersByTimeslot={oppStartersByTimeslot} />
+                    </PlayerModalContext.Provider>
+                </div>
+                {showPlayerModal &&
+                    <PlayerModal
+                        dismissPlayerModal={dismissPlayerModal}
+                        playerId={playersInfo[selectedPlayerId]?.id}
+                        avatarId={playersInfo[selectedPlayerId]?.avatarId}
+                        playerName={`${playersInfo[selectedPlayerId]?.firstName} ${playersInfo[selectedPlayerId]?.lastName}`}
+                        scores={isUserSelectedPlayer ? userLeagueInfo[selectedPlayerId]?.leagues : oppLeagueInfo[selectedPlayerId]?.leagues} />}
+            </section>
+        </>
     )
 };
 
