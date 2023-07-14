@@ -13,11 +13,11 @@ const HighlightedPlayers = () => {
         shouldShowHighlightedPlayers ? <div>
             <p className='text-primary-text mb-2 text-lg font-semibold'>Spotlight Players</p>
             {/* @TODO: scrollbar for desktop */}
-            <div className='col-span-2 flex gap-3 overflow-scroll'>
+            <ul className='col-span-2 flex gap-3 overflow-scroll py-1 scrollbar-thin scrollbar-thumb-accent scrollbar-track-secondary-accent'>
                 {Object.entries(highlightedPlayers).map(([playerId, playerHighlightType]) => (
-                    <HighlightedPlayer playerId={playerId} playerHighlightType={playerHighlightType} />
+                    <HighlightedPlayer key={playerId} playerId={playerId} playerHighlightType={playerHighlightType} />
                 ))}
-            </div>
+            </ul>
         </div> : null
     )
 };

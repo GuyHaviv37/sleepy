@@ -25,8 +25,8 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
             <PlayerModalContext.Provider value={{ openPlayerModal }}>
                 <HighlightedPlayers />
                 <section className='grid grid-cols-2 gap-3 text-primary-text lg:pt-6 pt-3'>
-                    <h6 className="text-lg">Your players</h6>
-                    <h6 className="text-lg">Opponent's players</h6>
+                    <h6 className="text-lg">{'Your players'}</h6>
+                    <h6 className="text-lg">{'Opponent\'s players'}</h6>
                     <div className="grid grid-cols-2 col-span-2 gap-3">
                         <Timeslots timeslots={timeslots}
                             viewMode={isByGameViewMode ? TimeslotViewMode.BY_GAME : TimeslotViewMode.FULL}
