@@ -1,8 +1,7 @@
 import { SPORT, SEASON, WEEKS } from '@/utils/consts';
 import { fetcher } from '@/utils/fetcher';
 import type { LeagueMatchup, SleeperLeagueData } from './leagues.types';
-import { extractSleeperMatchupData, extractUserLeagueRosterIds } from './extractors';
-import { LeagueRosterIdsMap } from '../local-storage/local-storage';
+import { extractUserLeagueRosterIds } from './extractors';
 
 export const getSleeperUserLeagues = async (sleeperId: string): Promise<SleeperLeagueData[]> => {
     return fetcher(`https://api.sleeper.app/v1/user/${sleeperId}/leagues/${SPORT}/${SEASON}`);
