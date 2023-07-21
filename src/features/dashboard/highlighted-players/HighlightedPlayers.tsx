@@ -14,8 +14,8 @@ const HighlightedPlayers = () => {
             <p className='text-primary-text mb-2 text-lg font-semibold'>Spotlight Players</p>
             {/* @TODO: scrollbar for desktop */}
             <ul className='col-span-2 flex gap-3 overflow-scroll py-1 scrollbar-thin scrollbar-thumb-accent scrollbar-track-secondary-accent'>
-                {Object.entries(highlightedPlayers).map(([playerId, playerHighlightType]) => (
-                    <HighlightedPlayer key={playerId} playerId={playerId} playerHighlightType={playerHighlightType} />
+                {Object.entries(highlightedPlayers).map(([playerId, { hightlightedPlayerType, conflictScore }]) => (
+                    <HighlightedPlayer key={playerId} playerId={playerId} playerHighlightType={hightlightedPlayerType} conflictScore={conflictScore} />
                 ))}
             </ul>
         </div> : null
