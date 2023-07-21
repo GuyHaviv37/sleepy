@@ -56,7 +56,6 @@ export const extractSleeperMatchupData = (leagueMatchupsData: {[leagueId: string
     })
     const oppStarters = extractStartersData(oppMatchups);
 
-    // @TODO: assign SCORES + playerRootType: ROOT/BOO/CONFLICTED/DEFAULT
     // assign conflicts
     if (userStarters) {
         Object.keys(userStarters ?? {}).forEach((playerId) => {
