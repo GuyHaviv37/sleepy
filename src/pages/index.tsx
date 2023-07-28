@@ -119,21 +119,11 @@ const Home: NextPage = () => {
               🏈 Sleepy
             </h1>
             <h3 className="text-3xl lg:text-5xl tracking-wide text-primary-text font-thin">
-              Complete Weekly Summary of Your Sleeper Leagues
+              Complete weekly summary of your sleeper leagues
             </h3>
           </section>
           {renderFormOrCachedUsername()}
         </FlexibleContainer>
-        {/* <div className="text-sm border-t-2 pt-2 text-primary-text">
-          <p>&rarr; Update Nov. 5th:</p>
-          <p>You can now enable a notice that warns you from missing starters !</p>
-          <p>Try it out in the {userCacheStatus === CacheStatus.HIT ?
-            <Link href={`user/${cachedUser?.sleeperId}/settings`}>
-              <span className="text-alt cursor-pointer"
-                onClick={bi.registerUpdateNoticeClick}
-              >Settings </span></Link> : 'Settings '}
-            page.</p>
-        </div> */}
       </main>
     </>
   );
