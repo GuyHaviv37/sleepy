@@ -29,7 +29,7 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
                         <h6 className="text-lg">{'Your players ⬇️'}</h6>
                         <h6 className="text-lg">{'Opponent players ⬇️'}</h6>
                     </div>
-                    <div className="grid grid-cols-2 col-span-2 gap-3">
+                    <div className="grid grid-cols-2 col-span-2 gap-3 md:gap-10">
                         <Timeslots timeslots={timeslots}
                             viewMode={isByGameViewMode ? TimeslotViewMode.BY_GAME : TimeslotViewMode.FULL}
                             userStartersByTimeslot={userStartersByTimeslot}
