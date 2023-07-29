@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import { ChangeEvent, useCallback, useState } from "react";
+import { ChangeEvent, FormEvent, MouseEventHandler, useCallback, useState } from "react";
 import { useRouter } from 'next/router';
 import Loader from "@/components/Loader";
 import * as bi from '../../lib/bi';
@@ -41,7 +41,11 @@ const Home: NextPage = () => {
     } // @TODO: else show error toast
   }
 
-  const onFormSubmit = () => {
+  const onFormSubmit = (e: any) => {
+    console.log('e', e);
+    if (e.preventDefault) {
+      e.preventDefault();
+    }
     submitMutation.mutate(usernameInput);
   };
 
@@ -71,8 +75,8 @@ const Home: NextPage = () => {
         )
       case CacheStatus.MISS:
         return (
-          <section className="flex flex-col space-y-3 bg-accent px-5 py-3 rounded-lg
-          md:w-1/2 md:max-w-md">
+          <form className="flex flex-col space-y-3 bg-accent px-5 py-3 rounded-lg
+          md:w-1/2 md:max-w-md" onSubmit={onFormSubmit}>
             <>
               <label className="text-primary-text w-full"
                 htmlFor="usernameInput">
@@ -99,7 +103,7 @@ const Home: NextPage = () => {
                   <span className="font-bold tracking-wide text-md">Submit</span>}
               </button>
             </>
-          </section>)
+          </form>)
       default: // LOADING
         return (<Loader />)
     }
