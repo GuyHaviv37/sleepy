@@ -27,7 +27,7 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
                 <section className='grid grid-cols-2 gap-3 text-primary-text lg:pt-6 pt-3'>
                     <div className='col-span-2 grid text-primary-text grid-cols-2 gap-3 md:gap-16 sticky top-0 bg-primary text-center'>
                         <h6 className="text-lg">{'Your players ⬇️'}</h6>
-                        <h6 className="text-lg">{'Opponent\'s players ⬇️'}</h6>
+                        <h6 className="text-lg">{'Opponent players ⬇️'}</h6>
                     </div>
                     <div className="grid grid-cols-2 col-span-2 gap-3">
                         <Timeslots timeslots={timeslots}

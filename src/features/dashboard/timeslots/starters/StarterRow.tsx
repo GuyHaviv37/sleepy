@@ -34,7 +34,7 @@ const StarterRow: React.FC<StarterRowProps> = (props) => {
                         {multipliers && multipliers > 1 && <span className='hidden lg:inline'>{` (X${multipliers})`}</span>}
                     </p>
                 </div>
-                <p className='justify-self-end'>
+                <p className='justify-self-end md:justify-self-start'>
                     {position !== 'DEF' && <span>{`${team}`}</span>}
                     {isByGameView ? null : <span className="hidden md:inline md:pl-1 lg:pl-2">{isHome ? 'vs.' : '@'}{'\t'}{oppTeam}</span>}
                 </p>
