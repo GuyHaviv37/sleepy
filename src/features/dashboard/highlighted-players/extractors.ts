@@ -12,7 +12,7 @@ const computeConflictScore = (userLeagues?: {[leagueId: string]: number}, oppLea
         const userWeightTotal = getWeightTotal(userLeagues, leagueWeightsMap);
         const oppWeightTotal = getWeightTotal(oppLeagues, leagueWeightsMap);
         const userRatio = userWeightTotal / (userWeightTotal + oppWeightTotal);
-        return Math.round(userRatio * 100);
+        return isNaN(userRatio) ? 0 : Math.round(userRatio * 100);
     }
     return 0;
 };
