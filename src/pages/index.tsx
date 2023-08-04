@@ -42,7 +42,6 @@ const Home: NextPage = () => {
   }
 
   const onFormSubmit = (e: any) => {
-    console.log('e', e);
     if (e.preventDefault) {
       e.preventDefault();
     }
