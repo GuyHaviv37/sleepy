@@ -1,4 +1,5 @@
 /** @type {import('tailwindcss').Config} */
+const defaultTheme = require('tailwindcss/defaultTheme');
 module.exports = {
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
@@ -10,6 +11,9 @@ module.exports = {
         'alt' : '#00A990',
         'background-main': '#F9F9ED',
         'primary-text': '#FFFFFF',
+      },
+      fontFamily: {
+        'sans': ['Nunito Sans', ...defaultTheme.fontFamily.sans]
       }
     },
   },
