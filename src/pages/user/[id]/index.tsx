@@ -79,7 +79,6 @@ const UserDashboardPage = (props: { nflWeek: WEEKS }) => {
                             userLeagueInfo: userStarters!,
                             oppLeagueInfo: oppStarters!
                         }}>
-                            {!isLoading && <MissingPlayersNotice />}
                             <Dashboard
                                 isByGameViewMode={dashboardViewType === DashboardViewTypes.FULL}
                             />
