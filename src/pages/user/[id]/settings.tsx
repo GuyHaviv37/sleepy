@@ -53,10 +53,10 @@ const UserDashboardPage = ({ leagues }: UserDashboardPageProps) => {
                         <br />
                         <span className='text-alt text-sm font-thin md:text-lg'>Ignore a league by unticking its checkbox</span>
                     </p>
-                    <section className='flex flex-col space-y-3 bg-accent px-5 py-3 rounded-lg md:w-1/2 md:max-w-md'>
-                        <h5 className='text-primary-text text-xl font-semibold tracking-wide md:text-2xl'>Your Leagues</h5>
+                    <section className='flex flex-col space-y-3 bg-accent py-8 rounded-lg md:w-1/2 md:max-w-md'>
+                        <h5 className='text-primary-text text-xl font-semibold tracking-wide md:text-2xl px-8'>Your Leagues</h5>
                         <div className="flex flex-col center-items">
-                            <div className="px-2 mb-3 max-h-96 overflow-y-auto md:self-center">
+                            <div className="w-full mb-3 max-h-96 overflow-y-auto md:self-center px-8">
                                 {leagues?.map((league) => (
                                     <LeagueWeightInput
                                         key={league.league_id}
@@ -67,8 +67,10 @@ const UserDashboardPage = ({ leagues }: UserDashboardPageProps) => {
                                         checkboxValue={leagueIgnoresMap[league.league_id] ?? true}
                                     />
                                 ))}
-                                <div className='border-t-[1px] mt-3 border-alt' />
-                                <div className='flex mt-3'>
+                            </div>
+                            <div className='border-t-[1px] mt-3 border-alt opacity-20' />
+                            <div className='px-8'>
+                                <div className='flex mt-3 mb-6'>
                                     <input type='checkbox'
                                         id='missing_players_checkbox'
                                         className='w-4 checked:accent-alt rounded-lg md:w-5'
@@ -77,15 +79,15 @@ const UserDashboardPage = ({ leagues }: UserDashboardPageProps) => {
                                     <label htmlFor='missing_players_checkbox'
                                         className="text-primary-text text-sm pl-5 md:text-base">Show missing starters notice</label>
                                 </div>
+                                <button className="text-primary-text rounded-lg bg-alt w-full py-3"
+                                    onClick={submitWeightsHandler}>
+                                    Submit
+                                </button>
+                                {fromLogin && <button className="px-1 mt-2 text-primary-text text-sm tracking-wide md:text-base w-full text-center"
+                                    onClick={submitWeightsHandler}>
+                                    Skip for later
+                                </button>}
                             </div>
-                            <button className="text-primary-text rounded-lg bg-alt w-full py-3"
-                                onClick={submitWeightsHandler}>
-                                Submit
-                            </button>
-                            {fromLogin && <button className="px-1 mt-2 text-primary-text mx-auto text-sm tracking-wide md:text-base w-fit"
-                                onClick={submitWeightsHandler}>
-                                or skip for later
-                            </button>}
                         </div>
                     </section>
                 </FlexibleContainer>

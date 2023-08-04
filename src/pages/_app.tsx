@@ -42,8 +42,11 @@ const MyApp: AppType = ({ Component, pageProps }) => {
             });
           `,
         }} />
-        <Head>
-        <link rel='manifest' href='./manifest.json'/>
+      <Head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        {/* <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin={'*'} /> */}
+        {/* <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200;0,6..12,400;0,6..12,500;0,6..12,600;0,6..12,700;1,6..12,400&display=swap" rel="stylesheet" /> */}
+        <link rel='manifest' href='./manifest.json' />
         <link rel="apple-touch-icon" href="icons/apple-icon-180.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <link rel="apple-touch-startup-image" href="icons/apple-splash-2048-2732.jpg" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
@@ -76,7 +79,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
         <link rel="apple-touch-startup-image" href="icons/apple-splash-1334-750.jpg" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" />
         <link rel="apple-touch-startup-image" href="icons/apple-splash-640-1136.jpg" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
         <link rel="apple-touch-startup-image" href="icons/apple-splash-1136-640.jpg" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)"></link>
-        </Head>
+      </Head>
       <Component {...pageProps} />
     </>)
 };
@@ -94,9 +97,9 @@ const getBaseUrl = () => {
 export default withTRPC<AppRouter>({
   config({ ctx }) {
     /**
-     * If you want to use SSR, you need to use the server's full URL
-     * @link https://trpc.io/docs/ssr
-     */
+            * If you want to use SSR, you need to use the server's full URL
+            * @link https://trpc.io/docs/ssr
+            */
     const url = `${getBaseUrl()}/api/trpc`;
 
     return {
@@ -105,7 +108,7 @@ export default withTRPC<AppRouter>({
       /**
        * @link https://react-query.tanstack.com/reference/QueryClient
        */
-      // queryClientConfig: { defaultOptions: { queries: { staleTime: 60 } } },
+      // queryClientConfig: {defaultOptions: {queries: {staleTime: 60 } } },
     };
   },
   /**

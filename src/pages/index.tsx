@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import { ChangeEvent, useCallback, useState } from "react";
+import { ChangeEvent, FormEvent, MouseEventHandler, useCallback, useState } from "react";
 import { useRouter } from 'next/router';
 import Loader from "@/components/Loader";
 import * as bi from '../../lib/bi';
@@ -41,7 +41,10 @@ const Home: NextPage = () => {
     } // @TODO: else show error toast
   }
 
-  const onFormSubmit = () => {
+  const onFormSubmit = (e: any) => {
+    if (e.preventDefault) {
+      e.preventDefault();
+    }
     submitMutation.mutate(usernameInput);
   };
 
@@ -71,8 +74,8 @@ const Home: NextPage = () => {
         )
       case CacheStatus.MISS:
         return (
-          <section className="flex flex-col space-y-3 bg-accent px-5 py-3 rounded-lg
-          md:w-1/2 md:max-w-md">
+          <form className="flex flex-col space-y-3 bg-accent px-5 py-3 rounded-lg
+          md:w-1/2 md:max-w-md" onSubmit={onFormSubmit}>
             <>
               <label className="text-primary-text w-full"
                 htmlFor="usernameInput">
@@ -99,7 +102,7 @@ const Home: NextPage = () => {
                   <span className="font-bold tracking-wide text-md">Submit</span>}
               </button>
             </>
-          </section>)
+          </form>)
       default: // LOADING
         return (<Loader />)
     }
@@ -119,21 +122,11 @@ const Home: NextPage = () => {
               🏈 Sleepy
             </h1>
             <h3 className="text-3xl lg:text-5xl tracking-wide text-primary-text font-thin">
-              Complete Weekly Summary of Your Sleeper Leagues
+              Complete weekly summary of your sleeper leagues
             </h3>
           </section>
           {renderFormOrCachedUsername()}
         </FlexibleContainer>
-        {/* <div className="text-sm border-t-2 pt-2 text-primary-text">
-          <p>&rarr; Update Nov. 5th:</p>
-          <p>You can now enable a notice that warns you from missing starters !</p>
-          <p>Try it out in the {userCacheStatus === CacheStatus.HIT ?
-            <Link href={`user/${cachedUser?.sleeperId}/settings`}>
-              <span className="text-alt cursor-pointer"
-                onClick={bi.registerUpdateNoticeClick}
-              >Settings </span></Link> : 'Settings '}
-            page.</p>
-        </div> */}
       </main>
     </>
   );

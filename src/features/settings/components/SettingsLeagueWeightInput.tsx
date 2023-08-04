@@ -28,7 +28,6 @@ const LeagueWeightInput: React.FC<LeagueWeightInputProps> = (props) => {
                 focus:text-primary focus:border-alt focus:border-[2px] focus:outline-none
                 md:text-md"
                 />
-                <p className="text-alt">$</p>
             </div>
         </div>
     )

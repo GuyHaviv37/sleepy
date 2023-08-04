@@ -17,10 +17,10 @@ const HighlightedPlayer = (props: HighlightedPlayerProps) => {
     const { openPlayerModal } = useContext(PlayerModalContext);
 
     const showPlayerScores = playerHighlightType !== HIGHLIGHTED_PLAYER_TYPES.BOO;
-    const showPlayerConflictScore = playerHighlightType === HIGHLIGHTED_PLAYER_TYPES.CONFLICTED;
+    const showPlayerConflictScore = playerHighlightType === HIGHLIGHTED_PLAYER_TYPES.CONFLICTED && conflictScore !== undefined && !isNaN(conflictScore);
     return (
         <li className='bg-accent rounded p-4 flex gap-3 relative cursor-pointer' onClick={() => openPlayerModal(playerId, showPlayerScores)}>
-            <p className={`rounded-full p-3 h-fit ${backgroundColor}`}>{emoji}</p>
+            <p className={`rounded-full p-3 h-fit lg:text-lg ${backgroundColor}`}>{emoji}</p>
             <div className='text-sm'>
                 <p className='text-primary-text w-32 line-clamp-1'>{playersInfo[playerId]?.position} {playersInfo[playerId]?.firstName} {playersInfo[playerId]?.lastName}</p>
                 <p className='text-gray-400'>{playersInfo[playerId]?.team}</p>

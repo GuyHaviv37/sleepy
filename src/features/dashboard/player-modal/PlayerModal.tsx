@@ -14,7 +14,7 @@ interface PlayerModalProps {
 const PlayerModal: React.FC<PlayerModalProps> = (props) => {
     const { data: cachedLeaguesInfo } = useGetLocalStorage('leaguesInfo');
     const leagueNames = cachedLeaguesInfo?.leagueNames;
-    const {dismissPlayerModal, avatarId, playerName, scores, playerId} = props;
+    const { dismissPlayerModal, avatarId, playerName, scores, playerId } = props;
     const [imageError, setImageError] = useState(false);
     return (
         <>
@@ -27,14 +27,16 @@ const PlayerModal: React.FC<PlayerModalProps> = (props) => {
                     <div className="relative w-full max-w-lg p-4 mx-auto bg-primary rounded-md shadow-lg">
                         <div className="mt-3 sm:flex relative">
                             <div className="flex items-center justify-center flex-none mx-auto
-                            relative w-32 h-[5.7rem] sm:w-48 sm:h-40 lg:w-64 lg:h-52 max-w-1/2">
+                            relative w-32 h-28 sm:w-40 sm:h-40 lg:w-52 lg:h-48 max-w-1/2">
                                 <Image
                                     src={!imageError ?
                                         `https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/${avatarId}.png` :
-                                            `https://sleepercdn.com/content/nfl/players/${playerId}.jpg`}
+                                        `https://sleepercdn.com/content/nfl/players/${playerId}.jpg`}
                                     layout="fill"
                                     objectFit='contain'
+                                    objectPosition='bottom'
                                     onError={() => setImageError(true)}
+                                    className='rounded-full bg-[#8B96A8]'
                                 />
                             </div>
                             <div className="mt-2 text-center sm:text-left sm:flex sm:flex-col sm:px-4">
@@ -44,9 +46,9 @@ const PlayerModal: React.FC<PlayerModalProps> = (props) => {
                                 <div>
                                     {Object.entries(scores ?? {}).map(([leagueId, score]) => {
                                         return (
-                                        <p key={leagueId} className="mt-2 text-[15px] text-primary-text lg:text-base lg:font-thin">
-                                            {`${leagueNames?.[leagueId]}: ${score}`}
-                                        </p>)
+                                            <p key={leagueId} className="mt-2 text-[15px] text-primary-text lg:text-base lg:font-thin">
+                                                {`${leagueNames?.[leagueId]}: ${score}`}
+                                            </p>)
                                     })}
                                 </div>
                                 <button

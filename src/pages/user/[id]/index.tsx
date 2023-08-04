@@ -35,6 +35,13 @@ const UserDashboardPage = (props: { nflWeek: WEEKS }) => {
         ['players.getPlayersInfoByIds',
             { playerIds: [...Object.keys(userStarters ?? {}), ...Object.keys(oppStarters ?? {})] }]);
 
+    const [isWeeksDropdownOpen, setIsWeeksDropdownOpen] = useState(false);
+    const [isDashboardViewDropdownOpen, setIsDashboardViewDropdownOpen] = useState(false);
+    const toggleOffDashboardFilters = () => {
+        if (isWeeksDropdownOpen) setIsWeeksDropdownOpen(false);
+        if (isDashboardViewDropdownOpen) setIsDashboardViewDropdownOpen(false);
+    }
+
     useEffect(() => {
         if (id && cachedSettings && !cachedSettings.leagueWeightsMap) {
             router.replace(`/user/${id}/settings`);
@@ -45,7 +52,7 @@ const UserDashboardPage = (props: { nflWeek: WEEKS }) => {
     return (
         <>
             <AppHeader title={'Sleepy - Board'} />
-            <main className="mx-auto flex flex-col items-center justify-center p-4 md:px-8 bg-primary">
+            <main className="mx-auto flex flex-col items-center justify-center p-4 md:px-8 bg-primary" onClick={toggleOffDashboardFilters}>
                 <Link href="/" passHref>
                     <PageLogo title={'🏈 Sleepy'} />
                 </Link>
@@ -54,10 +61,11 @@ const UserDashboardPage = (props: { nflWeek: WEEKS }) => {
                 </Link>
                 <div className='h-10 w-full md:h-12' />
                 <h1 className='text-primary-text text-3xl font-semibold text-left w-full'>Hello, {cachedUserInfo?.username ?? 'Player'}</h1>
-                {/* Highlighted players */}
                 <DashboardFilters
                     selectedWeek={selectedWeek} setSelectedWeek={setSelectedWeek}
                     dashboardViewType={dashboardViewType} setDashboardViewType={setDashboardViewType}
+                    isWeeksDropdownOpen={isWeeksDropdownOpen} setIsWeeksDropdownOpen={setIsWeeksDropdownOpen}
+                    isDashboardViewDropdownOpen={isDashboardViewDropdownOpen} setIsDashboardViewDropdownOpen={setIsDashboardViewDropdownOpen}
                 />
                 <section className="w-full rounded-lg py-4 flex flex-col">
                     {isLoading ? (

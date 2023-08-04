@@ -8,12 +8,15 @@ interface DashboardFiltersProps {
     setSelectedWeek: React.Dispatch<React.SetStateAction<WEEKS>>;
     dashboardViewType: DashboardViewType;
     setDashboardViewType: React.Dispatch<React.SetStateAction<DashboardViewType>>;
+    isWeeksDropdownOpen: boolean;
+    setIsWeeksDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    isDashboardViewDropdownOpen: boolean;
+    setIsDashboardViewDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const DashboardFilters = (props: DashboardFiltersProps) => {
-    const { selectedWeek, setSelectedWeek, dashboardViewType, setDashboardViewType } = props;
-    const [isWeeksDropdownOpen, setIsWeeksDropdownOpen] = useState(false);
-    const [isDashboardViewDropdownOpen, setIsDashboardViewDropdownOpen] = useState(false);
+    const { selectedWeek, setSelectedWeek, dashboardViewType, setDashboardViewType,
+        isWeeksDropdownOpen, setIsWeeksDropdownOpen, isDashboardViewDropdownOpen, setIsDashboardViewDropdownOpen } = props;
 
     const onWeekOptionClick = (week: WEEKS) => {
         setSelectedWeek(week);
