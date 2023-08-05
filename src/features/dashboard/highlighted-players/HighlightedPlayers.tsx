@@ -7,7 +7,7 @@ import MissingPlayersNotice from '@/features/missing-players/MissingPlayersNotic
 const HighlightedPlayers = () => {
     const { userLeagueInfo, oppLeagueInfo } = useContext(DashboardContext);
     // @TODO: sort by gametime
-    const highlightedPlayers = useMemo(() => getHighlightedPlayers(userLeagueInfo, oppLeagueInfo), []);
+    const highlightedPlayers = getHighlightedPlayers(userLeagueInfo, oppLeagueInfo);
 
     const shouldShowHighlightedPlayers = Object.keys(highlightedPlayers).length >= 1;
     return (
