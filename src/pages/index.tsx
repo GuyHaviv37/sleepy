@@ -19,7 +19,7 @@ const Home: NextPage = () => {
   const submitMutation = useMutation(submitNewUser, {
     onMutate: () => setErrorMessage(''),
     onSuccess: (user) => {
-      bi.logUsernameSubmitted(user.user_id, user.username);
+      bi.logUsernameSubmitted(user.username);
       router.push({
         pathname: `user/${user.user_id}/settings`,
         query: { fromLogin: true }
@@ -37,7 +37,7 @@ const Home: NextPage = () => {
   const onCachedSubmit = () => {
     const cachedUserId = cachedUser?.sleeperId;
     if (cachedUserId) {
-      bi.logContinuedWithLoggedInUser(cachedUserId, cachedUser.username);
+      bi.logContinuedWithLoggedInUser();
       router.push(`user/${cachedUserId}`);
     } // @TODO: else show error toast
   }
@@ -51,7 +51,7 @@ const Home: NextPage = () => {
 
   const logOffUser = () => {
     if (window.confirm('Switching user will delete all saved settings for the previous user. Continue?')) {
-      bi.logUserLoggedOut(cachedUser?.sleeperId);
+      bi.logUserLoggedOut();
       clearUserCache();
       deleteLocalStorageData('user');
       deleteLocalStorageData('settings');

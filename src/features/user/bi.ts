@@ -1,24 +1,19 @@
 import * as gtag from '../../../lib/gtag';
 
-export const logUsernameSubmitted = (userId: string, usernameInput: string) => gtag.event({
-    action: 'user_submit_form',
+
+export const logUsernameSubmitted = (usernameInput: string) => gtag.submitEvent({
     category: 'login',
-    label: 'username',
-    userId,
-    value: usernameInput
+    label: 'new',
+    username: usernameInput
   })
 
-export const logContinuedWithLoggedInUser = (userId: string, username: string | undefined) => gtag.event({
-  action: 'user_submit_form',
-  category: 're-login',
-  label: 'username',
-  userId,
-  value: username,
+export const logContinuedWithLoggedInUser = () => gtag.submitEvent({
+  category: 'login',
+  label: 'continue',
 })
 
-export const logUserLoggedOut = (userId: string | undefined) => gtag.event({
+export const logUserLoggedOut = () => gtag.event({
   action: 'user_alert',
   category: 'logout',
   label: 'logout',
-  value: userId
 })

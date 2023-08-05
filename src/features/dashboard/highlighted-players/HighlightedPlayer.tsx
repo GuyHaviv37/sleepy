@@ -3,6 +3,7 @@ import DashboardContext from '../DashboardContext';
 import { getHighlightStyle } from '../timeslots/content-utils';
 import { HIGHLIGHTED_PLAYER_TYPES, HighlightedPlayerType } from './types';
 import PlayerModalContext from '../player-modal/PlayerModalContext';
+import * as bi from './bi';
 
 interface HighlightedPlayerProps {
     playerId: string;
@@ -16,10 +17,15 @@ const HighlightedPlayer = (props: HighlightedPlayerProps) => {
     const { emoji, backgroundColor } = getHighlightStyle(playerHighlightType);
     const { openPlayerModal } = useContext(PlayerModalContext);
 
+    const onPlayerClicked = () => {
+        bi.logSpotlightPlayerClicked(playerHighlightType);
+        openPlayerModal(playerId, showPlayerScores)
+    }
+
     const showPlayerScores = playerHighlightType !== HIGHLIGHTED_PLAYER_TYPES.BOO;
     const showPlayerConflictScore = playerHighlightType === HIGHLIGHTED_PLAYER_TYPES.CONFLICTED && conflictScore !== undefined && !isNaN(conflictScore);
     return (
-        <li className='bg-accent rounded p-4 flex gap-3 relative cursor-pointer' onClick={() => openPlayerModal(playerId, showPlayerScores)}>
+        <li className='bg-accent rounded p-4 flex gap-3 relative cursor-pointer' onClick={onPlayerClicked}>
             <p className={`rounded-full p-3 h-fit lg:text-lg ${backgroundColor}`}>{emoji}</p>
             <div className='text-sm'>
                 <p className='text-primary-text w-32 line-clamp-1'>{playersInfo[playerId]?.position} {playersInfo[playerId]?.firstName} {playersInfo[playerId]?.lastName}</p>

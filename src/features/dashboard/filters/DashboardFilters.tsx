@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import DashboardDropdown from './DashboardDropdown';
 import { DashboardViewType, DashboardViewTypes, WEEKS } from '@/utils/consts';
 import DashboardDropdownItem from './DashboardDropdownItem';
+import * as bi from './bi';
 
 interface DashboardFiltersProps {
     selectedWeek: WEEKS;
@@ -35,21 +36,36 @@ const DashboardFilters = (props: DashboardFiltersProps) => {
                 <DashboardDropdown
                     isOpen={isWeeksDropdownOpen}
                     placeholder='Choose a week'
-                    toggleDropdown={() => setIsWeeksDropdownOpen(v => !v)}
+                    toggleDropdown={() => {
+                        bi.logWeeksFilterClicked(!isWeeksDropdownOpen);
+                        setIsWeeksDropdownOpen(v => !v)
+                    }}
                     currentValue={`Week ${selectedWeek}`} >
                     <ul className="py-1 divide-y divide-secondary-accent" aria-labelledby="dropdown">
                         {Object.values(WEEKS).map(week =>
-                            <DashboardDropdownItem key={week} label={`Week ${week}`} onClick={() => onWeekOptionClick(week)} isSelected={week === selectedWeek} />)}
+                            <DashboardDropdownItem key={week} label={`Week ${week}`} isSelected={week === selectedWeek}
+                                onClick={() => {
+                                    bi.logWeeksFilterItemClicked(week)
+                                    onWeekOptionClick(week)
+                                }
+                                } />)}
                     </ul>
                 </DashboardDropdown>
                 <DashboardDropdown
                     isOpen={isDashboardViewDropdownOpen}
                     placeholder='Choose a view'
-                    toggleDropdown={() => setIsDashboardViewDropdownOpen(v => !v)}
+                    toggleDropdown={() => {
+                        bi.logViewFilterClicked(!isDashboardViewDropdownOpen);
+                        setIsDashboardViewDropdownOpen(v => !v)
+                    }}
                     currentValue={`${dashboardViewType}`} >
                     <ul className="py-1 divide-y divide-secondary-accent" aria-labelledby="dropdown">
                         {Object.values(DashboardViewTypes).map(viewType =>
-                            <DashboardDropdownItem key={viewType} label={`${viewType}`} onClick={() => onViewTypeOptionClick(viewType)} isSelected={viewType === dashboardViewType} />)}
+                            <DashboardDropdownItem key={viewType} label={`${viewType}`} isSelected={viewType === dashboardViewType}
+                                onClick={() => {
+                                    bi.logViewFilterItemClicked(viewType);
+                                    onViewTypeOptionClick(viewType)
+                                }} />)}
                     </ul>
                 </DashboardDropdown>
             </div>

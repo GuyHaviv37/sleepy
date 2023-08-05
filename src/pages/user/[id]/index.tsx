@@ -15,6 +15,7 @@ import Dashboard from '@/features/dashboard/Dashboard';
 import DashboardContext from '@/features/dashboard/DashboardContext';
 import PageLogo from '@/components/PageLogo';
 import DashboardFilters from '@/features/dashboard/filters/DashboardFilters';
+import * as bi from '@/features/dashboard/bi';
 
 const UserDashboardPage = (props: { nflWeek: WEEKS }) => {
     const router = useRouter();
@@ -52,11 +53,11 @@ const UserDashboardPage = (props: { nflWeek: WEEKS }) => {
         <>
             <AppHeader title={'Sleepy - Board'} />
             <main className="mx-auto flex flex-col items-center justify-center p-4 md:px-8 bg-primary" onClick={toggleOffDashboardFilters}>
-                <Link href="/" passHref>
-                    <PageLogo title={'🏈 Sleepy'} />
+                <Link href="/" passHref >
+                    <PageLogo title={'🏈 Sleepy'} onClick={bi.logHomeLinkClicked} />
                 </Link>
-                <Link href={`/user/${id}/settings`}>
-                    <button className='text-md text-primary-text font-semibold absolute top-5 right-5'>⚙️ Settings</button>
+                <Link href={`/user/${id}/settings`} >
+                    <button className='text-md text-primary-text font-semibold absolute top-5 right-5' onClick={bi.logSettingsLinkClicked}>⚙️ Settings</button>
                 </Link>
                 <div className='h-10 w-full md:h-12' />
                 <h1 className='text-primary-text text-3xl font-semibold text-left w-full'>Hello, {cachedUserInfo?.username ?? 'Player'}</h1>

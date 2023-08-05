@@ -37,9 +37,9 @@ const UserDashboardPage = ({ leagues }: UserDashboardPageProps) => {
             leagueStarterSpots,
         });
         if (isSkipped) {
-            bi.logSettingsSkipped(id as string);
+            bi.logSettingsSkipped();
         } else {
-            bi.logSettingsSubmitted({ userId: id as string, leagueNames, leagueWeightsMap, leagueIgnoresMap, shouldShowMissingStarters })
+            bi.logSettingsSubmitted({ leagueNames, leagueWeightsMap, leagueIgnoresMap, shouldShowMissingStarters })
         }
         router.replace(`/user/${id}`);
     };
