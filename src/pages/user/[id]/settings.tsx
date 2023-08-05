@@ -10,6 +10,7 @@ import AppHeader from '@/components/layout/AppHeader';
 import { useSettings } from '@/features/settings/useSettings';
 import FlexibleContainer from '@/components/layout/FlexibleContainer';
 import PageLogo from '@/components/PageLogo';
+import * as bi from '@/features/settings/bi';
 
 type UserDashboardPageProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
@@ -20,7 +21,7 @@ const UserDashboardPage = ({ leagues }: UserDashboardPageProps) => {
         onChangeLeagueIgnore, onChangeLeagueWeight, onChangeShowMissingStarters } = useSettings(leagues);
 
     // move outside of component
-    const submitWeightsHandler = () => {
+    const submitWeightsHandler = (isSkipped = false) => {
         const leagueNames = leagues?.reduce((acc, league) => ({ ...acc, [league.league_id]: league.name }), {});
         const leagueStarterSpots = leagues?.reduce((acc, league) => {
             const starterSpotsInLeague = league.roster_positions.filter(position => position !== 'BN').length;
@@ -35,6 +36,11 @@ const UserDashboardPage = ({ leagues }: UserDashboardPageProps) => {
             leagueNames,
             leagueStarterSpots,
         });
+        if (isSkipped) {
+            bi.logSettingsSkipped(id as string);
+        } else {
+            bi.logSettingsSubmitted({ userId: id as string, leagueNames, leagueWeightsMap, leagueIgnoresMap, shouldShowMissingStarters })
+        }
         router.replace(`/user/${id}`);
     };
 
@@ -80,11 +86,11 @@ const UserDashboardPage = ({ leagues }: UserDashboardPageProps) => {
                                         className="text-primary-text text-sm pl-5 md:text-base">Show missing starters notice</label>
                                 </div>
                                 <button className="text-primary-text rounded-lg bg-alt w-full py-3"
-                                    onClick={submitWeightsHandler}>
+                                    onClick={() => submitWeightsHandler(false)}>
                                     Submit
                                 </button>
                                 {fromLogin && <button className="px-1 mt-2 text-primary-text text-sm tracking-wide md:text-base w-full text-center"
-                                    onClick={submitWeightsHandler}>
+                                    onClick={() => submitWeightsHandler(true)}>
                                     Skip for later
                                 </button>}
                             </div>

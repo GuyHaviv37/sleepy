@@ -5,24 +5,9 @@ import type { AppType } from "next/dist/shared/lib/utils";
 import superjson from "superjson";
 import "../styles/globals.css";
 import Script from "next/script";
-import { useRouter } from "next/router";
-import { useEffect } from "react";
-import * as gtag from '../../lib/gtag';
 import Head from "next/head";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
-  const router = useRouter()
-  useEffect(() => {
-    const handleRouteChange = (url: string) => {
-      gtag.pageview(url)
-    }
-    router.events.on('routeChangeComplete', handleRouteChange)
-    router.events.on('hashChangeComplete', handleRouteChange)
-    return () => {
-      router.events.off('routeChangeComplete', handleRouteChange)
-      router.events.off('hashChangeComplete', handleRouteChange)
-    }
-  }, [router.events])
 
   return (
     <>
@@ -43,9 +28,6 @@ const MyApp: AppType = ({ Component, pageProps }) => {
           `,
         }} />
       <Head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        {/* <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin={'*'} /> */}
-        {/* <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200;0,6..12,400;0,6..12,500;0,6..12,600;0,6..12,700;1,6..12,400&display=swap" rel="stylesheet" /> */}
         <link rel='manifest' href='./manifest.json' />
         <link rel="apple-touch-icon" href="icons/apple-icon-180.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />

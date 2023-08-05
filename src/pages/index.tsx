@@ -1,8 +1,8 @@
 import type { NextPage } from "next";
-import { ChangeEvent, FormEvent, MouseEventHandler, useCallback, useState } from "react";
+import { ChangeEvent, useCallback, useState } from "react";
 import { useRouter } from 'next/router';
 import Loader from "@/components/Loader";
-import * as bi from '../../lib/bi';
+import * as bi from '@/features/user/bi';
 import { useMutation } from "react-query";
 import { submitNewUser } from "@/features/user/data";
 import { useGetLocalStorage } from "@/features/local-storage/hooks";
@@ -19,7 +19,7 @@ const Home: NextPage = () => {
   const submitMutation = useMutation(submitNewUser, {
     onMutate: () => setErrorMessage(''),
     onSuccess: (user) => {
-      bi.registerUsernameSubmit(user.username);
+      bi.logUsernameSubmitted(user.user_id, user.username);
       router.push({
         pathname: `user/${user.user_id}/settings`,
         query: { fromLogin: true }
@@ -37,6 +37,7 @@ const Home: NextPage = () => {
   const onCachedSubmit = () => {
     const cachedUserId = cachedUser?.sleeperId;
     if (cachedUserId) {
+      bi.logContinuedWithLoggedInUser(cachedUserId, cachedUser.username);
       router.push(`user/${cachedUserId}`);
     } // @TODO: else show error toast
   }
@@ -50,6 +51,7 @@ const Home: NextPage = () => {
 
   const logOffUser = () => {
     if (window.confirm('Switching user will delete all saved settings for the previous user. Continue?')) {
+      bi.logUserLoggedOut(cachedUser?.sleeperId);
       clearUserCache();
       deleteLocalStorageData('user');
       deleteLocalStorageData('settings');

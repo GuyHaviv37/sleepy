@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { fetcher } from '@/utils/fetcher';
 import Loader from '@/components/Loader';
 import { DashboardViewType, DashboardViewTypes, WEEKS } from '@/utils/consts';
-import MissingPlayersNotice from '@/features/missing-players/MissingPlayersNotice';
 import { trpc } from '@/utils/trpc';
 import AppHeader from '@/components/layout/AppHeader';
 import { useGetLocalStorage } from '@/features/local-storage/hooks';
