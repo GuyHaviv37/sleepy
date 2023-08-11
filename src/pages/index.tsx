@@ -10,6 +10,7 @@ import { CacheStatus } from "@/features/local-storage/local-storage.types";
 import AppHeader from "@/components/layout/AppHeader";
 import { deleteLocalStorageData } from "@/features/local-storage/local-storage";
 import FlexibleContainer from "@/components/layout/FlexibleContainer";
+import KofiButton from "@/features/kofi/KofiButton";
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -127,6 +128,7 @@ const Home: NextPage = () => {
           </section>
           {renderFormOrCachedUsername()}
         </FlexibleContainer>
+        <KofiButton absolute />
       </main>
     </>
   );

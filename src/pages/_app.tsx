@@ -42,10 +42,8 @@ const MyApp: AppType = ({ Component, pageProps }) => {
             });
           `,
         }} />
+      <Script src='https://storage.ko-fi.com/cdn/scripts/overlay-widget.js' strategy="afterInteractive"></Script>
       <Head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        {/* <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin={'*'} /> */}
-        {/* <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200;0,6..12,400;0,6..12,500;0,6..12,600;0,6..12,700;1,6..12,400&display=swap" rel="stylesheet" /> */}
         <link rel='manifest' href='./manifest.json' />
         <link rel="apple-touch-icon" href="icons/apple-icon-180.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />

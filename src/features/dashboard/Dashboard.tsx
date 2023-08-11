@@ -7,6 +7,7 @@ import PlayerModalContext from './player-modal/PlayerModalContext';
 import Timeslots from './timeslots/Timeslots';
 import { TimeslotViewMode } from './timeslots/timeslot.types';
 import HighlightedPlayers from './highlighted-players/HighlightedPlayers';
+import KofiButton from '../kofi/KofiButton';
 
 interface DashboardProps {
     isByGameViewMode: boolean;
@@ -36,7 +37,10 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
                             oppStartersByTimeslot={oppStartersByTimeslot}
                         />
                     </div>
-                </section >
+                </section>
+                <div className='mt-4 mx-auto'>
+                    <KofiButton />
+                </div>
             </PlayerModalContext.Provider>
             {
                 showPlayerModal &&
