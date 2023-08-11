@@ -11,7 +11,7 @@ interface GtagEventProps {
 
 // https://developers.google.com/analytics/devguides/collection/gtagjs/events
 export const event = ({ action, category, label, value }: GtagEventProps) => {
-  const userId = getLocalStorageData('settings').sleeperId;
+  const userId = getLocalStorageData('settings')?.sleeperId;
   // @ts-ignore
   window.gtag('event', action, {
     event_category: category,
@@ -50,7 +50,6 @@ export const loadEvent = (props: Omit<GtagEventProps, 'action'>) => {
 }
 
 export const dropdownEvent = (props: Omit<GtagEventProps, 'action'>) => {
-  console.log('dropdownEvent', props)
   event({
     action: 'dashboard_filters_action',
     ...props
