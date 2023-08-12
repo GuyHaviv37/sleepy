@@ -12,8 +12,7 @@ export const logContinuedWithLoggedInUser = () => gtag.submitEvent({
   label: 'continue',
 })
 
-export const logUserLoggedOut = () => gtag.event({
-  action: 'user_alert',
+export const logUserLoggedOut = () => gtag.alertEvent({
   category: 'logout',
   label: 'logout',
 })
