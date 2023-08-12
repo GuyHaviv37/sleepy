@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { logModalDismissed } from "./bi";
 
 type SelectedPlayer = { playerId: string; isUser: boolean }
 
@@ -10,6 +11,7 @@ export const usePlayerModal = () => {
         setShowPlayerModal(true);
     };
     const dismissPlayerModal = () => {
+        logModalDismissed()
         setSelectedPlayer({playerId: '', isUser: false});
         setShowPlayerModal(false);
     }

@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { getStarterEmoji } from '../content-utils';
 import PlayerModalContext from '../../player-modal/PlayerModalContext';
+import { logStarterClicked } from '../../bi';
 
 interface StarterRowProps {
     id: string;
@@ -21,8 +22,13 @@ const StarterRow: React.FC<StarterRowProps> = (props) => {
     const starterEmoji = getStarterEmoji(multipliers, isConflicted, isUserTeam);
     const { openPlayerModal } = useContext(PlayerModalContext);
 
+    const onStarterClick = () => {
+        logStarterClicked();
+        openPlayerModal(id, isUserTeam)
+    }
+
     return (
-        <div className='flex items-center cursor-pointer py-2' onClick={() => openPlayerModal(id, isUserTeam)}>
+        <div className='flex items-center cursor-pointer py-2' onClick={onStarterClick}>
             <div className={`text-sm pb-1 md:text-base grid grid-cols-4
             w-full ${starterEmoji ? 'font-bold' : ''}`}>
                 <div className='flex w-full col-span-3'>
