@@ -52,7 +52,7 @@ const UserDashboardPage = (props: { nflWeek: WEEKS }) => {
     return (
         <>
             <AppHeader title={'Sleepy - Board'} />
-            <main className="mx-auto flex flex-col items-center justify-center p-4 md:px-8 bg-primary" onClick={toggleOffDashboardFilters}>
+            <main className="mx-auto flex flex-col items-center justify-center p-4 md:px-8 bg-primary max-w-7xl relative" onClick={toggleOffDashboardFilters}>
                 <Link href="/" passHref >
                     <PageLogo title={'🏈 Sleepy'} onClick={bi.logHomeLinkClicked} />
                 </Link>
