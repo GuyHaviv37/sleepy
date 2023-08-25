@@ -22,7 +22,7 @@ const LeagueWeightInput: React.FC<LeagueWeightInputProps> = (props) => {
             <div className="flex space-x-2">
                 <input type="number" onChange={onWeightValueHandler}
                     step={1} min={0} value={weightValue}
-                    className="max-w-[40px] max-h-[40px] text-center text-grey-700
+                    className="max-w-[60px] max-h-[40px] text-center text-grey-700
                 border-[3px] border-solid border-grey-300
                 transition ease-in-out
                 focus:text-primary focus:border-alt focus:border-[2px] focus:outline-none
