@@ -11,18 +11,21 @@ interface TimeslotsProps {
 }
 
 const Timeslots: React.FC<TimeslotsProps> = (props) => {
-    const {timeslots, viewMode, userStartersByTimeslot, oppStartersByTimeslot} = props;
+    const { timeslots, viewMode, userStartersByTimeslot, oppStartersByTimeslot } = props;
     return (
         <>
             {timeslots.map(timeslot => {
                 const TimeslotView = viewMode === TimeslotViewMode.BY_GAME ? TimeslotByGameView : TimeslotFullView;
+                const userStarterIds = userStartersByTimeslot[timeslot] ?? [];
+                const oppStarterIds = oppStartersByTimeslot[timeslot] ?? [];
+                if (userStarterIds.length === 0 && oppStarterIds.length === 0) return null;
                 return (
-                    <div className="col-span-2" key={timeslot}>
-                        <p className="lg:text-lg underline pb-1 underline-offset-4 md:pb-2">🏈 {getTimeslotString(timeslot)}</p>
+                    <div className="col-span-2 bg-[#202c40] p-4 pt-0 rounded-lg" key={timeslot}>
+                        <p className="lg:text-lg py-4 text-center">📅 {getTimeslotString(timeslot)}</p>
                         <TimeslotView
                             timeslot={timeslot}
-                            userStarterIds={userStartersByTimeslot[timeslot] ?? []}
-                            oppStarterIds={oppStartersByTimeslot[timeslot] ?? []}
+                            userStarterIds={userStarterIds}
+                            oppStarterIds={oppStarterIds}
                         />
                     </div>
                 )

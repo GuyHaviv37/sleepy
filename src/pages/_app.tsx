@@ -5,24 +5,9 @@ import type { AppType } from "next/dist/shared/lib/utils";
 import superjson from "superjson";
 import "../styles/globals.css";
 import Script from "next/script";
-import { useRouter } from "next/router";
-import { useEffect } from "react";
-import * as gtag from '../../lib/gtag';
 import Head from "next/head";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
-  const router = useRouter()
-  useEffect(() => {
-    const handleRouteChange = (url: string) => {
-      gtag.pageview(url)
-    }
-    router.events.on('routeChangeComplete', handleRouteChange)
-    router.events.on('hashChangeComplete', handleRouteChange)
-    return () => {
-      router.events.off('routeChangeComplete', handleRouteChange)
-      router.events.off('hashChangeComplete', handleRouteChange)
-    }
-  }, [router.events])
 
   return (
     <>
@@ -42,8 +27,9 @@ const MyApp: AppType = ({ Component, pageProps }) => {
             });
           `,
         }} />
-        <Head>
-        <link rel='manifest' href='./manifest.json'/>
+      <Script src='https://storage.ko-fi.com/cdn/scripts/overlay-widget.js' strategy="afterInteractive"></Script>
+      <Head>
+        <link rel='manifest' href='./manifest.json' />
         <link rel="apple-touch-icon" href="icons/apple-icon-180.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <link rel="apple-touch-startup-image" href="icons/apple-splash-2048-2732.jpg" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
@@ -76,7 +62,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
         <link rel="apple-touch-startup-image" href="icons/apple-splash-1334-750.jpg" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" />
         <link rel="apple-touch-startup-image" href="icons/apple-splash-640-1136.jpg" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
         <link rel="apple-touch-startup-image" href="icons/apple-splash-1136-640.jpg" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)"></link>
-        </Head>
+      </Head>
       <Component {...pageProps} />
     </>)
 };
@@ -94,9 +80,9 @@ const getBaseUrl = () => {
 export default withTRPC<AppRouter>({
   config({ ctx }) {
     /**
-     * If you want to use SSR, you need to use the server's full URL
-     * @link https://trpc.io/docs/ssr
-     */
+            * If you want to use SSR, you need to use the server's full URL
+            * @link https://trpc.io/docs/ssr
+            */
     const url = `${getBaseUrl()}/api/trpc`;
 
     return {
@@ -105,7 +91,7 @@ export default withTRPC<AppRouter>({
       /**
        * @link https://react-query.tanstack.com/reference/QueryClient
        */
-      // queryClientConfig: { defaultOptions: { queries: { staleTime: 60 } } },
+      // queryClientConfig: {defaultOptions: {queries: {staleTime: 60 } } },
     };
   },
   /**

@@ -23,3 +23,9 @@ export const WEEKS = {
 } as const;
 
 export type WEEKS = typeof WEEKS[keyof typeof WEEKS];
+
+export const DashboardViewTypes = {
+    SLIM: 'Default',
+    FULL: 'By Game'
+} as const;
+export type DashboardViewType = typeof DashboardViewTypes[keyof typeof DashboardViewTypes];

@@ -1,4 +1,5 @@
 import { EMOJIES } from "../consts";
+import { HIGHLIGHTED_PLAYER_TYPES, HighlightedPlayerType } from "../highlighted-players/types";
 
 export const getTimeslotString = (timeslot: string) => {
     const timeslotDate = new Date(timeslot);
@@ -12,4 +13,15 @@ export const getStarterEmoji = (multipliers?: number, isConflicted?: boolean, is
     if (isRoot) return EMOJIES.THUNDER_EMOJI;
     const isBoo = isUnconflictedMultiplier && !isUserTeam;
     if (isBoo) return EMOJIES.THUMBS_DOWN_EMOJI;
+}
+
+export const getHighlightStyle = (highlightType: HighlightedPlayerType) => {
+    switch (highlightType) {
+        case HIGHLIGHTED_PLAYER_TYPES.CONFLICTED:
+            return {emoji: EMOJIES.SWORDS_EMOJI, backgroundColor: 'bg-yellow-200'};
+        case HIGHLIGHTED_PLAYER_TYPES.ROOT:
+            return {emoji: EMOJIES.THUNDER_EMOJI, backgroundColor: 'bg-emerald-500'};
+        case HIGHLIGHTED_PLAYER_TYPES.BOO:
+            return {emoji: EMOJIES.THUMBS_DOWN_EMOJI, backgroundColor: 'bg-red-500'};
+    }
 }

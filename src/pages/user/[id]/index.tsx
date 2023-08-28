@@ -3,8 +3,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { fetcher } from '@/utils/fetcher';
 import Loader from '@/components/Loader';
-import { WEEKS } from '@/utils/consts';
-import MissingPlayersNotice from '@/features/missing-players/MissingPlayersNotice';
+import { DashboardViewType, DashboardViewTypes, WEEKS } from '@/utils/consts';
 import { trpc } from '@/utils/trpc';
 import AppHeader from '@/components/layout/AppHeader';
 import { useGetLocalStorage } from '@/features/local-storage/hooks';
@@ -14,13 +13,16 @@ import { getScheduleData } from '@/features/schedule/data';
 import { useSleeperUserMatchupsData } from '@/features/user/hooks/useSleeperUserMatchupsData';
 import Dashboard from '@/features/dashboard/Dashboard';
 import DashboardContext from '@/features/dashboard/DashboardContext';
-import { ViewTypePicker, WeeksNavbar } from '@/features/dashboard/DashboardFilters';
+import PageLogo from '@/components/PageLogo';
+import DashboardFilters from '@/features/dashboard/filters/DashboardFilters';
+import * as bi from '@/features/dashboard/bi';
 
 const UserDashboardPage = (props: { nflWeek: WEEKS }) => {
     const router = useRouter();
     const { id } = router.query;
     const [selectedWeek, setSelectedWeek] = useState<WEEKS>(props.nflWeek);
     const { data: cachedSettings } = useGetLocalStorage('settings');
+    const { data: cachedUserInfo } = useGetLocalStorage('user');
     const { leagueRosterIds, isLeagueRosterIdsLoading } = useSleeperUserRosterIds(id as string);
     const { matchups, isMatchupsLoading } = useSleeperUserMatchupsData(selectedWeek, leagueRosterIds, cachedSettings?.leagueIgnoresMap);
     const { userStarters, oppStarters } = matchups ?? {};
@@ -28,13 +30,16 @@ const UserDashboardPage = (props: { nflWeek: WEEKS }) => {
         queryKey: ['nfl-schedule'],
         queryFn: () => getScheduleData(selectedWeek)
     })
-    const [isByGameViewMode, setIsByGameViewMode] = useState(false);
+    const [dashboardViewType, setDashboardViewType] = useState<DashboardViewType>(DashboardViewTypes.SLIM);
     const { data: playersInfo, isLoading: isPlayersInfoLoading } = trpc.useQuery(
         ['players.getPlayersInfoByIds',
             { playerIds: [...Object.keys(userStarters ?? {}), ...Object.keys(oppStarters ?? {})] }]);
 
-    const getSelectedWeekHandler = (week: WEEKS) => {
-        return () => setSelectedWeek(week);
+    const [isWeeksDropdownOpen, setIsWeeksDropdownOpen] = useState(false);
+    const [isDashboardViewDropdownOpen, setIsDashboardViewDropdownOpen] = useState(false);
+    const toggleOffDashboardFilters = () => {
+        if (isWeeksDropdownOpen) setIsWeeksDropdownOpen(false);
+        if (isDashboardViewDropdownOpen) setIsDashboardViewDropdownOpen(false);
     }
 
     useEffect(() => {
@@ -47,47 +52,38 @@ const UserDashboardPage = (props: { nflWeek: WEEKS }) => {
     return (
         <>
             <AppHeader title={'Sleepy - Board'} />
-            <main className="container mx-auto flex flex-col items-center justify-center p-4 bg-background-main">
-                <Link href="/">
-                    <h2 className="text-primary text-2xl mb-4 font-bold tracking-wide sm:text-3xl md:text-4xl cursor-pointer">Sleepy</h2>
+            <main className="mx-auto flex flex-col items-center justify-center p-4 md:px-8 bg-primary max-w-7xl relative" onClick={toggleOffDashboardFilters}>
+                <Link href="/" passHref >
+                    <PageLogo title={'🏈 Sleepy'} onClick={bi.logHomeLinkClicked} />
                 </Link>
-                <section className="bg-primary w-full rounded-lg py-4 flex flex-col">
-                    <div className="flex justify-between">
-                        <div className="ml-4">
-                            <ViewTypePicker
-                                isByGameViewMode={isByGameViewMode}
-                                setIsByGameViewMode={setIsByGameViewMode}
+                <Link href={`/user/${id}/settings`} >
+                    <button className='text-md text-primary-text font-semibold absolute top-5 right-5' onClick={bi.logSettingsLinkClicked}>⚙️ Settings</button>
+                </Link>
+                <div className='h-10 w-full md:h-12' />
+                <h1 className='text-primary-text text-3xl font-semibold text-left w-full'>Hello, {cachedUserInfo?.username ?? 'Player'}</h1>
+                <DashboardFilters
+                    selectedWeek={selectedWeek} setSelectedWeek={setSelectedWeek}
+                    dashboardViewType={dashboardViewType} setDashboardViewType={setDashboardViewType}
+                    isWeeksDropdownOpen={isWeeksDropdownOpen} setIsWeeksDropdownOpen={setIsWeeksDropdownOpen}
+                    isDashboardViewDropdownOpen={isDashboardViewDropdownOpen} setIsDashboardViewDropdownOpen={setIsDashboardViewDropdownOpen}
+                />
+                <section className="w-full rounded-lg py-4 flex flex-col">
+                    {isLoading ? (
+                        <div className='pt-5 min-h-screen'>
+                            <Loader />
+                        </div>
+                    ) : (
+                        <DashboardContext.Provider value={{
+                            playersInfo: playersInfo!,
+                            scheduleData: scheduleData!,
+                            userLeagueInfo: userStarters!,
+                            oppLeagueInfo: oppStarters!
+                        }}>
+                            <Dashboard
+                                isByGameViewMode={dashboardViewType === DashboardViewTypes.FULL}
                             />
-                        </div>
-                        <Link href={`/user/${id}/settings`}>
-                            <button className="self-end pr-3 md:pr-6 md:text-lg">&#x2699; <span className="text-primary-text hidden md:inline-block">Settings</span></button>
-                        </Link>
-                    </div>
-                    <>
-                        <WeeksNavbar getSelectedWeekHandler={getSelectedWeekHandler} selectedWeek={selectedWeek} />
-                        <div className='flex justify-between w-full px-3 sm:justify-center sm:space-x-6 text-primary-text mt-3 md:text-lg'>
-                            <p>⚡ Super root</p>
-                            <p>👎 Super &quot;boo&quot;</p>
-                            <p>⚔ Conflicted</p>
-                        </div>
-                        {isLoading ? (
-                            <div className='pt-5'>
-                                <Loader />
-                            </div>
-                        ) : (
-                            <DashboardContext.Provider value={{
-                                playersInfo: playersInfo!,
-                                scheduleData: scheduleData!,
-                                userLeagueInfo: userStarters!,
-                                oppLeagueInfo: oppStarters!
-                            }}>
-                                {!isLoading && <MissingPlayersNotice />}
-                                <Dashboard
-                                    isByGameViewMode={isByGameViewMode}
-                                />
-                            </DashboardContext.Provider>
-                        )}
-                    </>
+                        </DashboardContext.Provider>
+                    )}
                 </section>
             </main>
         </>
