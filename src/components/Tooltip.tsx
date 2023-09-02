@@ -7,9 +7,9 @@ interface TooltipProps {
 
 const Tooltip = ({ TooltipComponent, children }: TooltipProps) => {
     return (
-        <div className="group relative flex z-50">
-            {children}
-            <span className="absolute left-7 opacity-0 transition-all ease-in-out group-hover:opacity-100">{TooltipComponent}</span>
+        <div className="relative flex z-50">
+            <div className="peer">{children}</div>
+            <span className="absolute left-7 invisible opacity-0 transition-all ease-in-out peer-hover:visible peer-hover:opacity-100">{TooltipComponent}</span>
         </div>
     )
 }
