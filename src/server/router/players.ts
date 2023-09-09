@@ -14,7 +14,7 @@ export const playersRouter = createRouter()
         where: {id: {in: noDuplicatePlayerIds} }
       });
       const playersInfoById: Record<string, Player> = playersInfo.reduce((acc, player) => {
-        return {...acc, [player.id]: player};
+        return {...acc, [player.id]: {...player, team: player.team === 'WAS' ? 'WSH' : player.team}};
       }, {})
       return playersInfoById;
     }

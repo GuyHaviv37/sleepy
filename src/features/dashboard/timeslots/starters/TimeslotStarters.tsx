@@ -18,7 +18,7 @@ const TimeslotStarters: React.FC<TimeslotStartersProps> = (props) => {
             <div className='hidden bg-secondary-accent px-3 py-1 justify-between rounded-t md:grid grid-cols-4
             text-lg tracking-wide font-semibold'>
                 <p className='col-span-3'>Players</p>
-                <p className='justify-self-end md:justify-self-start'>Matches</p>
+                <p className='justify-self-end md:justify-self-start'>{isByGameView ? 'Team' : 'Matches'}</p>
             </div>
             <ul className="flex flex-col bg-accent divide-y divide-secondary-accent px-3 py-1 rounded md:rounded-t-none">
                 {starterIds.map(starterId => {
