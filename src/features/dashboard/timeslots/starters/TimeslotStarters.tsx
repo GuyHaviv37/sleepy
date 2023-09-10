@@ -12,7 +12,7 @@ const TimeslotStarters: React.FC<TimeslotStartersProps> = (props) => {
     const { starterIds, isUser, isByGameView } = props;
     const { playersInfo, userLeagueInfo, oppLeagueInfo, scheduleData } = useContext(DashboardContext);
     const leagueInfo = isUser ? userLeagueInfo : oppLeagueInfo;
-    if (starterIds.length === 0) return null;
+    if (starterIds.length === 0) return <div></div>;
     return (
         <div>
             <div className='hidden bg-secondary-accent px-3 py-1 justify-between rounded-t md:grid grid-cols-4
