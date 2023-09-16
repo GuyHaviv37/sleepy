@@ -29,7 +29,7 @@ const HighlightedPlayers = (props: HighlightedPlayersProps) => {
                     const hightlightedPlayersForTimeslot = highLightedPlayersIdsByTimeslots[timeslot];
                     if (hightlightedPlayersForTimeslot === undefined || hightlightedPlayersForTimeslot.length === 0) return null;
                     return (
-                        <div className='flex flex-col'>
+                        <div className='flex flex-col' key={`highlighted_players_timeslot_${timeslot}`}>
                             <p className='z-10 text-xs bg-[#202c40] text-primary-text rounded px-2 py-1 w-fit'>{getCondensedTimeslotString(timeslot)}</p>
                             <ul className='flex gap-3 mt-2'>
                                 {hightlightedPlayersForTimeslot.map(playerId => {
