@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { StarterInfo } from '@/features/leagues/leagues.types';
 import { useGetLocalStorage } from '../../local-storage/hooks';
+import { getPlayerImageById } from './content-utils';
 
 interface PlayerModalProps {
     dismissPlayerModal: () => void;
@@ -16,6 +17,7 @@ const PlayerModal: React.FC<PlayerModalProps> = (props) => {
     const leagueNames = cachedLeaguesInfo?.leagueNames;
     const { dismissPlayerModal, avatarId, playerName, scores, playerId } = props;
     const [imageError, setImageError] = useState(false);
+    const playerImageSrc = getPlayerImageById(playerId);
     return (
         <>
             <div className="fixed inset-0 z-10 overflow-y-auto">
@@ -30,8 +32,9 @@ const PlayerModal: React.FC<PlayerModalProps> = (props) => {
                             relative w-32 h-28 sm:w-40 sm:h-40 lg:w-52 lg:h-48 max-w-1/2">
                                 <Image
                                     src={!imageError ?
-                                        `https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/${avatarId}.png` :
-                                        `https://sleepercdn.com/content/nfl/players/${playerId}.jpg`}
+                                        playerImageSrc :
+                                        `https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/${avatarId}.png`
+                                    }
                                     layout="fill"
                                     objectFit='contain'
                                     objectPosition='bottom'
