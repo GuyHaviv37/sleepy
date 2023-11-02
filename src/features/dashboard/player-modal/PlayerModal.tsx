@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+// @TODO: check if this breaks on dev preview
 import Image from 'next/image';
 import { StarterInfo } from '@/features/leagues/leagues.types';
 import { useGetLocalStorage } from '../../local-storage/hooks';
@@ -31,6 +32,7 @@ const PlayerModal: React.FC<PlayerModalProps> = (props) => {
                             <div className="flex items-center justify-center flex-none mx-auto
                             relative w-32 h-28 sm:w-40 sm:h-40 lg:w-52 lg:h-48 max-w-1/2">
                                 <Image
+                                    alt={`${playerName ?? 'Selected Player'} image`}
                                     src={!imageError ?
                                         playerImageSrc :
                                         `https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/${avatarId}.png`

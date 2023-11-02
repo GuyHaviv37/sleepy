@@ -9,7 +9,11 @@ const nextConfig = withPWA({
   reactStrictMode: true,
   swcMinify: true,
   images: {
-    domains: ['a.espncdn.com', 'sleepercdn.com'],
+    remotePatterns: [{
+      hostname: 'a.espncdn.com'
+    }, {
+      hostname: 'sleepercdn.com',
+    }],
   },
 });
 
