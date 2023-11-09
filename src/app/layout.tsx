@@ -2,6 +2,7 @@ import Script from "next/script";
 import "../styles/globals.css";
 import { Metadata } from "next";
 import { Nunito_Sans } from 'next/font/google';
+import Providers from "./providers";
 
 const nunitoSansFont = Nunito_Sans({
     display: 'swap',
@@ -59,7 +60,9 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en" className={nunitoSansFont.className}>
-            <body className="bg-primary">{children}</body>
+            <Providers>
+                <body className="bg-primary">{children}</body>
+            </Providers>
             <Script
                 strategy="afterInteractive"
                 src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`} />
