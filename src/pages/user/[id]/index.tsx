@@ -49,45 +49,43 @@ const UserDashboardPage = (props: { nflWeek: WEEKS }) => {
     }, [cachedSettings, id, router]);
 
     const isLoading = isScheduleLoading || isMatchupsLoading || isLeagueRosterIdsLoading || isPlayersInfoLoading;
-    return (
-        <>
-            <AppHeader title={'Sleepy - Board'} />
-            <main className="mx-auto flex flex-col items-center justify-center p-4 md:px-8 bg-primary max-w-7xl relative" onClick={toggleOffDashboardFilters}>
-                <Link href="/" passHref >
-                    <PageLogo title={'🏈 Sleepy'} onClick={bi.logHomeLinkClicked} />
-                </Link>
-                <Link href={`/user/${id}/settings`} >
-                    <button className='text-md text-primary-text font-semibold absolute top-5 right-5' onClick={bi.logSettingsLinkClicked}>⚙️ Settings</button>
-                </Link>
-                <div className='h-10 w-full md:h-12' />
-                <h1 className='text-primary-text text-3xl font-semibold text-left w-full'>Hello, {cachedUserInfo?.username ?? 'Player'}</h1>
-                <DashboardFilters
-                    selectedWeek={selectedWeek} setSelectedWeek={setSelectedWeek}
-                    dashboardViewType={dashboardViewType} setDashboardViewType={setDashboardViewType}
-                    isWeeksDropdownOpen={isWeeksDropdownOpen} setIsWeeksDropdownOpen={setIsWeeksDropdownOpen}
-                    isDashboardViewDropdownOpen={isDashboardViewDropdownOpen} setIsDashboardViewDropdownOpen={setIsDashboardViewDropdownOpen}
-                />
-                <section className="w-full rounded-lg py-4 flex flex-col">
-                    {isLoading ? (
-                        <div className='pt-5 min-h-screen'>
-                            <Loader />
-                        </div>
-                    ) : (
-                        <DashboardContext.Provider value={{
-                            playersInfo: playersInfo!,
-                            scheduleData: scheduleData!,
-                            userLeagueInfo: userStarters!,
-                            oppLeagueInfo: oppStarters!
-                        }}>
-                            <Dashboard
-                                isByGameViewMode={dashboardViewType === DashboardViewTypes.FULL}
-                            />
-                        </DashboardContext.Provider>
-                    )}
-                </section>
-            </main>
-        </>
-    )
+    return <>
+        <AppHeader title={'Sleepy - Board'} />
+        <main className="mx-auto flex flex-col items-center justify-center p-4 md:px-8 bg-primary max-w-7xl relative" onClick={toggleOffDashboardFilters}>
+            <Link href="/" onClick={bi.logHomeLinkClicked}>
+                <PageLogo title={'🏈 Sleepy'} />
+            </Link>
+            <Link href={`/user/${id}/settings`} onClick={bi.logSettingsLinkClicked}>
+                <span className='text-md text-primary-text font-semibold absolute top-5 right-5'>⚙️ Settings</span>
+            </Link>
+            <div className='h-10 w-full md:h-12' />
+            <h1 className='text-primary-text text-3xl font-semibold text-left w-full'>Hello, {cachedUserInfo?.username ?? 'Player'}</h1>
+            <DashboardFilters
+                selectedWeek={selectedWeek} setSelectedWeek={setSelectedWeek}
+                dashboardViewType={dashboardViewType} setDashboardViewType={setDashboardViewType}
+                isWeeksDropdownOpen={isWeeksDropdownOpen} setIsWeeksDropdownOpen={setIsWeeksDropdownOpen}
+                isDashboardViewDropdownOpen={isDashboardViewDropdownOpen} setIsDashboardViewDropdownOpen={setIsDashboardViewDropdownOpen}
+            />
+            <section className="w-full rounded-lg py-4 flex flex-col">
+                {isLoading ? (
+                    <div className='pt-5 min-h-screen'>
+                        <Loader />
+                    </div>
+                ) : (
+                    <DashboardContext.Provider value={{
+                        playersInfo: playersInfo!,
+                        scheduleData: scheduleData!,
+                        userLeagueInfo: userStarters!,
+                        oppLeagueInfo: oppStarters!
+                    }}>
+                        <Dashboard
+                            isByGameViewMode={dashboardViewType === DashboardViewTypes.FULL}
+                        />
+                    </DashboardContext.Provider>
+                )}
+            </section>
+        </main>
+    </>;
 };
 
 
