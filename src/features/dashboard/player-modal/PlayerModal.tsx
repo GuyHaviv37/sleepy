@@ -31,6 +31,7 @@ const PlayerModal: React.FC<PlayerModalProps> = (props) => {
                             <div className="flex items-center justify-center flex-none mx-auto
                             relative w-32 h-28 sm:w-40 sm:h-40 lg:w-52 lg:h-48 max-w-1/2">
                                 <Image
+                                    alt={`${playerName ?? 'Player'}'s image`}
                                     src={!imageError ?
                                         playerImageSrc :
                                         `https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/${avatarId}.png`
