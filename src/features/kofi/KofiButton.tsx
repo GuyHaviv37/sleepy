@@ -13,7 +13,7 @@ const KofiButton = (props: KofiButtonProps) => {
         <>
             <button className={`bg-accent px-4 py-2 rounded-full flex items-center ${buttonPosition}`}
                 onClick={() => setShouldShowKofiModal(true)}>
-                <Image src={require('/public/icons/kofi.webp')} height={40} width={40} />
+                <Image src={require('/public/icons/kofi.webp')} height={40} width={40} alt={'kofi support button'} />
                 <span className='text-primary-text'>
                     Support Sleepy
                 </span>

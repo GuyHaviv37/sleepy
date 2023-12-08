@@ -31,7 +31,7 @@ const DashboardFilters = (props: DashboardFiltersProps) => {
 
     return (
         <div className='w-full flex flex-start flex-col my-3'>
-            <h5 className='text-primary-text text-lg font-semibold mb-2'>Your Week</h5>
+            <h2 className='text-primary-text text-lg font-semibold mb-2'>Your Week</h2>
             <div className='flex gap-3 text-primary-text'>
                 <DashboardDropdown
                     isOpen={isWeeksDropdownOpen}
@@ -41,7 +41,7 @@ const DashboardFilters = (props: DashboardFiltersProps) => {
                         setIsWeeksDropdownOpen(v => !v)
                     }}
                     currentValue={`Week ${selectedWeek}`} >
-                    <ul className="py-1 divide-y divide-secondary-accent" aria-labelledby="dropdown">
+                    <ul className="py-1 divide-y divide-secondary-accent" aria-labelledby="dropdown_week">
                         {Object.values(WEEKS).map(week =>
                             <DashboardDropdownItem key={week} label={`Week ${week}`} isSelected={week === selectedWeek}
                                 onClick={() => {
@@ -59,7 +59,7 @@ const DashboardFilters = (props: DashboardFiltersProps) => {
                         setIsDashboardViewDropdownOpen(v => !v)
                     }}
                     currentValue={`${dashboardViewType}`} >
-                    <ul className="py-1 divide-y divide-secondary-accent" aria-labelledby="dropdown">
+                    <ul className="py-1 divide-y divide-secondary-accent" aria-labelledby="dropdown_view_type">
                         {Object.values(DashboardViewTypes).map(viewType =>
                             <DashboardDropdownItem key={viewType} label={`${viewType}`} isSelected={viewType === dashboardViewType}
                                 onClick={() => {

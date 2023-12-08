@@ -124,9 +124,9 @@ const Home: NextPage = () => {
             >
               🏈 Sleepy
             </h1>
-            <h3 className="text-3xl lg:text-5xl tracking-wide text-primary-text font-thin">
+            <h2 className="text-3xl lg:text-5xl tracking-wide text-primary-text font-thin">
               Complete weekly summary of your sleeper leagues
-            </h3>
+            </h2>
           </section>
           {renderFormOrCachedUsername()}
         </FlexibleContainer>
