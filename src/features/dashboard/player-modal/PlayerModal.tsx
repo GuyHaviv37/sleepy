@@ -31,6 +31,7 @@ const PlayerModal: React.FC<PlayerModalProps> = (props) => {
                             <div className="flex items-center justify-center flex-none mx-auto
                             relative w-32 h-28 sm:w-40 sm:h-40 lg:w-52 lg:h-48 max-w-1/2">
                                 <Image
+                                    alt={`${playerName ?? 'Player\'s'} image`}
                                     src={!imageError ?
                                         playerImageSrc :
                                         `https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/${avatarId}.png`
@@ -43,9 +44,9 @@ const PlayerModal: React.FC<PlayerModalProps> = (props) => {
                                 />
                             </div>
                             <div className="mt-2 text-center sm:text-left sm:flex sm:flex-col sm:px-4">
-                                <h4 className="text-lg font-medium text-primary-text md:text-xl lg:text-2xl">
+                                <h2 className="text-lg font-medium text-primary-text md:text-xl lg:text-2xl">
                                     {playerName}
-                                </h4>
+                                </h2>
                                 <div>
                                     {Object.entries(scores ?? {}).map(([leagueId, score]) => {
                                         return (

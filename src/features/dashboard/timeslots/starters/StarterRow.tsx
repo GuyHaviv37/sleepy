@@ -28,7 +28,7 @@ const StarterRow: React.FC<StarterRowProps> = (props) => {
     }
 
     return (
-        <div className='flex items-center cursor-pointer py-2' onClick={onStarterClick}>
+        <li className='flex items-center cursor-pointer py-2' onClick={onStarterClick}>
             <div className={`text-sm pb-1 md:text-base grid grid-cols-4
             w-full ${starterEmoji ? 'font-bold' : ''}`}>
                 <div className='flex w-full col-span-3'>
@@ -45,7 +45,7 @@ const StarterRow: React.FC<StarterRowProps> = (props) => {
                     {isByGameView ? null : <span className="hidden md:inline md:pl-1 lg:pl-2">{isHome ? 'vs.' : '@'}{'\t'}{oppTeam}</span>}
                 </p>
             </div>
-        </div>
+        </li>
     )
 };
 
