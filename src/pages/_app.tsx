@@ -6,21 +6,22 @@ import superjson from "superjson";
 import "../styles/globals.css";
 import Script from "next/script";
 import Head from "next/head";
+import { Partytown } from '@builder.io/partytown/react';
 
 const MyApp: AppType = ({ Component, pageProps }) => {
 
   return (
     <>
       <Script
-        strategy="afterInteractive"
+        strategy="worker"
         src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`} />
       <Script
         id="gtag-init"
-        strategy="afterInteractive"
+        strategy="worker"
         dangerouslySetInnerHTML={{
           __html: `
             window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
+            window.gtag = function gtag(){window.dataLayer.push(arguments);}
             gtag('js', new Date());
             gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}', {
               page_path: window.location.pathname,

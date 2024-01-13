@@ -10,6 +10,17 @@ class MyDocument extends Document {
         return (
             <Html lang='en'>
                 <Head>
+                    <script
+                        data-partytown-config
+                        dangerouslySetInnerHTML={{
+                            __html: `
+                            partytown = {
+                                lib: "/_next/static/~partytown/",
+                                forward: ["gtag", "dataLayer.push"]           
+                            };
+                            `,
+                        }}
+                    />
                     <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200;0,6..12,400;0,6..12,500;0,6..12,600;0,6..12,700;1,6..12,400&display=swap" rel="stylesheet" />
                 </Head>
                 <body className='bg-primary'>
