@@ -11,6 +11,9 @@ const nextConfig = withPWA({
   images: {
     domains: ['a.espncdn.com', 'sleepercdn.com'],
   },
+  experimental: {
+    nextScriptWorkers: true,
+  },
 });
 
 module.exports = nextConfig;
