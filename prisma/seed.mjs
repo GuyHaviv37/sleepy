@@ -4,9 +4,10 @@ const prisma = new PrismaClient();
 
 const extractDataFromApiResponse = (playersDataFromSleeper) => {
     const players = Object.values(playersDataFromSleeper);
-    const playersRefinedInfo = players.map((player) => {
+    const playersRefinedInfo = players.map((player, index) => {
+        const playerNumberId = Number(player.player_id);
         return {
-            id: player.player_id,
+            id: Number.isNaN(playerNumberId) ? -index : playerNumberId,
             firstName: player.first_name,
             lastName: player.last_name,
             position: player.position,
@@ -40,4 +41,4 @@ const seedPlayersInfo = async () => {
 }
 
 seedPlayersInfo();
-export {};
+export { };
