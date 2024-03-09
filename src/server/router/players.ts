@@ -9,12 +9,12 @@ export const playersRouter = createRouter()
       playerIds: z.array(z.string())
     }).nullish(),
     async resolve({ input }) {
-      const noDuplicatePlayerIds = Array.from(new Set(input?.playerIds ?? []));
+      const noDuplicatePlayerIds = Array.from(new Set(input?.playerIds ?? [])).map(id => Number(id));
       const playersInfo = await prisma.player.findMany({
-        where: {id: {in: noDuplicatePlayerIds} }
+        where: { id: { in: noDuplicatePlayerIds } }
       });
-      const playersInfoById: Record<string, Player> = playersInfo.reduce((acc, player) => {
-        return {...acc, [player.id]: {...player, team: player.team === 'WAS' ? 'WSH' : player.team}};
+      const playersInfoById: Record<string, Omit<Player, "id"> & { id?: string }> = playersInfo.reduce((acc, player) => {
+        return { ...acc, [player.id]: { ...player, team: player.team === 'WAS' ? 'WSH' : player.team, id: player.id?.toString() ?? '' } };
       }, {})
       return playersInfoById;
     }
