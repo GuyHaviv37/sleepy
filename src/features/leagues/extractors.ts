@@ -1,4 +1,5 @@
 import { LeagueRosterIdsMap } from "../local-storage/local-storage";
+import { getDBIdFromTeamAbv } from "../teams/data-transfomers";
 import { LeagueMatchup, LeagueMatchupWithLeagueId, Starters } from "./leagues.types";
 
 // @TODO: type Rosters data ? & refactor ?
@@ -24,8 +25,10 @@ const extractStartersData = (matchups: Partial<LeagueMatchupWithLeagueId>[]) => 
     if (!matchups || matchups.length === 0) return;
     for (let leagueMatchup of matchups) {
         const leagueId = leagueMatchup.leagueId ?? '';
-        leagueMatchup?.starters?.forEach((starter: LeagueMatchup['starters'][0], index: number) => {
+        leagueMatchup?.starters?.forEach((starterFromApi: LeagueMatchup['starters'][0], index: number) => {
             const starterScore = leagueMatchup?.starters_points?.[index] ?? 0;
+            const isStarterATeamAbv = Number.isNaN(Number(starterFromApi))
+            const starter = isStarterATeamAbv ? getDBIdFromTeamAbv(starterFromApi) : starterFromApi;
             starterData[starter] = {
                 ...starterData[starter],
                 leagues: {
@@ -39,20 +42,20 @@ const extractStartersData = (matchups: Partial<LeagueMatchupWithLeagueId>[]) => 
     return starterData;
 }
 
-export const extractSleeperMatchupData = (leagueMatchupsData: {[leagueId: string]: LeagueMatchup[]}, leagueRosterIds: LeagueRosterIdsMap)
-: {userStarters?: Starters; oppStarters?: Starters} => {
+export const extractSleeperMatchupData = (leagueMatchupsData: { [leagueId: string]: LeagueMatchup[] }, leagueRosterIds: LeagueRosterIdsMap)
+    : { userStarters?: Starters; oppStarters?: Starters } => {
     const userMatchups = Object.entries(leagueMatchupsData).map(([leagueId, leagueMatchups]) => {
         const userMatchup = leagueMatchups.find(isUserMatchup(leagueRosterIds[leagueId]));
-        if (!userMatchup) return {leagueId, matchup_id: 'N/A'};
-        return {...userMatchup, leagueId}
+        if (!userMatchup) return { leagueId, matchup_id: 'N/A' };
+        return { ...userMatchup, leagueId }
     });
     const userStarters = extractStartersData(userMatchups);
     const oppMatchups = Object.entries(leagueMatchupsData).map(([leagueId, leagueMatchups], index) => {
         const matchupId = userMatchups[index]?.matchup_id;
         const userRosterId = leagueRosterIds[leagueId];
         const oppMatchup = leagueMatchups.find(isOppMatchup(matchupId, userRosterId));
-        if (!oppMatchup) return {leagueId, matchup_id: 'N/A'};
-        return {...oppMatchup, leagueId};
+        if (!oppMatchup) return { leagueId, matchup_id: 'N/A' };
+        return { ...oppMatchup, leagueId };
     })
     const oppStarters = extractStartersData(oppMatchups);
 
@@ -60,8 +63,8 @@ export const extractSleeperMatchupData = (leagueMatchupsData: {[leagueId: string
     if (userStarters) {
         Object.keys(userStarters ?? {}).forEach((playerId) => {
             if (oppStarters?.[playerId]) {
-                userStarters[playerId] = {...userStarters[playerId], isConflicted: true}
-                oppStarters[playerId] = {...oppStarters[playerId], isConflicted: true}
+                userStarters[playerId] = { ...userStarters[playerId], isConflicted: true }
+                oppStarters[playerId] = { ...oppStarters[playerId], isConflicted: true }
             }
         })
     }

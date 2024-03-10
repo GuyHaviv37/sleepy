@@ -28,7 +28,7 @@ export const extractStartersByGame = (scheduleData: ScheduleData, timeslot: stri
             const playerTeam = playersInfo[starterId]?.team;
             return playerTeam === game.homeTeam || playerTeam === game.awayTeam;
         })
-        return {user: userStartersPerGame, opp: oppStartersPerGame};
+        return { user: userStartersPerGame, opp: oppStartersPerGame };
     })
     return startersPerGame;
 }

@@ -6,13 +6,14 @@ generator client {
   previewFeatures = ["referentialIntegrity"]
 }
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
   referentialIntegrity = "prisma"
 }
 
 model Player {
-  id String @id @default(cuid())
+  id Int @id @default(0)
   firstName String
   lastName String
   position String?
