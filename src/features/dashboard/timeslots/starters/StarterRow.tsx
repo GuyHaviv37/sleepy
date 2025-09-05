@@ -24,7 +24,7 @@ const StarterRow: React.FC<StarterRowProps> = (props) => {
 
     const onStarterClick = () => {
         logStarterClicked();
-        openPlayerModal(id, isUserTeam)
+        openPlayerModal(id)
     }
 
     return (

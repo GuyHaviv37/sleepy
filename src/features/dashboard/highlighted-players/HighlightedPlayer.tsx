@@ -20,10 +20,9 @@ const HighlightedPlayer = (props: HighlightedPlayerProps) => {
 
     const onPlayerClicked = () => {
         bi.logSpotlightPlayerClicked(playerHighlightType);
-        openPlayerModal(playerId, showPlayerScores)
+        openPlayerModal(playerId)
     }
 
-    const showPlayerScores = playerHighlightType !== HIGHLIGHTED_PLAYER_TYPES.BOO;
     const showPlayerConflictScore = playerHighlightType === HIGHLIGHTED_PLAYER_TYPES.CONFLICTED && conflictScore !== undefined && !isNaN(conflictScore);
     const highlightLabel = getHighlightPlayerLabel(playerHighlightType, showPlayerConflictScore);
     const conflictScoreColor = getConflictScoreColor(conflictScore);
