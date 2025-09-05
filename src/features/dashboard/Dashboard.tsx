@@ -19,7 +19,7 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
     const { isByGameViewMode } = props;
     const { timeslots, userStartersByTimeslot, oppStartersByTimeslot } = useDashboardPresenter();
     const { selectedPlayer, showPlayerModal, openPlayerModal, dismissPlayerModal } = usePlayerModal()
-    const { playerId: selectedPlayerId, isUser: isUserSelectedPlayer } = selectedPlayer;
+    const { playerId: selectedPlayerId } = selectedPlayer;
 
     return (
         <>
@@ -49,7 +49,8 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
                     playerId={playersInfo[selectedPlayerId]?.id}
                     avatarId={playersInfo[selectedPlayerId]?.avatarId}
                     playerName={`${playersInfo[selectedPlayerId]?.firstName} ${playersInfo[selectedPlayerId]?.lastName}`}
-                    scores={isUserSelectedPlayer ? userLeagueInfo[selectedPlayerId]?.leagues : oppLeagueInfo[selectedPlayerId]?.leagues}
+                    userScores={userLeagueInfo[selectedPlayerId]?.leagues}
+                    oppScores={oppLeagueInfo[selectedPlayerId]?.leagues}
                 />
             }
         </>
