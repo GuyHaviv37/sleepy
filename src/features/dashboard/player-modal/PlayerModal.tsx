@@ -27,7 +27,7 @@ const PlayerModal: React.FC<PlayerModalProps> = (props) => {
                     onClick={dismissPlayerModal}
                 ></div>
                 <div className="flex items-center min-h-screen px-4 py-8">
-                    <div className="relative w-full max-w-2xl p-4 mx-auto bg-primary rounded-md shadow-lg">
+                    <div className="relative w-full max-w-lg lg:max-w-2xl p-4 mx-auto bg-primary rounded-md shadow-lg">
                         <div className="mt-3 sm:flex relative">
                             <div className="flex items-center justify-center flex-none mx-auto
                             relative w-32 h-28 sm:w-40 sm:h-40 lg:w-52 lg:h-48 max-w-1/2">
