@@ -39,7 +39,8 @@ const TimeslotStarters: React.FC<TimeslotStartersProps> = (props) => {
                             oppTeam={oppTeam}
                             isHome={isHome}
                             isUser={isUser}
-                            isByGameView={isByGameView} />
+                            isByGameView={isByGameView}
+                            scores={leagueInfo[starterId]?.leagues} />
                     );
                 })}
             </ul>
