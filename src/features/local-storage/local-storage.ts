@@ -13,6 +13,7 @@ export type UserData = {
     leagueIgnores?: LeagueIgnoresMap;
     leagueStarterSpots?: LeagueStarterSpots;
     shouldShowMissingStarters?: boolean;
+    shouldShowAverageScore?: boolean;
 }
 
 type CacheUserInfo = {
@@ -24,6 +25,7 @@ type CacheUserSettings = {
     leagueWeightsMap: LeagueWeightsMap;
     leagueIgnoresMap: LeagueIgnoresMap;
     shouldShowMissingStarters: boolean;
+    shouldShowAverageScore: boolean;
 }
 
 type CacheUserLeaguesInfo = {
@@ -74,7 +76,7 @@ export const safeUpdateLocalStorageData = (key: CacheKey, data: CacheValue) => {
 
 export const patchLocalStorageData = (key: CacheKey, data: CacheValue) => {
     const existingData = getLocalStorageData(key);
-    updateLocalStorageData(key, {...existingData, ...data});
+    updateLocalStorageData(key, { ...existingData, ...data });
 }
 
 // @TODO: change newData to CacheValue after user/id index page

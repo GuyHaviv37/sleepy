@@ -10,11 +10,13 @@ export const useSettings = (leagues: SleeperLeagueData[]) => {
     const [leagueWeightsMap, setLeagueWeightsMap] = useState<LeagueWeightsMap>(cachedSettingsStatus === CacheStatus.HIT ? cachedSettings!.leagueWeightsMap : {});
     const [leagueIgnoresMap, setLeagueIgnoresMap] = useState<LeagueIgnoresMap>(cachedSettingsStatus === CacheStatus.HIT ? cachedSettings!.leagueIgnoresMap : {});
     const [shouldShowMissingStarters, setShouldShowMissingStarters] = useState<boolean>(cachedSettingsStatus === CacheStatus.HIT ? cachedSettings!.shouldShowMissingStarters : true);
+    const [shouldShowAverageScore, setShouldShowAverageScore] = useState<boolean>(cachedSettingsStatus === CacheStatus.HIT ? cachedSettings!.shouldShowAverageScore : true);
     useEffect(() => {
         if (cachedSettingsStatus === CacheStatus.HIT && cachedSettings) {
             setLeagueWeightsMap(cachedSettings.leagueWeightsMap);
             setLeagueIgnoresMap(cachedSettings.leagueIgnoresMap);
             setShouldShowMissingStarters(cachedSettings.shouldShowMissingStarters);
+            setShouldShowAverageScore(cachedSettings.shouldShowAverageScore);
         }
     }, [cachedSettingsStatus]);
 
@@ -26,23 +28,29 @@ export const useSettings = (leagues: SleeperLeagueData[]) => {
     }, [leagues])
 
     const onChangeLeagueWeight = (leagueId: string, weight: number) => {
-        setLeagueWeightsMap(currentMap => ({...currentMap, [leagueId]: weight}));
+        setLeagueWeightsMap(currentMap => ({ ...currentMap, [leagueId]: weight }));
     }
 
     const onChangeLeagueIgnore = (leagueId: string, shouldShow: boolean) => {
-        setLeagueIgnoresMap(currentMap => ({...currentMap, [leagueId]: shouldShow}));
+        setLeagueIgnoresMap(currentMap => ({ ...currentMap, [leagueId]: shouldShow }));
     }
 
     const onChangeShowMissingStarters = (shouldShow: boolean) => {
         setShouldShowMissingStarters(shouldShow);
     }
 
+    const onChangeShowAverageScore = (shouldShow: boolean) => {
+        setShouldShowAverageScore(shouldShow);
+    }
+
     return {
         leagueIgnoresMap,
         leagueWeightsMap,
         shouldShowMissingStarters,
+        shouldShowAverageScore,
         onChangeLeagueIgnore,
         onChangeLeagueWeight,
-        onChangeShowMissingStarters
+        onChangeShowMissingStarters,
+        onChangeShowAverageScore
     };
 };

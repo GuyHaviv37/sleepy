@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { getHighlightStyle, getStarterHighlightType } from '../content-utils';
 import PlayerModalContext from '../../player-modal/PlayerModalContext';
 import { logStarterClicked } from '../../bi';
+import { useGetLocalStorage } from '../../../local-storage/hooks';
 
 interface StarterRowProps {
     id: string;
@@ -24,7 +25,9 @@ const StarterRow: React.FC<StarterRowProps> = (props) => {
     const highlightStyle = highlightType ? getHighlightStyle(highlightType) : null;
     const { openPlayerModal } = useContext(PlayerModalContext);
 
-    // Compute average score
+    const { data: cachedSettings } = useGetLocalStorage('settings');
+    const shouldShowAverageScore = cachedSettings?.shouldShowAverageScore ?? true; // Default to true
+
     const averageScore = scores && Object.keys(scores).length > 0
         ? Object.values(scores).reduce((sum, score) => sum + score, 0) / Object.keys(scores).length
         : null;
@@ -54,7 +57,7 @@ const StarterRow: React.FC<StarterRowProps> = (props) => {
                     {isByGameView ? null : <span className="hidden md:inline md:pl-1 lg:pl-2">{isHome ? 'vs.' : '@'}{'\t'}{oppTeam}</span>}
                 </p>
                 <div className='col-span-4'>
-                    {averageScore !== null && averageScore > 0.0 && (
+                    {averageScore !== null && averageScore > 0.0 && shouldShowAverageScore && (
                         <p className='text-[10px] lg:text-sm text-gray-400 mt-0.5 text-left'>
                             <span className='hidden sm:inline'>Average score: </span>
                             <span className='sm:hidden'>Avg. score: </span>

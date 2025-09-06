@@ -17,8 +17,8 @@ type UserDashboardPageProps = InferGetServerSidePropsType<typeof getServerSidePr
 const UserDashboardPage = ({ leagues }: UserDashboardPageProps) => {
     const router = useRouter();
     const { id, fromLogin } = router.query;
-    const { leagueIgnoresMap, leagueWeightsMap, shouldShowMissingStarters,
-        onChangeLeagueIgnore, onChangeLeagueWeight, onChangeShowMissingStarters } = useSettings(leagues);
+    const { leagueIgnoresMap, leagueWeightsMap, shouldShowMissingStarters, shouldShowAverageScore,
+        onChangeLeagueIgnore, onChangeLeagueWeight, onChangeShowMissingStarters, onChangeShowAverageScore } = useSettings(leagues);
 
     // move outside of component
     const submitWeightsHandler = (isSkipped = false) => {
@@ -29,6 +29,7 @@ const UserDashboardPage = ({ leagues }: UserDashboardPageProps) => {
         }, {})
         safeUpdateLocalStorageData('settings', {
             shouldShowMissingStarters,
+            shouldShowAverageScore,
             leagueIgnoresMap,
             leagueWeightsMap
         });
@@ -39,7 +40,7 @@ const UserDashboardPage = ({ leagues }: UserDashboardPageProps) => {
         if (isSkipped) {
             bi.logSettingsSkipped();
         } else {
-            bi.logSettingsSubmitted({ leagueNames, leagueWeightsMap, leagueIgnoresMap, shouldShowMissingStarters })
+            bi.logSettingsSubmitted({ leagueNames, leagueWeightsMap, leagueIgnoresMap, shouldShowMissingStarters, shouldShowAverageScore })
         }
         router.replace(`/user/${id}`);
     };
@@ -84,6 +85,15 @@ const UserDashboardPage = ({ leagues }: UserDashboardPageProps) => {
                                         onChange={event => onChangeShowMissingStarters(event.target.checked)} />
                                     <label htmlFor='missing_players_checkbox'
                                         className="text-primary-text text-sm pl-5 md:text-base">Show missing starters notice</label>
+                                </div>
+                                <div className='flex mt-3 mb-6'>
+                                    <input type='checkbox'
+                                        id='average_score_checkbox'
+                                        className='w-4 checked:accent-alt rounded-lg md:w-5'
+                                        checked={shouldShowAverageScore}
+                                        onChange={event => onChangeShowAverageScore(event.target.checked)} />
+                                    <label htmlFor='average_score_checkbox'
+                                        className="text-primary-text text-sm pl-5 md:text-base">Show average scores</label>
                                 </div>
                                 <button className="text-primary-text rounded-lg bg-alt w-full py-3"
                                     onClick={() => submitWeightsHandler(false)}>
