@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { getStarterEmoji } from '../content-utils';
+import { getStarterHighlightType, getHighlightStyle } from '../content-utils';
 import PlayerModalContext from '../../player-modal/PlayerModalContext';
 import { logStarterClicked } from '../../bi';
 
@@ -19,7 +19,8 @@ interface StarterRowProps {
 
 const StarterRow: React.FC<StarterRowProps> = (props) => {
     const { id, position, firstName, lastName, team, multipliers, isConflicted, oppTeam, isHome, isUser: isUserTeam, isByGameView } = props;
-    const starterEmoji = getStarterEmoji(multipliers, isConflicted, isUserTeam);
+    const highlightType = getStarterHighlightType(multipliers, isConflicted, isUserTeam);
+    const highlightStyle = highlightType ? getHighlightStyle(highlightType) : null;
     const { openPlayerModal } = useContext(PlayerModalContext);
 
     const onStarterClick = () => {
@@ -30,11 +31,11 @@ const StarterRow: React.FC<StarterRowProps> = (props) => {
     return (
         <li className='flex items-center cursor-pointer py-2' onClick={onStarterClick}>
             <div className={`text-sm pb-1 md:text-base grid grid-cols-4
-            w-full ${starterEmoji ? 'font-bold' : ''}`}>
+            w-full ${highlightStyle ? `font-bold ${highlightStyle.textColor}` : ''}`}>
                 <div className='flex w-full col-span-3'>
-                    <p className='w-[4ch]'>{`${position}`}</p>
+                    <p className={'w-[4ch]'}>{`${position}`}</p>
                     <p>
-                        <span className={`hidden md:inline pr-1 lg:pr-2`}>{starterEmoji}</span>
+                        <span className={`hidden md:inline pr-1 lg:pr-2`}>{highlightStyle?.emoji}</span>
                         <span className="hidden sm:inline">{`${firstName}\t\t`}</span>
                         <span>{lastName}</span>
                         {multipliers && multipliers > 1 && <span className='hidden lg:inline'>{` (X${multipliers})`}</span>}
