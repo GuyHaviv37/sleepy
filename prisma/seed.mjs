@@ -72,7 +72,7 @@ const seedPlayersInfo = async () => {
         console.log(e);
         process.exit(1);
     } finally {
-        await prisma.$disconnect;
+        await prisma.$disconnect();
     }
 }
 
