@@ -2,9 +2,11 @@ import AppHeader from "@/components/layout/AppHeader";
 import PageLogo from "@/components/PageLogo";
 import { useGetLocalStorage } from "@/features/local-storage/hooks";
 import { patchLocalStorageData, setLocalStorageData, updateLocalStorageData } from "@/features/local-storage/local-storage";
+import { useSleeperMockDraftsQuery } from "@/features/mock-drafts/hooks/useSleeperMockDraftsQuery";
 
 const MockDraftsPage = () => {
     const { data: mockDrafts, refetch: refetchMockDrafts } = useGetLocalStorage("mockDrafts");
+    const { drafts } = useSleeperMockDraftsQuery(Object.keys(mockDrafts ?? {}));
 
     const addMockDraft = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -38,9 +40,9 @@ const MockDraftsPage = () => {
                         <button type="submit" className="bg-alt text-primary-text px-4 py-2 rounded-lg">Add Mock Draft</button>
                     </form>
                     <ul>
-                        {Object.entries(mockDrafts ?? {}).map(([draftId, draftUrl]) => {
+                        {drafts?.map((draft) => {
                             return (
-                                <li key={draftId} className="text-primary-text text-sm">{draftUrl}</li>
+                                <li key={draft.draft_id} className="text-primary-text text-sm">{draft.start_time}</li>
                             )
                         })}
                     </ul>
