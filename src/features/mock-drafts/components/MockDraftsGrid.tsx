@@ -32,7 +32,7 @@ const MockDraftsGrid = ({
         <div className="overflow-auto max-h-[70vh] scrollbar-thin scrollbar-thumb-secondary-accent scrollbar-track-accent pb-2">
             <div
                 className="grid gap-2 min-w-min"
-                style={{ gridTemplateColumns: `repeat(${maxPicks}, minmax(7rem, 7rem))` }}
+                style={{ gridTemplateColumns: `repeat(${maxPicks}, minmax(9rem, 9rem))` }}
             >
                 {draftRows.map(({ draftId, userPicks }) => (
                     <Fragment key={draftId}>
