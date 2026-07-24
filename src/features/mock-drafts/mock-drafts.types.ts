@@ -3,6 +3,7 @@ export type SleeperDraftMetadata = {
     draft_id: string;
     metadata: {
         scoring_type: 'standard' | 'half_ppr' | 'ppr' //@TODO: add all types
+        draft_order?: Record<string, number>;
     },
     settings: {
         teams: number;

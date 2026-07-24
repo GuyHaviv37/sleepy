@@ -1,14 +1,26 @@
+import { useState } from "react";
+import { useRouter } from "next/router";
 import AppHeader from "@/components/layout/AppHeader";
 import PageLogo from "@/components/PageLogo";
+import Loader from "@/components/Loader";
 import { useGetLocalStorage } from "@/features/local-storage/hooks";
-import { patchLocalStorageData, setLocalStorageData, updateLocalStorageData } from "@/features/local-storage/local-storage";
+import { patchLocalStorageData, setLocalStorageData } from "@/features/local-storage/local-storage";
+import AddMockDraftForm from "@/features/mock-drafts/components/AddMockDraftForm";
+import AddMockDraftModal from "@/features/mock-drafts/components/AddMockDraftModal";
+import MockDraftsList from "@/features/mock-drafts/components/MockDraftsList";
 import { categorizeMockDraftsByDraftType } from "@/features/mock-drafts/extractors";
 import { useSleeperMockDraftsQuery } from "@/features/mock-drafts/hooks/useSleeperMockDraftsQuery";
 
 const MockDraftsPage = () => {
+    const router = useRouter();
+    const sleeperUserId = router.query.id as string;
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
     const { data: mockDrafts, refetch: refetchMockDrafts } = useGetLocalStorage("mockDrafts");
-    const { drafts } = useSleeperMockDraftsQuery(Object.keys(mockDrafts ?? {}));
+    const mockDraftIds = Object.keys(mockDrafts ?? {});
+    const { drafts, isLoading } = useSleeperMockDraftsQuery(mockDraftIds);
     const mockDraftsByCategory = categorizeMockDraftsByDraftType(drafts);
+    const hasDrafts = Object.keys(mockDraftsByCategory).length > 0;
 
     const addMockDraft = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -25,37 +37,67 @@ const MockDraftsPage = () => {
                 });
             }
             refetchMockDrafts();
+            (e.target as HTMLFormElement).reset();
         }
-    }
+    };
 
     return (
         <>
             <AppHeader title={'Sleepy - Mock Drafts'} />
-            <main className="flex flex-col items-center justify-center h-screen p-4 bg-primary">
+            <main className={`flex flex-col items-center p-4 pt-16 bg-primary w-full min-h-screen ${hasDrafts ? 'pb-8' : 'justify-center h-screen'}`}>
                 <PageLogo title={`⚙️ Mock Drafts`} />
-                <div className="flex flex-col w-full px-6 py-4 space-y-4">
-                    <p className='text-primary-text text-lg'>
-                        Add the URL of your mock draft to the form below to save it for future use.
-                    </p>
-                    <form onSubmit={addMockDraft} className="flex flex-col space-y-3 bg-accent py-8 px-6 rounded-lg">
-                        <input type="url" name="mockDraftUrl" placeholder="Enter the URL of the mock draft" />
-                        <button type="submit" className="bg-alt text-primary-text px-4 py-2 rounded-lg">Add Mock Draft</button>
-                    </form>
-                    <ul>
-                        {Object.entries(mockDraftsByCategory).map(([category, drafts]) => {
-                            const draftsNode = drafts.map(draft => {
-                                return <p key={draft.metadata.draft_id} className="ml-2">{draft.metadata.start_time}</p>
-                            })
-                            return <li className="text-primary-text">
-                                {category}
-                                {draftsNode}
-                            </li>
-                        })}
-                    </ul>
+
+                {hasDrafts && (
+                    <button
+                        type="button"
+                        className="text-primary-text font-semibold bg-alt rounded-lg px-4 py-2 absolute top-5 right-4 md:right-8 text-sm md:text-base"
+                        onClick={() => setIsAddModalOpen(true)}
+                    >
+                        + Add Mock Draft
+                    </button>
+                )}
+
+                <div className={`flex flex-col w-full max-w-5xl space-y-6 ${hasDrafts ? 'mt-8 md:mt-12 px-2 md:px-6' : 'px-6 py-4'}`}>
+                    {!hasDrafts && (
+                        <>
+                            <div className="text-center space-y-2 max-w-lg mx-auto">
+                                <p className="text-primary-text text-lg md:text-xl font-semibold">
+                                    No mock drafts yet
+                                </p>
+                                <p className="text-gray-400 text-sm md:text-base">
+                                    Add a Sleeper mock draft URL below to track your picks and compare drafts across formats.
+                                </p>
+                            </div>
+                            {isLoading && mockDraftIds.length > 0 ? (
+                                <Loader />
+                            ) : (
+                                <AddMockDraftForm onSubmit={addMockDraft} />
+                            )}
+                        </>
+                    )}
+
+                    {hasDrafts && (
+                        <>
+                            {isLoading ? (
+                                <Loader />
+                            ) : (
+                                <MockDraftsList
+                                    mockDraftsByCategory={mockDraftsByCategory}
+                                    sleeperUserId={sleeperUserId}
+                                />
+                            )}
+                        </>
+                    )}
                 </div>
+
+                <AddMockDraftModal
+                    isOpen={isAddModalOpen}
+                    onClose={() => setIsAddModalOpen(false)}
+                    onSubmit={addMockDraft}
+                />
             </main>
         </>
-    )
-}
+    );
+};
 
 export default MockDraftsPage;
