@@ -16,7 +16,7 @@ const MockDraftPickCell = ({ pick }: MockDraftPickCellProps) => {
                 {position} · {team}
             </p>
             <p className="text-gray-500 text-[10px] sm:text-xs">
-                Pick {pick.pick_no}
+                Round {pick.round} · Pick {pick.pick_no}
             </p>
         </div>
     );

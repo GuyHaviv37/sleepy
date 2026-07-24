@@ -29,7 +29,7 @@ export const formatOrdinalPick = (pickNumber: number): string => {
 };
 
 export const getUserDraftSlot = (draftMetadata: SleeperDraftMetadata, sleeperUserId: string): number | undefined =>
-    draftMetadata.metadata.draft_order?.[sleeperUserId];
+    draftMetadata.draft_order?.[sleeperUserId];
 
 export const getUserPicks = (picks: SleeperDraftPick[], sleeperUserId: string): SleeperDraftPick[] =>
     picks
