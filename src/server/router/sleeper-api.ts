@@ -3,6 +3,7 @@ import { createRouter } from "./context";
 import { getSleeperUserLeagues, getSleeperUserMatchupsData, getSleeperUserRosterIds } from "@/features/leagues/data";
 import { extractSleeperMatchupData } from "@/features/leagues/extractors";
 import { WEEKS } from "@/utils/consts";
+import { getMockDrafts } from "@/features/mock-drafts/data";
 
 export const sleeperApiRouter = createRouter()
   .query("getLeagueRosterIds", {
@@ -30,5 +31,16 @@ export const sleeperApiRouter = createRouter()
       const leagueIds = Object.keys(leagueRosterIds);
       const leagueMatchupData = await getSleeperUserMatchupsData(leagueIds, week as WEEKS);
       return extractSleeperMatchupData(leagueMatchupData, leagueRosterIds);
+    }
+  })
+  .query("getMockDraftsData", {
+    input: z.object({
+      mockDraftIds: z.array(z.string())
+    }).nullish(),
+    async resolve({input}) {
+      const mockDraftIds = input?.mockDraftIds;
+      if (!mockDraftIds) return {};
+      const mockDraftData = await getMockDrafts(mockDraftIds);
+      return mockDraftData;
     }
   });
