@@ -11,6 +11,7 @@ import { useSettings } from '@/features/settings/useSettings';
 import FlexibleContainer from '@/components/layout/FlexibleContainer';
 import PageLogo from '@/components/PageLogo';
 import * as bi from '@/features/settings/bi';
+import { PageFooter } from '@/components/PageFooter';
 
 type UserDashboardPageProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
@@ -108,6 +109,11 @@ const UserDashboardPage = ({ leagues }: UserDashboardPageProps) => {
                     </section>
                 </FlexibleContainer>
 
+            <PageFooter>
+                <Link href="/">
+                    <button className="text-primary-text tracking-wide bg-accent px-2 py-1 rounded">Change user</button>
+                </Link>
+            </PageFooter>
             </main>
         </>
     )
