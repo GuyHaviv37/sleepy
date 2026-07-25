@@ -71,10 +71,6 @@ const MockDraftsList = ({ mockDraftsByCategory, sleeperUserId }: MockDraftsListP
                 </div>
             </div>
 
-            <h2 className="text-primary-text text-xl md:text-2xl font-semibold tracking-wide">
-                {formatDraftCategoryLabel(selectedCategory)}
-            </h2>
-
             <div className="flex flex-col space-y-6">
                 {draftGroups.map(({ draftOrder, drafts }) => (
                     <div key={draftOrder ?? 'unknown'} className="flex flex-col space-y-2">
