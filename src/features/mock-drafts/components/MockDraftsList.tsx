@@ -50,7 +50,7 @@ const MockDraftsList = ({ mockDraftsByCategory, sleeperUserId }: MockDraftsListP
 
     return (
         <section className="flex flex-col w-full space-y-4">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-start w-full max-w-2xl">
+            <div className="flex flex-col gap-3 w-full max-w-2xl">
                 <div className="w-full max-w-xs md:max-w-sm">
                     <MockDraftCategoryDropdown
                         categories={categories}
