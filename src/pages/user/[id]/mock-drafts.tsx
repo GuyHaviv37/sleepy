@@ -46,10 +46,10 @@ const MockDraftsPage = () => {
     return (
         <>
             <AppHeader title={'Sleepy - Mock Drafts'} />
-            <main className={`flex flex-col p-4 pt-16 bg-primary w-full min-h-screen ${hasDrafts ? 'pb-8' : 'justify-center h-screen'}`}>
-                <Link href={`/user/${sleeperUserId}`} passHref >
-                    <PageLogo title={'🏈 Sleepy'} onClick={bi.logDashboardLinkClicked} />
-                </Link>
+            <Link href={`/user/${sleeperUserId}`} passHref >
+                <PageLogo title={'🏈 Sleepy'} onClick={bi.logDashboardLinkClicked} />
+            </Link>
+            <main className={`flex flex-col p-4 pt-16 bg-primary w-full min-h-screen ${hasDrafts ? 'pb-8' : 'h-screen'}`}>
 
                 <h1 className='text-primary-text text-3xl font-semibold text-left w-full'>🔮 Mock Drafts</h1>
                 {hasDrafts && (
