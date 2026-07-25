@@ -10,6 +10,8 @@ import AddMockDraftModal from "@/features/mock-drafts/components/AddMockDraftMod
 import MockDraftsList from "@/features/mock-drafts/components/MockDraftsList";
 import { categorizeMockDraftsByDraftType } from "@/features/mock-drafts/extractors";
 import { useSleeperMockDraftsQuery } from "@/features/mock-drafts/hooks/useSleeperMockDraftsQuery";
+import Link from "next/link";
+import * as bi from '@/features/dashboard/bi';
 
 const MockDraftsPage = () => {
     const router = useRouter();
@@ -44,9 +46,12 @@ const MockDraftsPage = () => {
     return (
         <>
             <AppHeader title={'Sleepy - Mock Drafts'} />
-            <main className={`flex flex-col items-center p-4 pt-16 bg-primary w-full min-h-screen ${hasDrafts ? 'pb-8' : 'justify-center h-screen'}`}>
-                <PageLogo title={`⚙️ Mock Drafts`} />
+            <main className={`flex flex-col p-4 pt-16 bg-primary w-full min-h-screen ${hasDrafts ? 'pb-8' : 'justify-center h-screen'}`}>
+                <Link href={`/user/${sleeperUserId}`} passHref >
+                    <PageLogo title={'🏈 Sleepy'} onClick={bi.logDashboardLinkClicked} />
+                </Link>
 
+                <h1 className='text-primary-text text-3xl font-semibold text-left w-full'>🔮 Mock Drafts</h1>
                 {hasDrafts && (
                     <button
                         type="button"
@@ -57,7 +62,7 @@ const MockDraftsPage = () => {
                     </button>
                 )}
 
-                <div className={`flex flex-col w-full max-w-5xl space-y-6 ${hasDrafts ? 'mt-8 md:mt-12 px-2 md:px-6' : 'px-6 py-4'}`}>
+                <div className={`flex flex-col w-full space-y-6 ${hasDrafts ? 'mt-8 md:mt-12 px-2 md:px-6' : 'px-6 py-4'}`}>
                     {!hasDrafts && (
                         <>
                             <div className="text-center space-y-2 max-w-lg mx-auto">
