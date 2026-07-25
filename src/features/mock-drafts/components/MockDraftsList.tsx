@@ -23,16 +23,6 @@ const MockDraftsList = ({ mockDraftsByCategory, sleeperUserId }: MockDraftsListP
     const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
     const [isDraftOrderDropdownOpen, setIsDraftOrderDropdownOpen] = useState(false);
 
-    useEffect(() => {
-        if (categories.length > 0 && !categories.includes(selectedCategory)) {
-            setSelectedCategory(categories[0]!);
-        }
-    }, [categories, selectedCategory]);
-
-    useEffect(() => {
-        setSelectedDraftOrder('all');
-    }, [selectedCategory]);
-
     const draftsInCategory = mockDraftsByCategory[selectedCategory] ?? [];
     const draftOrdersInCategory = useMemo(
         () => getDraftOrdersInCategory(draftsInCategory, sleeperUserId),
