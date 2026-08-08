@@ -9,6 +9,7 @@ export type LeagueMatchup = {
     roster_id: number;
     starters: string[];
     starters_points: number[];
+    points: number;
 };
 
 export type StarterInfo = {

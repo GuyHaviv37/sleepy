@@ -24,9 +24,8 @@ const UserDashboardPage = (props: { nflWeek: WEEKS }) => {
     const { data: cachedSettings } = useGetLocalStorage('settings');
     const { data: cachedUserInfo } = useGetLocalStorage('user');
     const { leagueRosterIds, isLeagueRosterIdsLoading } = useSleeperUserRosterIds(id as string);
-    const { matchups, isMatchupsLoading } = useSleeperUserMatchupsData(selectedWeek, leagueRosterIds, cachedSettings?.leagueIgnoresMap);
+    const { matchups, isMatchupsLoading } = useSleeperUserMatchupsData(selectedWeek, leagueRosterIds, cachedSettings);
     const { userStarters, oppStarters } = matchups ?? {};
-    console.log('@selectedWeek', selectedWeek)
     const { data: scheduleData, isLoading: isScheduleLoading } = useQuery({
         queryKey: ['nfl-schedule', selectedWeek],
         queryFn: () => getScheduleData(selectedWeek)

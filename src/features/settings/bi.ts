@@ -7,6 +7,8 @@ type LogSettingsSubmittedProps = {
   leagueIgnoresMap: LeagueIgnoresMap;
   shouldShowMissingStarters: boolean;
   shouldShowAverageScore: boolean;
+  shouldShowCloseMatchupMargin: boolean;
+  closeMatchupMargin: number | null;
 }
 export const logSettingsSubmitted = (settingsProps: LogSettingsSubmittedProps) => gtag.submitEvent({
   category: 'settings',
@@ -15,7 +17,9 @@ export const logSettingsSubmitted = (settingsProps: LogSettingsSubmittedProps) =
   ignored_leagues: Object.values(settingsProps.leagueIgnoresMap).filter(check => !check).length,
   weighted_leagues: Object.values(settingsProps.leagueWeightsMap).filter(weight => weight > 0).length,
   show_missing_starters: settingsProps.shouldShowMissingStarters,
-  show_average_scores: settingsProps.shouldShowAverageScore
+  show_average_scores: settingsProps.shouldShowAverageScore,
+  show_close_matchup_margin: settingsProps.shouldShowCloseMatchupMargin,
+  close_matchup_margin: settingsProps.closeMatchupMargin,
 })
 
 export const logSettingsSkipped = () => gtag.submitEvent({
