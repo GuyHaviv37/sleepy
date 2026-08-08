@@ -18,8 +18,8 @@ type UserDashboardPageProps = InferGetServerSidePropsType<typeof getServerSidePr
 const UserDashboardPage = ({ leagues }: UserDashboardPageProps) => {
     const router = useRouter();
     const { id, fromLogin } = router.query;
-    const { leagueIgnoresMap, leagueWeightsMap, shouldShowMissingStarters, shouldShowAverageScore,
-        onChangeLeagueIgnore, onChangeLeagueWeight, onChangeShowMissingStarters, onChangeShowAverageScore } = useSettings(leagues);
+    const { leagueIgnoresMap, leagueWeightsMap, shouldShowMissingStarters, shouldShowAverageScore, shouldShowCloseMatchupMargin, closeMatchupMargin,
+        onChangeLeagueIgnore, onChangeLeagueWeight, onChangeShowMissingStarters, onChangeShowAverageScore, onChangeShowCloseMatchupMargin, onChangeCloseMatchupMargin } = useSettings(leagues);
 
     // move outside of component
     const submitWeightsHandler = (isSkipped = false) => {
@@ -32,7 +32,9 @@ const UserDashboardPage = ({ leagues }: UserDashboardPageProps) => {
             shouldShowMissingStarters,
             shouldShowAverageScore,
             leagueIgnoresMap,
-            leagueWeightsMap
+            leagueWeightsMap,
+            shouldShowCloseMatchupMargin,
+            closeMatchupMargin,
         });
         safeUpdateLocalStorageData('leaguesInfo', {
             leagueNames,
@@ -41,7 +43,7 @@ const UserDashboardPage = ({ leagues }: UserDashboardPageProps) => {
         if (isSkipped) {
             bi.logSettingsSkipped();
         } else {
-            bi.logSettingsSubmitted({ leagueNames, leagueWeightsMap, leagueIgnoresMap, shouldShowMissingStarters, shouldShowAverageScore })
+            bi.logSettingsSubmitted({ leagueNames, leagueWeightsMap, leagueIgnoresMap, shouldShowMissingStarters, shouldShowAverageScore, shouldShowCloseMatchupMargin, closeMatchupMargin })
         }
         router.replace(`/user/${id}`);
     };
@@ -96,6 +98,33 @@ const UserDashboardPage = ({ leagues }: UserDashboardPageProps) => {
                                     <label htmlFor='average_score_checkbox'
                                         className="text-primary-text text-sm pl-5 md:text-base">Show average scores</label>
                                 </div>
+                                <div className="flex justify-between mb-6 sm:space-x-5 lg:space-x-8">
+                                    <div className='flex'>
+                                        <input type='checkbox'
+                                            id='close_matchup_margin_checkbox'
+                                            className='w-4 checked:accent-alt rounded-lg md:w-5'
+                                            checked={shouldShowCloseMatchupMargin} onChange={event => onChangeShowCloseMatchupMargin(event.target.checked)} />
+                                        <div>
+                                            <label htmlFor={'close_matchup_margin_checkbox'}
+                                                className="text-primary-text text-sm pl-5 md:text-base">Close matchup margin</label>
+                                            <p className="text-alt text-xs pl-5 md:text-sm">{'Filter to matchups within a % difference'}</p>
+                                        </div>
+                                    </div>
+                                    <div className="relative inline-flex items-center">
+                                        <input type="number" onChange={event => onChangeCloseMatchupMargin(parseInt(event.target.value))}
+                                            step={1} min={1} max={99} value={closeMatchupMargin ?? 0}
+                                            disabled={!shouldShowCloseMatchupMargin}
+                                            id={'close_matchup_margin_input'}
+                                            className="peer max-w-[60px] md:max-w-[72px] max-h-[40px] pl-2 pr-6 text-center text-grey-700
+                                            border-[3px] border-solid border-grey-300
+                                            transition ease-in-out
+                                            focus:text-primary focus:border-alt focus:border-[2px] focus:outline-none
+                                            md:text-md"
+                                        />
+                                        <span className="pointer-events-none absolute right-2 text-sm text-grey-700
+                                            transition ease-in-out peer-focus:text-primary md:text-md">%</span>
+                                    </div>
+                                </div>
                                 <button className="text-primary-text rounded-lg bg-alt w-full py-3"
                                     onClick={() => submitWeightsHandler(false)}>
                                     Submit
@@ -109,11 +138,11 @@ const UserDashboardPage = ({ leagues }: UserDashboardPageProps) => {
                     </section>
                 </FlexibleContainer>
 
-            <PageFooter>
-                <Link href="/">
-                    <button className="text-primary-text tracking-wide bg-accent px-2 py-1 rounded">Change user</button>
-                </Link>
-            </PageFooter>
+                <PageFooter>
+                    <Link href="/">
+                        <button className="text-primary-text tracking-wide bg-accent px-2 py-1 rounded">Change user</button>
+                    </Link>
+                </PageFooter>
             </main>
         </>
     )

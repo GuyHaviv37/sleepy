@@ -42,22 +42,36 @@ const extractStartersData = (matchups: Partial<LeagueMatchupWithLeagueId>[]) => 
     return starterData;
 }
 
-export const extractSleeperMatchupData = (leagueMatchupsData: { [leagueId: string]: LeagueMatchup[] }, leagueRosterIds: LeagueRosterIdsMap)
+export const extractSleeperMatchupData = (leagueMatchupsData: { [leagueId: string]: LeagueMatchup[] }, leagueRosterIds: LeagueRosterIdsMap, closeMatchupMargin?: number | null)
     : { userStarters?: Starters; oppStarters?: Starters } => {
     const userMatchups = Object.entries(leagueMatchupsData).map(([leagueId, leagueMatchups]) => {
         const userMatchup = leagueMatchups.find(isUserMatchup(leagueRosterIds[leagueId]));
-        if (!userMatchup) return { leagueId, matchup_id: 'N/A' };
+        if (!userMatchup) return { leagueId, matchup_id: 'N/A', points: 0 };
         return { ...userMatchup, leagueId }
     });
-    const userStarters = extractStartersData(userMatchups);
     const oppMatchups = Object.entries(leagueMatchupsData).map(([leagueId, leagueMatchups], index) => {
         const matchupId = userMatchups[index]?.matchup_id;
         const userRosterId = leagueRosterIds[leagueId];
         const oppMatchup = leagueMatchups.find(isOppMatchup(matchupId, userRosterId));
-        if (!oppMatchup) return { leagueId, matchup_id: 'N/A' };
+        if (!oppMatchup) return { leagueId, matchup_id: 'N/A', points: 0 };
         return { ...oppMatchup, leagueId };
     })
-    const oppStarters = extractStartersData(oppMatchups);
+
+    const userCloseMarginMatchups = userMatchups.filter(userMatchup => {
+        if (!closeMatchupMargin) return true;
+        const userMatchupPoints = userMatchup.points;
+        const oppMatchupPoints = oppMatchups.find(oppMatchup => oppMatchup.leagueId === userMatchup.leagueId)?.points;
+        if (!oppMatchupPoints) return false;
+        const leadMargin = 1 + closeMatchupMargin/100;
+        const trailingMargin = 1 - closeMatchupMargin/100;
+        const userWithinMaxLead = (userMatchupPoints/oppMatchupPoints) <= leadMargin;
+        const userWithinMinTrail = (userMatchupPoints/oppMatchupPoints) >= trailingMargin;
+        return userWithinMaxLead && userWithinMinTrail;
+    })
+
+    const oppCloseMarginMatchups = oppMatchups.filter(oppMatchup => userCloseMarginMatchups.find(userMatchup => userMatchup.leagueId === oppMatchup.leagueId))
+    const userStarters = extractStartersData(userCloseMarginMatchups);
+    const oppStarters = extractStartersData(oppCloseMarginMatchups);
 
     // assign conflicts
     if (userStarters) {

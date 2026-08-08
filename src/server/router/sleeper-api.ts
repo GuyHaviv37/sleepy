@@ -22,15 +22,17 @@ export const sleeperApiRouter = createRouter()
   .query("getMatchupsData", {
     input: z.object({
       leagueRosterIds: z.record(z.number()),
-      week: z.string()
+      week: z.string(),
+      closeMatchupMargin: z.number().nullish()
     }).nullish(),
     async resolve({input}) {
       const leagueRosterIds = input?.leagueRosterIds;
       const week = input?.week;
       if (!leagueRosterIds || !week) return {};
       const leagueIds = Object.keys(leagueRosterIds);
+      const closeMatchupMargin = input?.closeMatchupMargin;
       const leagueMatchupData = await getSleeperUserMatchupsData(leagueIds, week as WEEKS);
-      return extractSleeperMatchupData(leagueMatchupData, leagueRosterIds);
+      return extractSleeperMatchupData(leagueMatchupData, leagueRosterIds, closeMatchupMargin);
     }
   })
   .query("getMockDraftsData", {

@@ -9,6 +9,8 @@ export const useSettings = (leagues: SleeperLeagueData[]) => {
     const { data: cachedSettings, cacheStatus: cachedSettingsStatus } = useGetLocalStorage('settings');
     const [leagueWeightsMap, setLeagueWeightsMap] = useState<LeagueWeightsMap>(cachedSettingsStatus === CacheStatus.HIT ? cachedSettings!.leagueWeightsMap : {});
     const [leagueIgnoresMap, setLeagueIgnoresMap] = useState<LeagueIgnoresMap>(cachedSettingsStatus === CacheStatus.HIT ? cachedSettings!.leagueIgnoresMap : {});
+    const [shouldShowCloseMatchupMargin, setShouldShowCloseMatchupMargin] = useState<boolean>(cachedSettingsStatus === CacheStatus.HIT ? cachedSettings!.shouldShowCloseMatchupMargin : false);
+    const [closeMatchupMargin, setCloseMatchupMargin] = useState<number | null>(cachedSettingsStatus === CacheStatus.HIT ? cachedSettings!.closeMatchupMargin : null);
     const [shouldShowMissingStarters, setShouldShowMissingStarters] = useState<boolean>(cachedSettingsStatus === CacheStatus.HIT ? cachedSettings!.shouldShowMissingStarters : true);
     const [shouldShowAverageScore, setShouldShowAverageScore] = useState<boolean>(cachedSettingsStatus === CacheStatus.HIT ? cachedSettings!.shouldShowAverageScore : true);
     useEffect(() => {
@@ -17,6 +19,8 @@ export const useSettings = (leagues: SleeperLeagueData[]) => {
             setLeagueIgnoresMap(cachedSettings.leagueIgnoresMap);
             setShouldShowMissingStarters(cachedSettings.shouldShowMissingStarters);
             setShouldShowAverageScore(cachedSettings.shouldShowAverageScore);
+            setShouldShowCloseMatchupMargin(cachedSettings.shouldShowCloseMatchupMargin ?? false);
+            setCloseMatchupMargin(cachedSettings.closeMatchupMargin ?? null)
         }
     }, [cachedSettingsStatus]);
 
@@ -43,14 +47,27 @@ export const useSettings = (leagues: SleeperLeagueData[]) => {
         setShouldShowAverageScore(shouldShow);
     }
 
+    const onChangeShowCloseMatchupMargin = (shouldShow: boolean) => {
+        setShouldShowCloseMatchupMargin(shouldShow);
+    }
+
+    const onChangeCloseMatchupMargin = (margin: number) => {
+        if (Number.isNaN(margin)) return;
+        setCloseMatchupMargin(margin);
+    }
+
     return {
         leagueIgnoresMap,
         leagueWeightsMap,
         shouldShowMissingStarters,
         shouldShowAverageScore,
+        closeMatchupMargin,
+        shouldShowCloseMatchupMargin,
         onChangeLeagueIgnore,
         onChangeLeagueWeight,
         onChangeShowMissingStarters,
-        onChangeShowAverageScore
+        onChangeShowAverageScore,
+        onChangeShowCloseMatchupMargin,
+        onChangeCloseMatchupMargin
     };
 };

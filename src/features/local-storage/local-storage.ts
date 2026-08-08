@@ -14,6 +14,8 @@ type CacheUserSettings = {
     leagueIgnoresMap: LeagueIgnoresMap;
     shouldShowMissingStarters: boolean;
     shouldShowAverageScore: boolean;
+    shouldShowCloseMatchupMargin: boolean;
+    closeMatchupMargin: number | null;
 }
 
 type CacheUserLeaguesInfo = {
