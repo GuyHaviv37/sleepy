@@ -1,5 +1,5 @@
 export const SPORT = 'nfl';
-export const SEASON = '2025';
+export const SEASON = '2026';
 
 export const WEEKS = {
     WEEK1: '1',
