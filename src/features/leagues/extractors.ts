@@ -7,7 +7,7 @@ export const extractUserLeagueRosterIds = (rostersData: any, sleeperId: string):
     const isSingleLeague = !!rostersData[0].league_id;
     const refinedRosterData = isSingleLeague ? [rostersData] : rostersData;
     const userRosters = refinedRosterData.map((leagueRosters: any[]) => {
-        return leagueRosters.find((leagueRoster: { owner_id: string; }) => leagueRoster.owner_id === sleeperId);
+        return leagueRosters.find((leagueRoster: { owner_id: string; co_owners: string[]}) => leagueRoster.owner_id === sleeperId || leagueRoster.co_owners?.includes(sleeperId));
     })
     const availableUserRosters = userRosters.filter((userRoster: any) => !!userRoster);
     const leagueRosterIds: LeagueRosterIdsMap = {};
