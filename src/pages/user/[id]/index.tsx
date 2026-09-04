@@ -56,9 +56,9 @@ const UserDashboardPage = (props: { nflWeek: WEEKS }) => {
                 <Link href="/" passHref >
                     <PageLogo title={'🏈 Sleepy'} onClick={bi.logHomeLinkClicked} />
                 </Link>
-                <Link href={`/user/${id}/mock-drafts`} >
+                {/* <Link href={`/user/${id}/mock-drafts`} >
                     <button className='text-md text-primary-text font-semibold absolute top-5 right-28 md:right-32' onClick={bi.logMockDraftsLinkClicked}>🔮 Mock Drafts</button>
-                </Link>
+                </Link> */}
                 <Link href={`/user/${id}/settings`} >
                     <button className='text-md text-primary-text font-semibold absolute top-5 right-5' onClick={bi.logSettingsLinkClicked}>⚙️ Settings</button>
                 </Link>
