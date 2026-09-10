@@ -1,19 +1,23 @@
 name: player-info-seed
+
 on:
   schedule:
-    - cron: '0 15 * * *'
+    - cron: '17 15 * * *'
   workflow_dispatch:
 
 jobs:
   player_info_seed:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
-      - run: |
-          touch .env
-          echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> .env
-      - run: yarn run ci
-      - run: yarn run seed-players
+
+      - name: Create .env and run seed
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          echo "DATABASE_URL=$DATABASE_URL" > .env
+          yarn run ci
+          yarn run seed-players
